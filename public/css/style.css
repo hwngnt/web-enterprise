@@ -5794,7 +5794,8 @@ textarea.form-control-lg {
   display: none;
   float: left;
   width: 100%;
-  margin-right: -100%;
+  margin-right: -97%;
+  margin-left: 5%;
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
   transition: transform 0.6s ease-in-out;
@@ -5925,7 +5926,7 @@ textarea.form-control-lg {
   padding: 0;
   margin-right: 15%;
   margin-bottom: 1rem;
-  margin-left: 15%;
+  margin-left: 24%;
   list-style: none;
 }
 .carousel-indicators [data-bs-target] {
@@ -11051,7 +11052,7 @@ body {
   color: rgba(255, 255, 255, 0.5);
 }
 .sb-sidenav-dark .sb-sidenav-menu .sb-sidenav-menu-heading {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(235, 228, 28, 0.75);
 }
 .sb-sidenav-dark .sb-sidenav-menu .nav-link {
   color: #fff;
