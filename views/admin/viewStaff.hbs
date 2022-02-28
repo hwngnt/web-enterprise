@@ -9,11 +9,11 @@
             <div class="form-group">
                 <label>Search by Name:</label>
                 <div class="input-group">
-                    <a href="/admin/addQualityAssuranceCoordinator" class="btn btn-success" style="margin-left: 5%;">
+                    <a href="/admin/addStaff" class="btn btn-success" style="margin-left: 5%;">
                         <span class="glyphicon glyphicon-plus"></span>
                         <span><strong>Add new account</strong></span>
                     </a>
-                    <form class="form btn-group align-top" method="post" action="/admin/searchQualityAssuranceCoordinator"
+                    <form class="form btn-group align-top" method="post" action="/admin/searchStaff"
                         style="margin-left: 20%; width: 40%;  flex: none;">
                         <input type="search" name="keyword" class="form-control rounded" placeholder="Search by name "
                             aria-label="Search" aria-describedby="search-addon" />
@@ -40,11 +40,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {{#each listQAcoordinator}}
+                                {{#each listStaff}}
                                 <tr>
                                     <td class="text-nowrap align-middle">{{name}}</td>
                                     <td class="text-nowrap align-middle">
-                                        <center><img src="/uploads/QAcoordinator/{{img}}" alt="{{img}}" width="50px" height="70px">
+                                        <center><img src="/uploads/staff/{{img}}" alt="{{img}}" width="50px" height="70px">
                                         </center>
                                     </td>
                                     <td class="text-nowrap align-middle">{{email}}</td>
@@ -52,11 +52,11 @@
                                     <td class="text-nowrap align-middle">{{address}}</td>
                                     <td class="text-center align-middle">
                                         <div class="btn-group align-top">
-                                            {{!-- <a href="/admin/editQualityAssuranceCoordinator?id={{_id}}" class="btn btn-success">
+                                            {{!-- <a href="/admin/editStaff?id={{_id}}" class="btn btn-success">
                                                 <span class="glyphicon glyphicon-edit"></span>
                                                 <span><strong>Edit</strong></span>
                                             </a> --}}
-                                            <a href="/admin/deleteQualityAssuranceCoordinator?id={{_id}}" class="btn btn-danger"
+                                            <a href="/admin/deleteStaff?id={{_id}}" class="btn btn-danger"
                                                 onclick="return confirm('Are you sure')">
                                                 <span class="glyphicon glyphicon-remove"></span>
                                                 <span><strong>Delete</strong></span>

@@ -9,12 +9,12 @@ exports.handleLogin = async (req, res) => {
         let user = await Account.findOne({ email: username });
         await bcrypt.compare(password, user.password).then((doMatch) => {
             if (doMatch) {
-                if (user.role == 'admin') {
+                if (user.role == 'Admin') {
                     req.session.user = user;
                     req.session.email = username;
                     req.session.admin = true;
                     res.redirect('/admin');
-                }else if(user.role == 'staff'){
+                }else if(user.role == 'Staff'){
                     req.session.user = user;
                     req.session.email = username;
                     req.session.staff = true;

@@ -28,12 +28,55 @@ const uploadQAmanager = multer({
 router.get('/admin/viewQualityAssuranceManager', adminController.viewQAmanager);
 router.get('/admin/addQualityAssuranceManager', adminController.addQAmanager);
 router.post('/admin/doAddQualityAssuranceManager', uploadQAmanager.single('picture'), adminController.doAddQAmanager);
-// router.get('/admin/deleteQualityAssuranceManager', adminController.deleteQAmanager);
-// router.post('/admin/searchQualityAssuranceManager', adminController.searchQAmanager);
+router.get('/admin/deleteQualityAssuranceManager', adminController.deleteQAmanager);
+router.post('/admin/searchQualityAssuranceManager', adminController.searchQAmanager);
 
 
 
 //QAcoordinator
-router.get('admin/viewQualityAssuranceCoordinator', adminController.viewQAcoordinator);
+const storageQAcoordinator = multer.diskStorage({
+    destination:function(req, file, callback){
+        callback(null, 'public/uploads/QAcoordinator');
+    },
+    //add back the extension
+    filename:function(req, file, callback){
+        callback(null, Date.now()+file.originalname);
+    },
+})
+
+const uploadQAcoordinator = multer({
+    storage:storageQAcoordinator,
+    limits:{
+        fieldSize:1024*1024*3
+    },
+})
+router.get('/admin/viewQualityAssuranceCoordinator', adminController.viewQAcoordinator);
+router.get('/admin/addQualityAssuranceCoordinator', adminController.addQAcoordinator);
+router.post('/admin/doAddQualityAssuranceCoordinator', uploadQAcoordinator.single('picture'), adminController.doAddQAcoordinator);
+router.get('/admin/deleteQualityAssuranceCoordinator', adminController.deleteQAcoordinator);
+router.post('/admin/searchQualityAssuranceCoordinator', adminController.searchQAcoordinator);
+
+//Staff
+const storageStaff = multer.diskStorage({
+    destination:function(req, file, callback){
+        callback(null, 'public/uploads/staff');
+    },
+    //add back the extension
+    filename:function(req, file, callback){
+        callback(null, Date.now()+file.originalname);
+    },
+})
+
+const uploadStaff = multer({
+    storage:storageStaff,
+    limits:{
+        fieldSize:1024*1024*3
+    },
+})
+router.get('/admin/viewStaff', adminController.viewStaff);
+router.get('/admin/addStaff', adminController.addStaff);
+router.post('/admin/doAddStaff', uploadStaff.single('picture'), adminController.doAddStaff);
+router.get('/admin/deleteStaff', adminController.deleteStaff);
+router.post('/admin/searchStaff', adminController.searchStaff);
 
 module.exports = router;
