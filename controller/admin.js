@@ -9,8 +9,52 @@ exports.getAdmin = async (req, res) => {
 
 //view all QAmanager
 exports.viewQAmanager = async (req, res) => {
-    let listQAmanager = await trainer.find();
+    let listQAmanager = await QAmanager.find();
     res.render('admin/viewQAmanager', { listQAmanager: listQAmanager, loginName: req.session.email })
+}
+exports.addQAmanager = async (req, res) => {
+    res.render('admin/addQAmanager', { loginName: req.session.email });
+}
+exports.doAddQAmanager = async (req, res) => {
+    let newQAmanager;
+    if (req.file) {
+        newQAmanager = new QAmanager({
+            name: req.body.name,
+            email: req.body.email,
+            dateOfBirth: new Date(req.body.date),
+            address: req.body.address,
+            img: req.file.filename
+        })
+    }
+    else {
+        newQAmanager = new QAmanager({
+            name: req.body.name,
+            email: req.body.email,
+            dateOfBirth: new Date(req.body.date),
+            address: req.body.address
+        })
+    }
+    let newAccount = new Account({
+        email: req.body.email,
+        password: "12345678",
+        role: "QAmanager"
+    })
+    try {
+        await bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newAccount.password, salt, (err, hash) => {
+                if (err) throw err;
+                newAccount.password = hash;
+                newAccount = newAccount.save();
+                newQAmanager = newQAmanager.save();
+            });
+        });
+        // console.log(newTrainee);
+        res.redirect('/admin/viewQualityAssuranceManager');
+    }
+    catch (error) {
+        console.log(error);
+        res.redirect('/admin/viewQualityAssuranceManager');
+    }
 }
 
 //view all QAcoordinator
