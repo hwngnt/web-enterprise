@@ -5,7 +5,7 @@ session = require('express-session')
 const app = express();
 app.set('view engine', 'hbs');
 var hbs = require('hbs');
-const staff = require('./models/staff');
+const staff = require('./models/user');
 app.use(bodyParser.urlencoded({ extended: true }));
 // register path to partials
 hbs.registerPartials(__dirname + '/views/partials/');
