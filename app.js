@@ -5,7 +5,17 @@ session = require('express-session')
 const app = express();
 app.set('view engine', 'hbs');
 var hbs = require('hbs');
+
+app.use(session({
+    secret: '2C44-4D44-WppQ38S',
+    resave: true,
+    saveUninitialized: true,
+    cookie: { maxAge: 3600000 }
+}));
+
+
 const staff = require('./models/user');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 // register path to partials
 hbs.registerPartials(__dirname + '/views/partials/');
