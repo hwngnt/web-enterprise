@@ -14,6 +14,21 @@ exports.handleLogin = async (req, res) => {
                     req.session.email = username;
                     req.session.admin = true;
                     res.redirect('/admin');
+                }else if(user.role == 'Staff'){
+                    req.session.user = user;
+                    req.session.email = username;
+                    req.session.staff = true;
+                    res.redirect('/QAmanager');
+                }else if(user.role == 'QAmanager'){
+                    req.session.user = user;
+                    req.session.email = username;
+                    req.session.QAmanager = true;
+                    res.redirect('/QAmanager');
+                }else{
+                    req.session.user = user;
+                    req.session.email = username;
+                    req.session.QAcoordinator = true;
+                    res.redirect('/QAcoordinator');
                 }
 
                 if (user.role == 'qam') {
