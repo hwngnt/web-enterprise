@@ -19,7 +19,7 @@ hbs.registerPartials(__dirname + '/views/partials/');
 // hbs.registerHelper('dateFormat', require('handlebars-dateformat'));
 app.use(express.static(__dirname + '/public'));
 app.get('/', (req, res) => {
-    res.render('index')
+    res.render('qindex')
 });
 
 const authRoute = require("./routes/auth")
