@@ -19,14 +19,16 @@ hbs.registerPartials(__dirname + '/views/partials/');
 // hbs.registerHelper('dateFormat', require('handlebars-dateformat'));
 app.use(express.static(__dirname + '/public'));
 app.get('/', (req, res) => {
-    res.render('qindex')
+    res.render('index')
 });
 
 const authRoute = require("./routes/auth")
 var adminRoute = require('./routes/admin');
+var qamRoute = require('./routes/qam');
 
 app.use("/", authRoute);
 app.use('/', adminRoute);
+app.use('/', qamRoute);
 
 
 const PORT = process.env.PORT || 3000;
