@@ -9,7 +9,7 @@ exports.handleLogin = async (req, res) => {
         let user = await Account.findOne({ email: username });
         await bcrypt.compare(password, user.password).then((doMatch) => {
             if (doMatch) {
-                if (user.role == 'Admin') {
+                if (user.role == 'admin') {
                     req.session.user = user;
                     req.session.email = username;
                     req.session.admin = true;
@@ -29,6 +29,13 @@ exports.handleLogin = async (req, res) => {
                     req.session.email = username;
                     req.session.QAcoordinator = true;
                     res.redirect('/QAcoordinator');
+                }
+
+                if (user.role == 'qam') {
+                    req.session.user = user;
+                    req.session.email = username;
+                    req.session.qam = true;
+                    res.redirect('/qam_index');
                 }
             } else {
                 return res.render('index', { errors: 'Username or password is incorrect' })

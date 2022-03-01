@@ -13,8 +13,8 @@ exports.isStaff = function(req, res, next) {
 };
 
 
-exports.isTrainer = function(req, res, next) {
-    if (req.session && req.session.trainer)
+exports.isQAM = function(req, res, next) {
+    if (req.session && req.session.qam)
       return next();
     else
       return res.sendStatus(401);
