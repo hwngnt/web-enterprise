@@ -23,12 +23,12 @@ app.get('/', (req, res) => {
 });
 
 const authRoute = require("./routes/auth")
-var adminRoute = require('./routes/admin');
-var qamRoute = require('./routes/qam');
+const adminRoute = require('./routes/admin');
+const qacRoute = require('./routes/qac');
 
 app.use("/", authRoute);
 app.use('/', adminRoute);
-app.use('/', qamRoute);
+app.use('/', qacRoute);
 
 
 const PORT = process.env.PORT || 3000;
