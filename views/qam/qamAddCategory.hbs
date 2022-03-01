@@ -5,38 +5,39 @@
 
 <body class="sb-nav-fixed">
     {{> qamHeader}}
-    <div class="modal-dialog modal-lg" role="document" style="margin-top: 3%; margin-left: 15%">
-        <div class="modal-content py-5" style="padding-left: 12%;">
+    <div class="modal-dialog modal-lg" role="document" style="margin-top: 5%; margin-left: 20%">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">Create a Category</h2>
             </div>
-            <div class="row">
-                <div class="col-md-8 border-right">
-                    <form class="form" method="post" action='/doAddStaff' id="addStaff" enctype="multipart/form-data">
-                        <div class="row" style="width: 130%;">
+            <div class="modal-body">
+                <div class="py-1">
+                    <form class="form" method="POST" action="/qam/doAddCategory">
+                        <div class="row">
                             <div class="col">
-                                <div class="form-group">
-                                    <label>Name</label>
-                                    <input class="form-control" type="text" name="name" placeholder="name"
-                                        id="name">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label>Category Name</label>
+                                            <input class="form-control" type="text" name="name" placeholder="Category Name"required/>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row" style="width: 130%;">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea class="form-control" rows="6" placeholder="description"
-                                        name="description"></textarea>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <div class="form-group">
+                                            <label>Description</label>
+                                            <textarea class="form-control" rows="5" name="description" placeholder="Description" required/></textarea>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
                         <div class="row">
-                            <div class="row" style="margin-left: 27%">
-                                <div class="col d-flex justify-content-end">
-                                    <button class="btn btn-primary" type="submit">Save</button>
-                                    <a href="/qam/qam_index" class="btn btn-warning">Cancel</a>
-                                </div>
+                            <div class="col d-flex justify-content-end">
+                                <button class="btn btn-primary" type="submit">Save</button>
+                                <a href="/qam/qam_index" class="btn btn-warning">Cancel</a>
                             </div>
                         </div>
                     </form>
@@ -44,7 +45,6 @@
             </div>
         </div>
     </div>
-    <script src="/js/validateStaff.js"></script>
 </body>
 
 </html>
