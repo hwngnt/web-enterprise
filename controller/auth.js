@@ -18,7 +18,7 @@ exports.handleLogin = async (req, res) => {
                     req.session.user = user;
                     req.session.email = username;
                     req.session.staff = true;
-                    res.redirect('/QAmanager');
+                    res.redirect('/staff');
                 }else if(user.role == 'QAmanager'){
                     req.session.user = user;
                     req.session.email = username;
