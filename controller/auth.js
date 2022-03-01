@@ -18,33 +18,22 @@ exports.handleLogin = async (req, res) => {
                     req.session.user = user;
                     req.session.email = username;
                     req.session.staff = true;
-                    res.redirect('/QAmanager');
+                    res.redirect('/staff');
                 }else if(user.role == 'QAmanager'){
                     req.session.user = user;
                     req.session.email = username;
                     req.session.QAmanager = true;
-                    res.redirect('/QAmanager');
+                    res.redirect('/qam_index');
                 }else{
                     req.session.user = user;
                     req.session.email = username;
                     req.session.QAcoordinator = true;
                     res.redirect('/QAcoordinator');
                 }
-
-                if (user.role == 'qam') {
-                    req.session.user = user;
-                    req.session.email = username;
-                    req.session.qam = true;
-                    res.redirect('/qam_index');
-                }
             } else {
                 return res.render('index', { errors: 'Username or password is incorrect' })
             }
-
         })
-            // .catch(err => {
-            //     console.log(err)
-            // })
     } catch (error) {
         console.log(error);
         return res.render('index');

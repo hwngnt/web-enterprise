@@ -5,5 +5,7 @@ const mongoose = require('mongoose');
 const qamController = require('../controller/qam');
 const { isQAM } = require("../middleware/auth");
 
-router.get('/qam_index', isQAM, qamController.getQAM);
+// router.get('/qam_index', isQAM, qamController.getQAM);
+router.get('/qam_index', qamController.getQAM);
+router.get('/qamAddCategory', qamController.getQAMAddCategory);
 module.exports = router;
