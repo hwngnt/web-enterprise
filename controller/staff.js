@@ -40,7 +40,6 @@ exports.doAddIdea = async (req, res) => {
             console.log("Given Directory already exists !!");
         }
     });
-    console.log(path)
     res.render('staff/addFileToIdea', { path: path, loginName: req.session.email })
 }
 exports.doAddFile = async (req, res) => {
