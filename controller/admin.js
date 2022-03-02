@@ -142,7 +142,6 @@ exports.deleteQAcoordinator = async (req, res) => {
     let id = req.query.id;
     let aQAcoordinator = await QAcoordinator.findById(id);
     let email = aQAcoordinator.email;
-    console.log(email);
     Account.deleteOne({'email': email }, (err) => {
         if (err)
             throw err;
