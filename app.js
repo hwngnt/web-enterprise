@@ -26,11 +26,13 @@ const authRoute = require("./routes/auth")
 var adminRoute = require('./routes/admin');
 var qamRoute = require('./routes/qam');
 var staffRoute = require('./routes/staff');
+const qacRoute = require('./routes/qac');
 
 app.use("/", authRoute);
 app.use('/', adminRoute);
 app.use('/', qamRoute);
 app.use('/', staffRoute);
+app.use('/', qacRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
