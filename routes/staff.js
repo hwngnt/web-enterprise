@@ -26,5 +26,5 @@ router.get('/staff', staffController.getStaff);
 router.get('/staff/addIdea', staffController.addIdea);
 router.post('/staff/doAddIdea', staffController.doAddIdea);
 router.post('/staff/doAddFile', uploadQAmanager.any('ideas'), staffController.doAddFile);
-router.get('/staff/viewCategory', staffController.viewCategory);
+
 module.exports = router;

@@ -46,6 +46,3 @@ exports.doAddFile = async (req, res) => {
     req.file
     res.render('staff/addIdeas', { loginName: req.session.email })
 }
-exports.viewCategory = async (req, res) => {
-    res.render('staff/viewCategory', { loginName: req.session.email })
-}
