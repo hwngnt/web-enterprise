@@ -81,4 +81,6 @@ router.get('/admin/deleteStaff', adminController.deleteStaff);
 router.post('/admin/searchStaff', adminController.searchStaff);
 
 router.get('/admin/viewCategory', adminController.viewCategory);
+router.get('/admin/category/edit', adminController.editDate);
+router.post('/admin/doEditCategory', adminController.doEditDate);
 module.exports = router;

@@ -257,3 +257,25 @@ exports.viewCategory = async (req, res) => {
     let listCategory = await category.find();
     res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email })
 }
+exports.editDate = async (req, res) => {
+    let id = req.query.id;
+    let aCategory = await category.findById(id);
+    res.render('admin/editDate', { aCategory:aCategory, loginName: req.session.email })
+}
+exports.doEditDate = async (req, res) => {
+    let id = req.body.id;
+    console.log(req.body)
+    let aCategory = await category.findById(id);
+    console.log(req.body.dateStart)
+    console.log(req.body.dateEnd)
+    aCategory.dateStart = new Date(req.body.dateStart);
+    aCategory.dateStart = new Date(req.body.dateEnd);
+    try {
+        aCategory = await aCategory.save();
+        res.redirect('/admin/viewCategory');
+    }
+    catch (error) {
+        console.log(error);
+        res.redirect('/admin/viewCategory');
+    }
+}
