@@ -15,7 +15,7 @@ exports.addIdea = async (req,  res) => {
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
-    var idtest = "621e3fd1f3e6c57393eae6b1"
+    var idtest = "621e3fd1f3e6c57393eae6b1";
     let aCategory = await category.findById(idtest);
     let path = aCategory.url + '/' + req.body.name;
     
