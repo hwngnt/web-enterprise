@@ -80,4 +80,5 @@ router.post('/admin/doAddStaff', uploadStaff.single('picture'), adminController.
 router.get('/admin/deleteStaff', adminController.deleteStaff);
 router.post('/admin/searchStaff', adminController.searchStaff);
 
+router.get('/admin/viewCategory', adminController.viewCategory);
 module.exports = router;

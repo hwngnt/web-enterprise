@@ -2,6 +2,7 @@ const Account = require('../models/user');
 const Staff = require('../models/staff');
 const QAcoordinator = require('../models/QAcoordinator');
 const QAmanager = require('../models/QAmanager');
+const category = require('../models/category');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 exports.getAdmin = async (req, res) => {
@@ -250,4 +251,9 @@ exports.searchStaff = async (req, res) => {
         listStaff = await Staff.find({ name: searchCondition });
     }
     res.render('admin/viewStaff', { listStaff: listStaff, loginName: req.session.email });
+}
+
+exports.viewCategory = async (req, res) => {
+    let listCategory = await category.find();
+    res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email })
 }
