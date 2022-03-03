@@ -6,11 +6,11 @@ exports.getQAM = async (req, res) => {
     res.render('qam/qam_index', { loginName: req.session.email })
 }
 
-exports.getQAMAddCategory = async (req, res) => {
+exports.getAddCategory = async (req, res) => {
     res.render('qam/qamAddCategory', { loginName: req.session.email })
 }
 
-exports.doQAMAddCategory = async (req, res) => {
+exports.doAddCategory = async (req, res) => {
     const fs = require("fs");
     let date = new Date();
     let newDate = new Date();
@@ -74,4 +74,22 @@ exports.doQAMAddCategory = async (req, res) => {
       });
     newCategory = await newCategory.save();
     res.redirect('/qam_index');
+}
+
+exports.getViewCategory = async (req, res) => {
+    let listCategory = await category.find();
+    res.render('qam/qamViewCategory', { listCategory: listCategory, loginName: req.session.email })
+}
+
+exports.getCategoryDetail = async (req, res) => {
+    let id = req.query.id;
+    let aCategory = await category.findById(id);
+    res.render('qam/qamViewCategoryDetail', { aCategory: aCategory, loginName: req.session.email })
+}
+
+exports.deleteCategory = async (req, res) => {
+    let id = req.query.id;
+    category.findByIdAndRemove(id).then(data = {});
+    console.log('Category is deleted!')
+    res.redirect('/qam/qamViewCategory');
 }
