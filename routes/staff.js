@@ -22,6 +22,7 @@ const uploadQAmanager = multer({
         fieldSize:1024*1024*3
     },
 })
+router.get('/staff', staffController.getStaff);
 router.get('/staff/addIdea', staffController.addIdea);
 router.post('/staff/doAddIdea', staffController.doAddIdea);
 router.post('/staff/doAddFile', uploadQAmanager.any('ideas'), staffController.doAddFile);
