@@ -5,29 +5,25 @@ const mongoose = require('mongoose');
 const staffController = require('../controller/staff');
 const { isStaff } = require("../middleware/auth");
 
+const storageQAmanager = multer.diskStorage({
+    destination:function(req, file, callback){
+        callback(null, req.body.path);
+        console.log(req.body)
+    },
+    //add back the extension
+    filename:function(req, file, callback){
+        callback(null, Date.now()+file.originalname);
+    },
+})
 
+const uploadQAmanager = multer({
+    storage:storageQAmanager,
+    limits:{
+        fieldSize:1024*1024*3
+    },
+})
 router.get('/staff/addIdea', staffController.addIdea);
 router.post('/staff/doAddIdea', staffController.doAddIdea);
-router.post('/staff/doAddFile', function (req, res, file) {
-
-    try{
-        const  storage = multer.diskStorage({
-            destination:function(req, file, callback){
-                callback(null, 'public/folder/hung-cho/hoangcho23');
-                console.log(req.body.path)
-            },
-            //add back the extension
-            filename:function(req, file, callback){
-                callback(null, Date.now()+file.originalname);
-            },
-        });
-        const upload = multer({ storage: storage });
-        upload.single('ideas');
-        console.log('a')
-    }catch(err){
-        console.log(err)
-    }
-
-    
-});
+router.post('/staff/doAddFile', uploadQAmanager.any('ideas'), staffController.doAddFile);
+router.get('/staff/viewCategory', staffController.viewCategory);
 module.exports = router;

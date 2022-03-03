@@ -11,6 +11,7 @@ router.get('/admin', adminController.getAdmin);
 const storageQAmanager = multer.diskStorage({
     destination:function(req, file, callback){
         callback(null, 'public/uploads/QAmanager');
+        console.log(req.body)
     },
     //add back the extension
     filename:function(req, file, callback){
