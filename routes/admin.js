@@ -4,6 +4,8 @@ const multer = require('multer');
 const mongoose = require('mongoose');
 const adminController = require('../controller/admin');
 const { isAdmin } = require("../middleware/auth");
+var bodyParser = require('body-parser')
+var jsonParser = bodyParser.json();
 
 router.get('/admin', adminController.getAdmin);
 
@@ -66,14 +68,14 @@ const storageStaff = multer.diskStorage({
     filename:function(req, file, callback){
         callback(null, Date.now()+file.originalname);
     },
-})
+});
 
 const uploadStaff = multer({
     storage:storageStaff,
     limits:{
         fieldSize:1024*1024*3
     },
-})
+});
 router.get('/admin/viewStaff', adminController.viewStaff);
 router.get('/admin/addStaff', adminController.addStaff);
 router.post('/admin/doAddStaff', uploadStaff.single('picture'), adminController.doAddStaff);
