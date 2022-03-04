@@ -2,6 +2,7 @@ const Account = require('../models/user');
 const Staff = require('../models/staff');
 const QAcoordinator = require('../models/QAcoordinator');
 const QAmanager = require('../models/QAmanager');
+const category = require('../models/category');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 exports.getAdmin = async (req, res) => {
@@ -17,6 +18,7 @@ exports.addQAmanager = async (req, res) => {
     res.render('admin/addQAmanager', { loginName: req.session.email });
 }
 exports.doAddQAmanager = async (req, res) => {
+    console.log(req.body)
     let newQAmanager;
     if (req.file) {
         newQAmanager = new QAmanager({
@@ -99,6 +101,7 @@ exports.addQAcoordinator = async (req, res) => {
 }
 exports.doAddQAcoordinator = async (req, res) => {
     let newQAcoordinator;
+    console.log(req.body)
     if (req.file) {
         newQAcoordinator = new QAcoordinator({
             name: req.body.name,
@@ -236,7 +239,7 @@ exports.deleteStaff = async (req, res) => {
 }
 exports.searchStaff = async (req, res) => {
     const searchText = req.body.keyword;
-    //console.log(req.body.keyword);
+    console.log(req.body);
     let listStaff;
     let checkAlphaName = validation.checkAlphabet(searchText);
     let checkEmpty = validation.checkEmpty(searchText);
@@ -250,4 +253,32 @@ exports.searchStaff = async (req, res) => {
         listStaff = await Staff.find({ name: searchCondition });
     }
     res.render('admin/viewStaff', { listStaff: listStaff, loginName: req.session.email });
+}
+
+exports.viewCategory = async (req, res) => {
+    let listCategory = await category.find();
+    res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email })
+}
+exports.editDate = async (req, res) => {
+    let id = req.query.id;
+    let aCategory = await category.findById(id);
+    res.render('admin/editDate', { aCategory:aCategory, loginName: req.session.email })
+}
+exports.doEditDate = async (req, res) => {
+    console.log(req.body)
+    let id = req.body.id;
+    
+    let aCategory = await category.findById(id);
+    console.log(req.body.dateStart)
+    console.log(req.body.dateEnd)
+    aCategory.dateStart = new Date(req.body.dateStart);
+    aCategory.dateEnd = new Date(req.body.dateEnd);
+    try {
+        aCategory = await aCategory.save();
+        res.redirect('/admin/viewCategory');
+    }
+    catch (error) {
+        console.log(error);
+        res.redirect('/admin/viewCategory');
+    }
 }
