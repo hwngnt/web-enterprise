@@ -114,6 +114,7 @@ exports.viewLastestIdeas = async (req, res) => {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
     res.render('qam/viewLastestIdeas',{listIdeas: last_ideas});
+}
 
 exports.editCategory = async (req,  res) => {
     let id = req.query.id;
