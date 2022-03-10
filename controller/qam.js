@@ -89,7 +89,35 @@ exports.getCategoryDetail = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
     let id = req.query.id;
+    let dir = await category.findById(id);
     category.findByIdAndRemove(id).then(data = {});
-    console.log('Category is deleted!')
+    const path = 'public/folder/'+dir.name
+    // include node fs module
+    const fs = require('fs');
+    fs.rm(path, { recursive: true }, () => console.log('delete done'));
     res.redirect('/qam/qamViewCategory');
+}
+
+exports.editCategory = async (req,  res) => {
+    let id = req.query.id;
+    let aCategory = await category.findById(id);
+    res.render('qam/qamEditCategory', { aCategory: aCategory, loginName: req.session.email })
+}
+
+exports.updateCategory = async (req, res) => {
+    let id = req.body.id;
+    let aCategory = await category.findById(id);
+    console.log(aCategory)
+    aCategory.name = req.body.name;
+    aCategory.description = req.body.description;
+    console.log(req.body.name)
+    console.log(req.body.description)
+    try {
+        aCategory = await aCategory.save();
+        res.redirect('/qam/qamViewCategory');
+    }
+    catch (error) {
+        console.log(error);
+        res.redirect('/qam/qamViewCategory');
+    }
 }

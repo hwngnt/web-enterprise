@@ -12,4 +12,6 @@ router.post('/qam/doAddCategory', qamController.doAddCategory);
 router.get('/qam/qamViewCategory', qamController.getViewCategory);
 router.get('/qam/qamViewCategoryDetail', qamController.getCategoryDetail);
 router.get('/qam/qamDeleteCategory', qamController.deleteCategory);
+router.get('/qam/qamEditCategory', qamController.editCategory);
+router.post('/qam/doEditCategory', qamController.updateCategory);
 module.exports = router;
