@@ -15,8 +15,9 @@ exports.addIdea = async (req,  res) => {
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
-    var idtest = "621e3fd1f3e6c57393eae6b1";
+    var idtest = "6220d600bc1f51ab58b2d03d";
     let aCategory = await category.findById(idtest);
+    console.log(aCategory);
     let path = aCategory.url + '/' + req.body.name;
     
     await fs.access(path, (error) => {
@@ -45,4 +46,20 @@ exports.doAddIdea = async (req, res) => {
 exports.doAddFile = async (req, res) => {
     req.file
     res.render('staff/addIdeas', { loginName: req.session.email })
+}
+
+exports.viewLastestIdeas = async (req, res) => {
+    let listIdeas = await idea.find();
+    let len_ideas = listIdeas.length;
+    let last_ideas = [];
+    if(len_ideas == 0){
+        last_ideas = [];
+    }
+    else if(len_ideas < 5){
+        last_ideas = listIdeas.reverse();
+    }
+    else{
+        last_ideas = listIdeas.slice(-5, len_ideas).reverse();
+    }
+    res.render('staff/viewLastestIdeas',{listIdeas: last_ideas});
 }

@@ -168,7 +168,7 @@ exports.searchQAcoordinator = async (req, res) => {
         res.redirect('/admin/viewQualityAssuranceCoordinator');
     }
     else if (checkAlphaName) {
-        listQAcoordinator = await QAcoordinator.find({ name: searchCondition });
+        listQAcoordinator = await QAcoordinator.find({name: searchCondition });
     }
     res.render('admin/viewQAcoordinator', { listQAcoordinator: listQAcoordinator, loginName: req.session.email });
 }

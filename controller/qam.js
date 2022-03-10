@@ -1,6 +1,7 @@
 const Account = require('../models/user');
 const bcrypt = require('bcryptjs');
 const category = require('../models/category');
+const idea = require('../models/ideas');
 
 exports.getQAM = async (req, res) => {
     res.render('qam/qam_index', { loginName: req.session.email })
@@ -92,4 +93,20 @@ exports.deleteCategory = async (req, res) => {
     category.findByIdAndRemove(id).then(data = {});
     console.log('Category is deleted!')
     res.redirect('/qam/qamViewCategory');
+}
+
+exports.viewLastestIdeas = async (req, res) => {
+    let listIdeas = await idea.find();
+    let len_ideas = listIdeas.length;
+    let last_ideas = [];
+    if(len_ideas == 0){
+        last_ideas = [];
+    }
+    else if(len_ideas < 5){
+        last_ideas = listIdeas.reverse();
+    }
+    else{
+        last_ideas = listIdeas.slice(-5, len_ideas).reverse();
+    }
+    res.render('qam/viewLastestIdeas',{listIdeas: last_ideas});
 }

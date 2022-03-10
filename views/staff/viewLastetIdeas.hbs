@@ -1,0 +1,62 @@
+<html lang="en">
+
+{{> head}}
+
+<body class="sb-nav-fixed">
+    {{> staffHeader}}
+    <div class="container py-5" style="margin-top: 3%; margin-left: 15%">
+        {{!-- <center>
+            <div class="form-group">
+                <label>Search by Name:</label>
+                <div class="input-group">
+                    <a href="/admin/addQualityAssuranceCoordinator" class="btn btn-success" style="margin-left: 5%;">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        <span><strong>Add new account</strong></span>
+                    </a>
+                    <form class="form btn-group align-top" method="post"
+                        action="/admin/searchQualityAssuranceCoordinator"
+                        style="margin-left: 20%; width: 40%;  flex: none;">
+                        <input type="search" name="keyword" class="form-control rounded" placeholder="Search by name "
+                            aria-label="Search" aria-describedby="search-addon" />
+                        <button type="submit" class="btn btn-success">Search</button>
+                    </form>
+                </div>
+            </div>
+        </center> --}}
+        <h1 class="display-1 font-weight-bold" style="text-align:center">Lastest Ideas</h1>
+        <div class="e-panel card" style="width: 90%; margin-left: 5%">
+            <div class="card-body">
+                <div class="card-title">
+                </div>
+                <div class="e-table">
+                    <div class="table-responsive table-lg mt-3">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="max-width" style="text-align:center">No.</th>
+                                    <th class="max-width" style="text-align:center; width: 200px">Name</th>
+                                    <th class="max-width" style="text-align:center">URL</th>
+                                    <th class="sortable" style="text-align:center">Like</th>
+                                    <th style="text-align:center">Dislike</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each listIdeas}}
+                                <tr>
+                                    <td>{{@index}}</td>
+                                    <td class="text-nowrap align-middle">{{name}}</td>
+                                    <td class="text-nowrap align-middle">{{url}}</td>
+                                    <td class="text-nowrap align-middle">{{like}}</td>
+                                    <td class="text-nowrap align-middle">{{dislike}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
