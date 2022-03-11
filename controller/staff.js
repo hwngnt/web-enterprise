@@ -11,12 +11,13 @@ exports.getStaff = async (req, res) => {
 }
 
 exports.addIdea = async (req,  res) => {
-    res.render('staff/addIdeas', { loginName: req.session.email })
+    var id = req.query.id;
+    res.render('staff/addIdeas', {idCategory:id,  loginName: req.session.email })
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
-    var idtest = "6220d600bc1f51ab58b2d03d";
-    let aCategory = await category.findById(idtest);
+    var idCategory = req.body.idCategory;
+    let aCategory = await category.findById(idCategory);
     console.log(aCategory);
     let path = aCategory.url + '/' + req.body.name;
     
@@ -41,11 +42,14 @@ exports.doAddIdea = async (req, res) => {
             console.log("Given Directory already exists !!");
         }
     });
-    res.render('staff/addFileToIdea', { path: path, loginName: req.session.email })
+    res.render('staff/addFileToIdea', {idCategory:idCategory, path: path, loginName: req.session.email })
 }
 exports.doAddFile = async (req, res) => {
     req.file
-    res.render('staff/addIdeas', { loginName: req.session.email })
+    let id = req.body.idCategory;
+    let listIdeas = await idea.find({categoryID: id})
+    console.log(listIdeas)
+    res.render('staff/viewCategoryDetail', { idCategory: id, listIdeas: listIdeas, loginName: req.session.email })
 }
 
 exports.viewLastestIdeas = async (req, res) => {
