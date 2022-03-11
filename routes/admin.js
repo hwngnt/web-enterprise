@@ -32,6 +32,8 @@ router.get('/admin/viewQualityAssuranceManager', adminController.viewQAmanager);
 router.get('/admin/addQualityAssuranceManager', adminController.addQAmanager);
 router.post('/admin/doAddQualityAssuranceManager', uploadQAmanager.single('picture'), adminController.doAddQAmanager);
 router.get('/admin/deleteQualityAssuranceManager', adminController.deleteQAmanager);
+router.get('/admin/editQualityAssuranceManager', adminController.editQAmanager);
+router.post('/admin/doEditQualityAssuranceManager', adminController.doEditQAmanager);
 router.post('/admin/searchQualityAssuranceManager', adminController.searchQAmanager);
 
 

@@ -11,20 +11,12 @@
                 <h2 class="modal-title">Add file </h2>
             </div>
             <div class="row">
-                <div class="col-md-3 border-right" style="padding-right: 20px;">
-                    <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                        <img class="rounded-circle mt-5" width="150px" src="/images/user.png">
-                    </div>
-                </div>
                 <div class="col-md-8 border-right">
                     <form class="form" method="post" action='/staff/doAddFile' id="add"
                         enctype="multipart/form-data">
                         <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                    <label>Full Name</label>
-                                    <input class="form-control" type="text" name="name" placeholder="Full name"
-                                        required />
                                     <input type="hidden" name="path"  value="{{path}}" />
                                 </div>
                             </div>
@@ -38,7 +30,7 @@
                         <div class="row">
                             <div class="col d-flex justify-content-end">
                                 <button class="btn btn-primary" type="submit">Save</button>
-                                <a href="/admin/viewQualityAssuranceCoordinator" class="btn btn-warning">Cancel</a>
+                                <a href="/" class="btn btn-warning">Cancel</a>
                             </div>
                         </div>
                     </form>
