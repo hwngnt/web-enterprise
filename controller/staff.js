@@ -76,6 +76,20 @@ exports.viewSubmittedIdeas = async (req, res) => {
 exports.viewCategoryDetail = async (req, res) => {
     let id = req.query.id;
     let listIdeas = await idea.find({categoryID: id})
-    console.log(listIdeas)
-    res.render('staff/viewCategoryDetail', { idCategory: id, listIdeas: listIdeas, loginName: req.session.email })
+    const fs = require("fs");
+    let listFiles = [];
+    listIdeas.forEach(i => {
+        fs.readdir(i.url, (err, files) => {
+            // files = files.toString();
+            // listFiles.push(files);
+            // console.log(listFiles);
+            if(err){
+                console.log(err)
+            }
+            else
+            console.log(files)
+        })
+    })
+    // console.log(listFiles)
+    res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, loginName: req.session.email })
 }
