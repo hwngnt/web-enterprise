@@ -12,12 +12,11 @@
             </div>
             <div class="row">
                 <div class="col-md-8 border-right">
-                    <form class="form" method="post" action='/staff/doAddFile' id="add"
-                        enctype="multipart/form-data">
+                    <form class="form" method="post" action='/staff/doAddFile' id="add" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                    <input type="hidden" name="path"  value="{{path}}" />
+                                    <input type="hidden" name="path" value="{{path}}" />
                                 </div>
                             </div>
                         </div>
@@ -27,6 +26,18 @@
                                 <input type="file" name="picture" id="ideas" required multiple />
                             </div>
                         </div>
+                        <div class="col mb-3">
+                            <div class="col form-group">
+                                <label for="agree">
+                                    <input type="checkbox" value="0" name="agree" id="agree" required
+                                        oninvalid="this.setCustomValidity('You must agree to our terms and conditions.')"
+                                        oninput="this.setCustomValidity('')">
+                                    <b> I Agree to the <a href="https://example.com/TOS">Terms and Conditions</a> and <a
+                                            href="https://example.com/PP">Privacy Policy</a></b>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col d-flex justify-content-end">
                                 <button class="btn btn-primary" type="submit">Save</button>
