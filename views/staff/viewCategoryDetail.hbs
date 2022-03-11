@@ -1,42 +1,21 @@
-<!DOCTYPE html>
 <html lang="en">
 
 {{> head}}
 
 <body class="sb-nav-fixed">
-    {{> qamHeader}}
+    {{> staffHeader}}
+    
     <div class="modal-dialog modal-lg" role="document" style="margin-top: 5%; margin-left: 20%">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Category: {{aCategory.name}}</h2>
-            </div>
-            <div class="modal-body">
-                <div class="py-1">
-                    <form class="form">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <label>Category Name</label>
-                                            <input class="form-control" type="text" name="name" placeholder="Category Name" value="{{aCategory.name}}"disabled/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col mb-3">
-                                        <div class="form-group">
-                                            <label>Description</label>
-                                            <textarea class="form-control" rows="5" name="description" placeholder="Description" disabled/>{{aCategory.description}}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        {{!-- <div class="btn-group align-top">
+            <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success">
+                <span class="glyphicon glyphicon-edit"></span>
+                <span><strong>Add new Idea</strong></span>
+            </a>
+        </div> --}}
+        <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success" style="margin-left: 5%;">
+            <span class="glyphicon glyphicon-plus"></span>
+            <span><strong>Add new Idea</strong></span>
+        </a>
         <div class="container mt-4 mb-3">
             <div class="d-flex justify-content-center row">
                 <div class="col-md-8">

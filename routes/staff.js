@@ -27,4 +27,7 @@ router.get('/staff/addIdea', staffController.addIdea);
 router.post('/staff/doAddIdea', staffController.doAddIdea);
 router.post('/staff/doAddFile', uploadQAmanager.any('ideas'), staffController.doAddFile);
 router.get('/staff/viewLastestIdeas', staffController.viewLastestIdeas);
+
+router.get('/staff/viewSubmittedIdeas', staffController.viewSubmittedIdeas);
+router.get('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
 module.exports = router;

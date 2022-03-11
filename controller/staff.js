@@ -63,3 +63,15 @@ exports.viewLastestIdeas = async (req, res) => {
     }
     res.render('staff/viewLastestIdeas',{listIdeas: last_ideas});
 }
+
+exports.viewSubmittedIdeas = async (req, res) => {
+    let listCategory = await category.find();
+    res.render('staff/viewSubmittedIdeas', { listCategory: listCategory, loginName: req.session.email })
+}
+
+exports.viewCategoryDetail = async (req, res) => {
+    let id = req.query.id;
+    let listIdeas = await idea.find({categoryID: id})
+    console.log(listIdeas)
+    res.render('staff/viewCategoryDetail', { idCategory: id, listIdeas: listIdeas, loginName: req.session.email })
+}
