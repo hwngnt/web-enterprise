@@ -85,7 +85,9 @@ exports.getViewCategory = async (req, res) => {
 exports.getCategoryDetail = async (req, res) => {
     let id = req.query.id;
     let aCategory = await category.findById(id);
-    res.render('qam/qamViewCategoryDetail', { aCategory: aCategory, loginName: req.session.email })
+    let listIdeas = await idea.find({categoryID: id})
+    console.log(listIdeas)
+    res.render('qam/qamViewCategoryDetail', { aCategory: aCategory, listIdeas: listIdeas, loginName: req.session.email })
 }
 
 exports.deleteCategory = async (req, res) => {

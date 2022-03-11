@@ -2156,6 +2156,22 @@ progress {
   color: #6c757d;
 }
 
+.time {
+  font-size: 9px !important
+}
+
+.socials i {
+  margin-right: 14px;
+  font-size: 17px;
+  color: #d2c8c8;
+  cursor: pointer
+}
+
+.feed-image img {
+  width: 100%;
+  height: auto
+}
+
 .form-control, .dataTable-input {
   display: block;
   width: 100%;
