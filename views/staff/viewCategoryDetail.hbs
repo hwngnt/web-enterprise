@@ -12,10 +12,14 @@
                 <span><strong>Add new Idea</strong></span>
             </a>
         </div> --}}
-        <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success" style="margin-left: 5%;">
+        {{!-- <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success" style="margin-left: 5%;">
             <span class="glyphicon glyphicon-plus"></span>
             <span><strong>Add new Idea</strong></span>
-        </a>
+        </a> --}}
+        <form class="btn-group align-top" method="post" action="/staff/addIdea">
+            <input type="hidden" name="id" value="{{idCategory}}"/> 
+            <button type="submit" class="btn btn-success">Add new Idea</button>
+          </form>
         <div class="container mt-4 mb-3">
             <div class="d-flex justify-content-center row">
                 <div class="col-md-8">
