@@ -66,40 +66,18 @@ exports.editQAmanager = async (req, res) => {
     res.render('admin/editQAmanager', {aQAmanager:aQAmanager, loginName: req.session.email });
 }
 exports.doEditQAmanager = async (req, res) => {
-    console.log(req.body)
-    let newQAmanager;
-    if (req.file) {
-        newQAmanager = new QAmanager({
-            name: req.body.name,
-            email: req.body.email,
-            dateOfBirth: new Date(req.body.date),
-            address: req.body.address,
-            img: req.file.filename
-        })
-    }
-    else {
-        newQAmanager = new QAmanager({
-            name: req.body.name,
-            email: req.body.email,
-            dateOfBirth: new Date(req.body.date),
-            address: req.body.address
-        })
-    }
-    let newAccount = new Account({
-        email: req.body.email,
-        password: "12345678",
-        role: "QAmanager"
-    })
+    let id = req.body.id;
+    let aQAmanager = await QAmanager.findById(id);
+    // console.log(aQAmanager);
+    
     try {
-        await bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(newAccount.password, salt, (err, hash) => {
-                if (err) throw err;
-                newAccount.password = hash;
-            });
-        });
-        newAccount = await newAccount.save();
-        newQAmanager = await newQAmanager.save();
-        //console.log(newTrainee);
+        if (req.file) {
+            aQAmanager.img=req.file.filename;
+        }
+        aQAmanager.name = req.body.name;
+        aQAmanager.dateOfBirth = new Date(req.body.date);
+        aQAmanager.address = req.body.address;
+        aQAmanager = await aQAmanager.save();
         res.redirect('/admin/viewQualityAssuranceManager');
     }
     catch (error) {
@@ -189,6 +167,31 @@ exports.doAddQAcoordinator = async (req, res) => {
         res.redirect('/admin/viewQualityAssuranceCoordinator');
     }
 }
+exports.editQAcoordinator = async (req, res) => {
+    let id = req.query.id;
+    let aQAcoordinator = await QAcoordinator.findById(id);
+
+    res.render('admin/editQAcoordinator', {aQAcoordinator: aQAcoordinator, loginName: req.session.email });
+}
+exports.doEditQAcoordinator = async (req, res) => {
+    let id = req.body.id;
+    let aQAcoordinator = await QAcoordinator.findById(id);
+    
+    try {
+        if (req.file) {
+            aQAcoordinator.img=req.file.filename;
+        }
+        aQAcoordinator.name = req.body.name;
+        aQAcoordinator.dateOfBirth = new Date(req.body.date);
+        aQAcoordinator.address = req.body.address;
+        aQAcoordinator = await aQAcoordinator.save();
+        res.redirect('/admin/viewQualityAssuranceCoordinator');
+    }
+    catch (error) {
+        console.log(error);
+        res.redirect('/admin/viewQualityAssuranceCoordinator');
+    }
+}
 exports.deleteQAcoordinator = async (req, res) => {
     let id = req.query.id;
     let aQAcoordinator = await QAcoordinator.findById(id);
@@ -263,6 +266,31 @@ exports.doAddStaff = async (req, res) => {
         newAccount = await newAccount.save();
         newStaff = await newStaff.save();
         //console.log(newTrainee);
+        res.redirect('/admin/viewStaff');
+    }
+    catch (error) {
+        console.log(error);
+        res.redirect('/admin/viewStaff');
+    }
+}
+exports.editStaff = async (req, res) => {
+    let id = req.query.id;
+    let aStaff = await Staff.findById(id);
+
+    res.render('admin/editStaff', {aStaff: aStaff, loginName: req.session.email });
+}
+exports.doEditStaff = async (req, res) => {
+    let id = req.body.id;
+    let aStaff = await Staff.findById(id);
+    
+    try {
+        if (req.file) {
+            aStaff.img=req.file.filename;
+        }
+        aStaff.name = req.body.name;
+        aStaff.dateOfBirth = new Date(req.body.date);
+        aStaff.address = req.body.address;
+        aStaff = await aStaff.save();
         res.redirect('/admin/viewStaff');
     }
     catch (error) {

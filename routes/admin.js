@@ -33,7 +33,7 @@ router.get('/admin/addQualityAssuranceManager', adminController.addQAmanager);
 router.post('/admin/doAddQualityAssuranceManager', uploadQAmanager.single('picture'), adminController.doAddQAmanager);
 router.get('/admin/deleteQualityAssuranceManager', adminController.deleteQAmanager);
 router.get('/admin/editQualityAssuranceManager', adminController.editQAmanager);
-router.post('/admin/doEditQualityAssuranceManager', adminController.doEditQAmanager);
+router.post('/admin/doEditQualityAssuranceManager',uploadQAmanager.single('picture'), adminController.doEditQAmanager);
 router.post('/admin/searchQualityAssuranceManager', adminController.searchQAmanager);
 
 
@@ -58,6 +58,8 @@ const uploadQAcoordinator = multer({
 router.get('/admin/viewQualityAssuranceCoordinator', adminController.viewQAcoordinator);
 router.get('/admin/addQualityAssuranceCoordinator', adminController.addQAcoordinator);
 router.post('/admin/doAddQualityAssuranceCoordinator', uploadQAcoordinator.single('picture'), adminController.doAddQAcoordinator);
+router.get('/admin/editQualityAssuranceCoordinator', adminController.editQAcoordinator);
+router.post('/admin/doEditQualityAssuranceCoordinator',uploadQAcoordinator.single('picture'), adminController.doEditQAcoordinator);
 router.get('/admin/deleteQualityAssuranceCoordinator', adminController.deleteQAcoordinator);
 router.post('/admin/searchQualityAssuranceCoordinator', adminController.searchQAcoordinator);
 
@@ -81,6 +83,8 @@ const uploadStaff = multer({
 router.get('/admin/viewStaff', adminController.viewStaff);
 router.get('/admin/addStaff', adminController.addStaff);
 router.post('/admin/doAddStaff', uploadStaff.single('picture'), adminController.doAddStaff);
+router.get('/admin/editStaff', adminController.editStaff);
+router.post('/admin/doEditStaff',uploadStaff.single('picture'), adminController.doEditStaff);
 router.get('/admin/deleteStaff', adminController.deleteStaff);
 router.post('/admin/searchStaff', adminController.searchStaff);
 

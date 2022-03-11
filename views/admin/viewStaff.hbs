@@ -11,7 +11,7 @@
                 <div class="input-group">
                     <a href="/admin/addStaff" class="btn btn-success" style="margin-left: 5%;">
                         <span class="glyphicon glyphicon-plus"></span>
-                        <span><strong>Add new account</strong></span>
+                        <span><strong>Add new Staff</strong></span>
                     </a>
                     <form class="form btn-group align-top" method="post" action="/admin/searchStaff"
                         style="margin-left: 20%; width: 40%;  flex: none;">
@@ -52,10 +52,10 @@
                                     <td class="text-nowrap align-middle">{{address}}</td>
                                     <td class="text-center align-middle">
                                         <div class="btn-group align-top">
-                                            {{!-- <a href="/admin/editStaff?id={{_id}}" class="btn btn-success">
+                                            <a href="/admin/editStaff?id={{_id}}" class="btn btn-success">
                                                 <span class="glyphicon glyphicon-edit"></span>
                                                 <span><strong>Edit</strong></span>
-                                            </a> --}}
+                                            </a>
                                             <a href="/admin/deleteStaff?id={{_id}}" class="btn btn-danger"
                                                 onclick="return confirm('Are you sure')">
                                                 <span class="glyphicon glyphicon-remove"></span>

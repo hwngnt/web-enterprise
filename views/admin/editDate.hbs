@@ -11,8 +11,8 @@
             <div class="modal-header">
                 <h2 class="modal-title">Editing Category </h2>
             </div>
-            <div class="row">
-                <div class="col-md-8 border-right">
+            <div class="modal-body">
+                <div class="py-1">
                     <form class="form" method="post" action='/admin/doEditCategory'>
                         <div class="row">
                             <div class="col">
@@ -29,14 +29,14 @@
                                 <div class="form-group">
                                     <label>Date Start</label>
                                     <input class="form-control" type="date" name="dateStart"
-                                        value="{{dateFormat aCategory.dateStart "YYYY-MM-DD"}}" />
+                                        value="{{dateFormat aCategory.dateStart " YYYY-MM-DD"}}" />
                                 </div>
                             </div>
                             <div class="col mb-3">
                                 <div class="form-group">
                                     <label>Date End</label>
                                     <input class="form-control" type="date" name="dateEnd"
-                                        value="{{dateFormat aCategory.dateEnd "YYYY-MM-DD"}}" />
+                                        value="{{dateFormat aCategory.dateEnd " YYYY-MM-DD"}}" />
                                 </div>
                             </div>
                         </div>
