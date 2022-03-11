@@ -1,6 +1,7 @@
 const Account = require('../models/user');
 const bcrypt = require('bcryptjs');
 const category = require('../models/category');
+const idea = require('../models/ideas');
 
 exports.getQAM = async (req, res) => {
     res.render('qam/qam_index', { loginName: req.session.email })
@@ -89,7 +90,52 @@ exports.getCategoryDetail = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
     let id = req.query.id;
+    let dir = await category.findById(id);
     category.findByIdAndRemove(id).then(data = {});
-    console.log('Category is deleted!')
+    const path = 'public/folder/'+dir.name
+    // include node fs module
+    const fs = require('fs');
+    fs.rm(path, { recursive: true }, () => console.log('delete done'));
     res.redirect('/qam/qamViewCategory');
+}
+
+
+exports.viewLastestIdeas = async (req, res) => {
+    let listIdeas = await idea.find();
+    let len_ideas = listIdeas.length;
+    let last_ideas = [];
+    if(len_ideas == 0){
+        last_ideas = [];
+    }
+    else if(len_ideas < 5){
+        last_ideas = listIdeas.reverse();
+    }
+    else{
+        last_ideas = listIdeas.slice(-5, len_ideas).reverse();
+    }
+    res.render('qam/viewLastestIdeas',{listIdeas: last_ideas});
+}
+
+exports.editCategory = async (req,  res) => {
+    let id = req.query.id;
+    let aCategory = await category.findById(id);
+    res.render('qam/qamEditCategory', { aCategory: aCategory, loginName: req.session.email })
+}
+
+exports.updateCategory = async (req, res) => {
+    let id = req.body.id;
+    let aCategory = await category.findById(id);
+    console.log(aCategory)
+    aCategory.name = req.body.name;
+    aCategory.description = req.body.description;
+    console.log(req.body.name)
+    console.log(req.body.description)
+    try {
+        aCategory = await aCategory.save();
+        res.redirect('/qam/qamViewCategory');
+    }
+    catch (error) {
+        console.log(error);
+        res.redirect('/qam/qamViewCategory');
+    }
 }
