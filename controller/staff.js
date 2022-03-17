@@ -89,9 +89,3 @@ exports.viewCategoryDetail = async (req, res) => {
     })
     res.render('staff/viewCategoryDetail', { idCategory: id,listFiles: listFiles, loginName: req.session.email })
 }
-
-exports.viewFile = async (req, res) =>{
-    let link = req.body.link;
-    console.log(link)
-    res.render('staff/viewEmbeddedFile', { link: link, loginName: req.session.email })
-}
