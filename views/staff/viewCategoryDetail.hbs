@@ -15,14 +15,13 @@
     <div class="container py-5" style="margin-top: 3%; margin-left: 15%">
         {{#each listFiles}}
         <div class="bg-white border mt-2">
-            <form class="form" method="POST" action="/staff/viewEmbeddedFile?id={{value}}">
-                <h1>PDF Example</h1>
-                <input type="hidden" name="link" value="{{linkValue}}/{{value}}">
-                <button class="btn btn-primary" type="submit">{{value}}</button>
-            </form>
+
+            <h1>{{linkValue}}</h1>
+            <p> Open a PDF file <a href="../../{{linkValue}}/{{value}}" >{{value}}</a>.</p>
         </div>
         {{/each}}
     </div>
 </body>
+
 
 </html>

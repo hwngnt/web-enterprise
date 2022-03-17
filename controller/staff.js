@@ -16,6 +16,7 @@ exports.addIdea = async (req,  res) => {
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
+    
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
     console.log(aCategory);
@@ -46,9 +47,7 @@ exports.doAddIdea = async (req, res) => {
 }
 exports.doAddFile = async (req, res) => {
     let id = req.body.idCategory;
-    let listIdeas = await idea.find({categoryID: id})
-    console.log(listIdeas)
-    res.render('staff/viewCategoryDetail', { idCategory: id, listIdeas: listIdeas, loginName: req.session.email })
+    res.redirect('viewCategoryDetail?id='+ id)
 }
 
 exports.viewLastestIdeas = async (req, res) => {

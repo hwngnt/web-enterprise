@@ -8,7 +8,7 @@ const { isStaff } = require("../middleware/auth");
 const storageQAmanager = multer.diskStorage({
     destination:function(req, file, callback){
         callback(null, req.body.path);
-        console.log(req.body)
+        // console.log(req.body)
     },
     //add back the extension
     filename:function(req, file, callback){
