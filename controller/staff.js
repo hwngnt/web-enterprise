@@ -45,7 +45,6 @@ exports.doAddIdea = async (req, res) => {
     res.render('staff/addFileToIdea', {idCategory:idCategory, path: path, loginName: req.session.email })
 }
 exports.doAddFile = async (req, res) => {
-    req.file
     let id = req.body.idCategory;
     let listIdeas = await idea.find({categoryID: id})
     console.log(listIdeas)
@@ -81,15 +80,19 @@ exports.viewCategoryDetail = async (req, res) => {
     let count=0;
     await listIdeas.forEach(i => {
         fs.readdir(i.url, (err, files) => {
-            // files = files.toString();
             listFiles.push({
                 key: count,
-                value: files
+                value: files,
+                linkValue: i.url
             });
             count+=1;
-            // console.log(listFiles);
-            // console.log(files)
         })
     })
-    res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, loginName: req.session.email })
+    res.render('staff/viewCategoryDetail', { idCategory: id,listFiles: listFiles, loginName: req.session.email })
+}
+
+exports.viewFile = async (req, res) =>{
+    let link = req.body.link;
+    console.log(link)
+    res.render('staff/viewEmbeddedFile', { link: link, loginName: req.session.email })
 }

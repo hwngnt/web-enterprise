@@ -30,4 +30,5 @@ router.get('/staff/viewLastestIdeas', staffController.viewLastestIdeas);
 
 router.get('/staff/viewSubmittedIdeas', staffController.viewSubmittedIdeas);
 router.get('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
+router.post('/staff/viewEmbeddedFile', staffController.viewFile);
 module.exports = router;
