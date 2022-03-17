@@ -82,7 +82,7 @@ exports.viewCategoryDetail = async (req, res) => {
             listFiles.push({
                 key: count,
                 value: files,
-                linkValue: i.url
+                linkValue: i.url.slice(7)
             });
             count+=1;
         })
