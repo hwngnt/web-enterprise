@@ -28,7 +28,7 @@ exports.handleLogin = async (req, res) => {
                     req.session.user = user;
                     req.session.email = username;
                     req.session.QAcoordinator = true;
-                    res.redirect('/QAcoordinator');
+                    res.redirect('/qac');
                 }
             } else {
                 return res.render('index', { errors: 'Username or password is incorrect' })
