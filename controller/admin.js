@@ -358,3 +358,20 @@ exports.doEditDate = async (req, res) => {
         res.redirect('/admin/viewCategory');
     }
 }
+
+exports.viewLastestIdeas = async (req, res) => {
+    let listIdeas = await idea.find();
+    let len_ideas = listIdeas.length;
+    let last_ideas = [];
+    if(len_ideas == 0){
+        last_ideas = [];
+    }
+    else if(len_ideas < 5){
+        last_ideas = listIdeas.reverse();
+    }
+    else{
+        last_ideas = listIdeas.slice(-5, len_ideas).reverse();
+    }
+    res.render('admin/viewLastestIdeas',{listIdeas: last_ideas});
+}
+

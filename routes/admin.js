@@ -91,4 +91,6 @@ router.post('/admin/searchStaff', adminController.searchStaff);
 router.get('/admin/viewCategory', adminController.viewCategory);
 router.get('/admin/category/edit', adminController.editDate);
 router.post('/admin/doEditCategory', adminController.doEditDate);
+
+router.get('/admin/viewLastestIdeas', adminController.viewLastestIdeas);
 module.exports = router;
