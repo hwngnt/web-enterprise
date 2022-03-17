@@ -3,7 +3,8 @@ const mongoose = require('../db/db');
 const ideas = new mongoose.Schema({
     categoryID: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'category'
+        ref: 'category',
+        require : true
     }, 
     name: { 
         type: String,
@@ -12,6 +13,15 @@ const ideas = new mongoose.Schema({
     url: {
         type: String,
         required: true
+    },
+    author:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'user',
+        require : true
+    },
+    time:{
+        type: Date,
+        default: Date.now()
     },
     like: { 
         type: Number,

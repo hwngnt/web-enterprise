@@ -21,7 +21,7 @@ exports.doAddIdea = async (req, res) => {
     let aCategory = await category.findById(idCategory);
     console.log(aCategory);
     let path = aCategory.url + '/' + req.body.name;
-    
+    console.log(req.session.user._id);
     await fs.access(path, (error) => {
         if (error) {
             fs.mkdir(path, (error) => {
@@ -32,6 +32,7 @@ exports.doAddIdea = async (req, res) => {
                     let newIdea = new idea({
                         categoryID: aCategory._id,
                         name: req.body.name,
+                        author: req.session.user._id,
                         url: path,
                         like: 0,
                         dislike: 0

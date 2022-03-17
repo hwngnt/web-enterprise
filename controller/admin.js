@@ -41,17 +41,16 @@ exports.doAddQAmanager = async (req, res) => {
         email: req.body.email,
         password: "12345678",
         role: "QAmanager"
-    })
+    });
     try {
-        await bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(newAccount.password, salt, (err, hash) => {
                 if (err) throw err;
                 newAccount.password = hash;
+                newAccount = newAccount.save();
             });
         });
-        newAccount = await newAccount.save();
         newQAmanager = await newQAmanager.save();
-        //console.log(newTrainee);
         res.redirect('/admin/viewQualityAssuranceManager');
     }
     catch (error) {
@@ -155,9 +154,9 @@ exports.doAddQAcoordinator = async (req, res) => {
             bcrypt.hash(newAccount.password, salt, (err, hash) => {
                 if (err) throw err;
                 newAccount.password = hash;
+                newAccount = newAccount.save();
             });
         });
-        newAccount = await newAccount.save();
         newQAcoordinator = await newQAcoordinator.save();
         //console.log(newTrainee);
         res.redirect('/admin/viewQualityAssuranceCoordinator');
@@ -261,9 +260,9 @@ exports.doAddStaff = async (req, res) => {
             bcrypt.hash(newAccount.password, salt, (err, hash) => {
                 if (err) throw err;
                 newAccount.password = hash;
+                newAccount = newAccount.save();
             });
         });
-        newAccount = await newAccount.save();
         newStaff = await newStaff.save();
         //console.log(newTrainee);
         res.redirect('/admin/viewStaff');
