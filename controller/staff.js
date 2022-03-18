@@ -89,9 +89,11 @@ exports.viewCategoryDetail = async (req, res) => {
     console.log(id );
     let listIdeas = await idea.find({ categoryID: id }).sort({"name": -1})
     
+    let aCategory = await category.findById(id);
+    let tempDate = new Date();
+    let compare = tempDate > aCategory.dateEnd;
     const fs = require("fs");
     let listFiles = [];
-    let count = 0;
     await listIdeas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             listFiles.push({
@@ -104,9 +106,11 @@ exports.viewCategoryDetail = async (req, res) => {
         });
         // console.log(listFiles);
     })
-    res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment:listComment,  loginName: req.session.email })
-
+    res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment:listComment, compare: compare,  loginName: req.session.email });
 }
+
+
+
 
 exports.doComment = async (req, res) => {
     let id = req.body.idCategory;
@@ -120,3 +124,4 @@ exports.doComment = async (req, res) => {
     console.log(newComment.comment);
     res.redirect('../viewCategoryDetail?id=' + id);
 }
+
