@@ -12,26 +12,24 @@
             </a>
         </div>
     </div>
-    <div class="container py-5" style="margin-top: 3%; margin-left: 15%">
-        {{#each listFiles}}
-        <div class="bg-white border mt-2">
-
-            <h1>{{linkValue}}</h1>
-            <p> Open a PDF file <a href="../../{{linkValue}}/{{value}}">{{value}}</a>.</p>
-        </div>
-        <div class="well">
-            <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
-            <form method="post" action='/staff/viewCategoryDetail/Comment'>
-                <input type="hidden" name="idIdea" type="text" value="{{key}}" />
-                <div class="form-group">
-                    <textarea class="form-control" name="comment" row="3"></textarea>
+    {{#each listFiles}}
+    <div class="container py-5" style="margin-left: 15%; width: 500px">
+        <ul class="list-group mt-5 text-white">
+            <li class="list-group-item d-flex justify-content-between align-content-center">
+                <div class="d-flex flex-row"> <img src="https://img.icons8.com/color/100/000000/folder-invoices.png" width="40" />
+                    <div class="ml-2">
+                        <h1 class="mb-0">{{name}}</h1>
+                        <ul>
+                            {{#each value}}
+                            <li><p><a href="../../{{../this.linkValue}}/{{this}}" >{{this}}</a></p></li>
+                            {{/each}}
+                        </ul>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Send</button>
-            </form>
-        </div>
-
-        {{/each}}
+            </li>
+        </ul>
     </div>
+    {{/each}}
 </body>
 
 
