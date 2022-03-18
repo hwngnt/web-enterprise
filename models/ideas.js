@@ -31,6 +31,10 @@ const ideas = new mongoose.Schema({
         type: Number,
         required: true
     },
+    comment:{
+        type: Number,
+        required: true
+    }
 });
 
 module.exports = mongoose.model('ideas', ideas);

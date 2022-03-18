@@ -49,20 +49,12 @@
                             <form method="post" action='/staff/viewCategoryDetail'>
                                 <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                 <input type="hidden" name="idIdea" value="{{id}}" />
-                                <button type="submit" class="btn btn-primary">Read Comment</button>
+                                <button type="submit" class="btn btn-warning">Read {{comment}} Comment</button>
                             </form>
 
                         </div>
                     </div>
                 </div>
-                {{!-- <div class="well" style="width: 500px">
-                    <h4>List Comments <span class="glyphicon glyphicon-comment"></span></h4>
-                    {{#each listComment}}
-                    <div class="form-group">
-                        <textarea class="form-control" name="comment" row="3">{{this.comment}} </textarea>
-                    </div>
-                    {{/each}}
-                </div> --}}
                 <div class="well" style="width: 500px">
                     <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
                     <form method="post" action='/staff/viewCategoryDetail/Comment'>

@@ -36,7 +36,8 @@ exports.doAddIdea = async (req, res) => {
                         author: req.session.user._id,
                         url: path,
                         like: 0,
-                        dislike: 0
+                        dislike: 0,
+                        comment: 0
                     })
                     newIdea = newIdea.save();
                 }
@@ -86,7 +87,7 @@ exports.viewCategoryDetail = async (req, res) => {
     }else{
         id = req.query.id;
     }
-    console.log(id );
+    // console.log(id );
     let listIdeas = await idea.find({ categoryID: id }).sort({"name": -1})
     
     let aCategory = await category.findById(id);
@@ -101,7 +102,7 @@ exports.viewCategoryDetail = async (req, res) => {
                 value: files,
                 linkValue: i.url.slice(7),
                 name: i.name,
-                // listComment: aComment
+                comment: i.comment
             });
         });
         // console.log(listFiles);
@@ -120,8 +121,11 @@ exports.doComment = async (req, res) => {
         author: req.session.user._id,
         comment: req.body.comment,
     })
+    let aIdea = await idea.findById( req.body.idIdea)
+    aIdea.comment +=1;
+    aIdea = aIdea.save();
     newComment = await newComment.save();
-    console.log(newComment.comment);
+    //console.log(newComment.comment);
     res.redirect('../viewCategoryDetail?id=' + id);
 }
 
