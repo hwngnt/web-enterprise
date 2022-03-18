@@ -1,0 +1,27 @@
+const mongoose = require('../db/db');
+
+const comments = new mongoose.Schema({
+    ideaID: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'ideas',
+        require : true
+    }, 
+
+    comment: {
+        type: String,
+        required: true
+    },
+
+    author:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'user',
+        require : true
+    },
+
+    time:{
+        type: Date,
+        default: Date.now()
+    },
+});
+
+module.exports = mongoose.model('comments', comments);

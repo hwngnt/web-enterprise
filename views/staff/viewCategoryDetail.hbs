@@ -17,8 +17,19 @@
         <div class="bg-white border mt-2">
 
             <h1>{{linkValue}}</h1>
-            <p> Open a PDF file <a href="../../{{linkValue}}/{{value}}" >{{value}}</a>.</p>
+            <p> Open a PDF file <a href="../../{{linkValue}}/{{value}}">{{value}}</a>.</p>
         </div>
+        <div class="well">
+            <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
+            <form method="post" action='/staff/viewCategoryDetail/Comment'>
+                <input type="hidden" name="idIdea" type="text" value="{{key}}" />
+                <div class="form-group">
+                    <textarea class="form-control" name="comment" row="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+
         {{/each}}
     </div>
 </body>
