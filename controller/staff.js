@@ -11,13 +11,13 @@ exports.getStaff = async (req, res) => {
     res.render('staff/staff', { loginName: req.session.email })
 }
 
-exports.addIdea = async (req,  res) => {
+exports.addIdea = async (req, res) => {
     var id = req.query.id;
-    res.render('staff/addIdeas', {idCategory:id,  loginName: req.session.email })
+    res.render('staff/addIdeas', { idCategory: id, loginName: req.session.email })
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
-    
+
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
     // console.log(aCategory);
@@ -45,27 +45,27 @@ exports.doAddIdea = async (req, res) => {
             console.log("Given Directory already exists !!");
         }
     });
-    res.render('staff/addFileToIdea', {idCategory:idCategory, path: path, loginName: req.session.email })
+    res.render('staff/addFileToIdea', { idCategory: idCategory, path: path, loginName: req.session.email })
 }
 exports.doAddFile = async (req, res) => {
     let id = req.body.idCategory;
-    res.redirect('viewCategoryDetail?id='+ id)
+    res.redirect('viewCategoryDetail?id=' + id)
 }
 
 exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
     let last_ideas = [];
-    if(len_ideas == 0){
+    if (len_ideas == 0) {
         last_ideas = [];
     }
-    else if(len_ideas < 5){
+    else if (len_ideas < 5) {
         last_ideas = listIdeas.reverse();
     }
-    else{
+    else {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
-    res.render('staff/viewLastestIdeas',{listIdeas: last_ideas});
+    res.render('staff/viewLastestIdeas', { listIdeas: last_ideas });
 }
 
 exports.viewSubmittedIdeas = async (req, res) => {
@@ -74,33 +74,49 @@ exports.viewSubmittedIdeas = async (req, res) => {
 }
 
 exports.viewCategoryDetail = async (req, res) => {
-    let id = req.query.id;
-    let listIdeas = await idea.find({categoryID: id})
+    let id;
+    let listComment;
+    let nameIdea;
+    if(req.query.id === undefined){
+        id = req.body.idCategory;
+        listComment = await comment.find({ideaID : req.body.idIdea })
+        nameIdea = await idea.findById( req.body.idIdea)
+        nameIdea = nameIdea.name
+    //console.log(nameIdea);
+    }else{
+        id = req.query.id;
+    }
+    console.log(id );
+    let listIdeas = await idea.find({ categoryID: id }).sort({"name": -1})
+    
     const fs = require("fs");
     let listFiles = [];
-    let count=0;
-    await listIdeas.forEach(i => {
+    let count = 0;
+    await listIdeas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             listFiles.push({
-                key: count,
+                id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
-                name: i.name
+                name: i.name,
+                // listComment: aComment
             });
-            console.log(listFiles)
-            count+=1;
-        })
+        });
+        // console.log(listFiles);
     })
-    res.render('staff/viewCategoryDetail', { idCategory: id,listFiles: listFiles, loginName: req.session.email })
+    res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment:listComment,  loginName: req.session.email })
+
 }
 
 exports.doComment = async (req, res) => {
+    let id = req.body.idCategory;
+    //console.log(req.body.idCategory);
     newComment = new comment({
-        ideaID : req.body.ideaID,
+        ideaID: req.body.idIdea,
         author: req.session.user._id,
         comment: req.body.comment,
     })
     newComment = await newComment.save();
     console.log(newComment.comment);
-        res.redirect('/staff/viewCategoryDetail');
+    res.redirect('../viewCategoryDetail?id=' + id);
 }

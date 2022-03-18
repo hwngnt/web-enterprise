@@ -12,24 +12,76 @@
             </a>
         </div>
     </div>
-    {{#each listFiles}}
-    <div class="container py-5" style="margin-left: 15%; width: 500px">
-        <ul class="list-group mt-5 text-white">
-            <li class="list-group-item d-flex justify-content-between align-content-center">
-                <div class="d-flex flex-row"> <img src="https://img.icons8.com/color/100/000000/folder-invoices.png" width="40" />
-                    <div class="ml-2">
-                        <h1 class="mb-0">{{name}}</h1>
-                        <ul>
-                            {{#each value}}
-                            <li><p><a href="../../{{../this.linkValue}}/{{this}}" >{{this}}</a></p></li>
-                            {{/each}}
+    <div class="row">
+        <div class="col" style="margin-left: 15%; width: 1000px">
+            {{#each listFiles}}
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col">
+                        <ul class="list-group mt-99 text-white" style="width: 500px">
+                            <li class="list-group-item d-flex justify-content-between align-content-center"
+                                style="width: 500px">
+                                <div class="d-flex flex-row"> <img
+                                        src="https://img.icons8.com/color/100/000000/folder-invoices.png" width="40" />
+                                    <div class="ml-2">
+                                        <h1 class="mb-0">{{name}}</h1>
+                                        <ul>
+                                            {{#each value}}
+                                            <li>
+                                                <p><a href="../../{{../this.linkValue}}/{{this}}">{{this}}</a></p>
+                                            </li>
+                                            {{/each}}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
                     </div>
+                    <div class="col" style="margin-left: -5%;">
+                        <div class="btn-group align-top">
+                            <form method="post" action='/staff/viewCategoryDetail'>
+                                <input type="hidden" name="idCategory" value="{{../idCategory}}">
+                                <input type="hidden" name="idIdea" value="{{id}}" />
+                                <button type="submit" class="btn btn-primary">Read Comment</button>
+                            </form>
+
+                        </div>
+                    </div>
                 </div>
-            </li>
-        </ul>
+                {{!-- <div class="well" style="width: 500px">
+                    <h4>List Comments <span class="glyphicon glyphicon-comment"></span></h4>
+                    {{#each listComment}}
+                    <div class="form-group">
+                        <textarea class="form-control" name="comment" row="3">{{this.comment}} </textarea>
+                    </div>
+                    {{/each}}
+                </div> --}}
+                <div class="well" style="width: 500px">
+                    <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
+                    <form method="post" action='/staff/viewCategoryDetail/Comment'>
+                        <input type="hidden" name="idCategory" value="{{../idCategory}}">
+                        <input type="hidden" name="idIdea" value="{{id}}" />
+                        <div class="form-group">
+                            <textarea class="form-control" name="comment" row="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <div class="col" style="margin-left: -15%; width: 500px">
+            <h4>List Comments of {{nameIdea}} <span class="glyphicon glyphicon-comment"></span></h4>
+            {{#each listComment}}
+            <div class="well" style="width: 500px">
+                    <div class="form-group">
+                        <textarea class="form-control" name="comment" row="3">{{this.comment}}</textarea>
+                    </div>
+                </form>
+            </div>
+            {{/each}}
+        </div>
     </div>
-    {{/each}}
 </body>
 
 

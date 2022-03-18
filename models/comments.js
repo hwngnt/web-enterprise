@@ -6,18 +6,15 @@ const comments = new mongoose.Schema({
         ref: 'ideas',
         require : true
     }, 
-
     comment: {
         type: String,
         required: true
     },
-
     author:{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'user',
         require : true
     },
-
     time:{
         type: Date,
         default: Date.now()
