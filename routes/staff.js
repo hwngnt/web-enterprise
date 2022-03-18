@@ -23,9 +23,9 @@ const uploadQAmanager = multer({
     },
 })
 router.get('/staff', staffController.getStaff);
-router.get('/staff/addIdea', staffController.addIdea);
-router.post('/staff/doAddIdea', staffController.doAddIdea);
-router.post('/staff/doAddFile', uploadQAmanager.any('ideas'), staffController.doAddFile);
+router.get('/staff/addIdea',isStaff, staffController.addIdea);
+router.post('/staff/doAddIdea',isStaff, staffController.doAddIdea);
+router.post('/staff/doAddFile',isStaff, uploadQAmanager.any('ideas'), staffController.doAddFile);
 router.get('/staff/viewLastestIdeas', staffController.viewLastestIdeas);
 
 router.get('/staff/viewSubmittedIdeas', staffController.viewSubmittedIdeas);
