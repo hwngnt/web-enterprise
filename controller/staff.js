@@ -2,6 +2,7 @@ const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 const idea = require('../models/ideas');
 const category = require('../models/category');
+const comment = require('../models/comments');
 const multer = require('multer');
 const { redirect } = require('express/lib/response');
 
@@ -75,7 +76,6 @@ exports.viewSubmittedIdeas = async (req, res) => {
 exports.viewCategoryDetail = async (req, res) => {
     let id = req.query.id;
     let listIdeas = await idea.find({categoryID: id})
-    // console.log(listIdeas)
     const fs = require("fs");
     let listFiles = [];
     let count=0;
@@ -92,4 +92,15 @@ exports.viewCategoryDetail = async (req, res) => {
         })
     })
     res.render('staff/viewCategoryDetail', { idCategory: id,listFiles: listFiles, loginName: req.session.email })
+}
+
+exports.doComment = async (req, res) => {
+    newComment = new comment({
+        ideaID : req.body.ideaID,
+        author: req.session.user._id,
+        comment: req.body.comment,
+    })
+    newComment = await newComment.save();
+    console.log(newComment.comment);
+        res.redirect('/staff/viewCategoryDetail');
 }
