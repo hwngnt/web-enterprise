@@ -19,9 +19,9 @@ exports.doAddIdea = async (req, res) => {
     
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
-    console.log(aCategory);
+    // console.log(aCategory);
     let path = aCategory.url + '/' + req.body.name;
-    console.log(req.session.user._id);
+    // console.log(req.session.user._id);
     await fs.access(path, (error) => {
         if (error) {
             fs.mkdir(path, (error) => {
@@ -75,6 +75,7 @@ exports.viewSubmittedIdeas = async (req, res) => {
 exports.viewCategoryDetail = async (req, res) => {
     let id = req.query.id;
     let listIdeas = await idea.find({categoryID: id})
+    // console.log(listIdeas)
     const fs = require("fs");
     let listFiles = [];
     let count=0;
@@ -83,8 +84,10 @@ exports.viewCategoryDetail = async (req, res) => {
             listFiles.push({
                 key: count,
                 value: files,
-                linkValue: i.url.slice(7)
+                linkValue: i.url.slice(7),
+                name: i.name
             });
+            console.log(listFiles)
             count+=1;
         })
     })
