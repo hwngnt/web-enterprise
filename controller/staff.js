@@ -76,6 +76,12 @@ exports.viewSubmittedIdeas = async (req, res) => {
 exports.viewCategoryDetail = async (req, res) => {
     let id = req.query.id;
     let listIdeas = await idea.find({categoryID: id})
+    let aCategory = await category.findById(id);
+    // console.log(aCategory)
+    let tempDate = new Date();
+    let compare = tempDate > aCategory.dateEnd;
+    console.log(tempDate);
+    console.log(aCategory.dateEnd);
     const fs = require("fs");
     let listFiles = [];
     let count=0;
@@ -87,12 +93,16 @@ exports.viewCategoryDetail = async (req, res) => {
                 linkValue: i.url.slice(7),
                 name: i.name
             });
-            console.log(listFiles)
+            // console.log(listFiles)
             count+=1;
         })
     })
-    res.render('staff/viewCategoryDetail', { idCategory: id,listFiles: listFiles, loginName: req.session.email })
+    console.log(compare)
+    res.render('staff/viewCategoryDetail', { idCategory: id,listFiles: listFiles, compare: compare,loginName: req.session.email })
 }
+
+
+
 
 exports.doComment = async (req, res) => {
     newComment = new comment({
