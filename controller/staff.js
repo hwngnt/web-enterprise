@@ -129,3 +129,34 @@ exports.doComment = async (req, res) => {
     res.redirect('../viewCategoryDetail?id=' + id);
 }
 
+exports.viewLastestIdeas = async (req, res) => {
+    let listIdeas = await idea.find();
+    let len_ideas = listIdeas.length;
+    let last_ideas = [];
+    if(len_ideas == 0){
+        last_ideas = [];
+    }
+    else if(len_ideas < 5){
+        last_ideas = listIdeas.reverse();
+    }
+    else{
+        last_ideas = listIdeas.slice(-5, len_ideas).reverse();
+    }
+    res.render('staff/viewLastestIdeas',{listIdeas: last_ideas});
+}
+
+exports.viewLatestComment = async (req, res) => {
+    let listComments = await comment.find()
+    let len_comments = listComments.length;
+    let last_comments = [];
+    if(len_comments == 0){
+        last_comments = [];
+    }
+    else if(len_comments < 5){
+        last_comments = listComments.reverse();
+    }
+    else{
+        last_comments = listComments.slice(-5, len_comments).reverse();
+    }
+    res.render('staff/viewLatestComments',{listComments: last_comments});
+}

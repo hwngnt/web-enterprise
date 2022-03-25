@@ -32,4 +32,5 @@ router.get('/staff/viewSubmittedIdeas', staffController.viewSubmittedIdeas);
 router.get('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
 router.post('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
 router.post('/staff/viewCategoryDetail/Comment', staffController.doComment);
+router.get('/staff/viewLatestComments', staffController.viewLatestComment);
 module.exports = router;
