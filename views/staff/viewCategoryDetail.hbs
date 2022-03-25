@@ -7,7 +7,7 @@
     <div class="container py-5" style="margin-top: 3%; margin-left: 15%">
         <div class="form-group">
             {{#if compare}}
-            <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success" style="margin-left: 5%;" disabled>
+            <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success" style="margin-left: 5%;">
                 <span class="glyphicon glyphicon-plus"></span>
                 <span><strong>Add new Idea</strong></span>
             </a>
@@ -44,43 +44,87 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="col" >
+                    <div class="col">
                         <div class="btn-group align-top">
                             <form method="post" action='/staff/viewCategoryDetail'>
                                 <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                 <input type="hidden" name="idIdea" value="{{id}}" />
-                                <button type="submit" class="btn btn-outline-warning" style="font-weight: 900; font-size: 1.2rem; margin-left: -75%; margin-top: 10%;">Read {{comment}} Comment</button>
+                                <button type="submit" class="btn btn-outline-warning"
+                                    style="font-weight: 900; font-size: 1.2rem; margin-left: -75%; margin-top: 10%;">Read
+                                    {{comment}} Comment</button>
                             </form>
 
                         </div>
                     </div>
                 </div>
-                <div class="well" style="width: 500px">
-                    <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
-                    <form method="post" action='/staff/viewCategoryDetail/Comment'>
-                        <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                        <input type="hidden" name="idIdea" value="{{id}}" />
-                        <div class="form-group">
-                            <textarea class="form-control" name="comment" row="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Send</button>
-                    </form>
+                <div class="container">
+                    <div class="well row" style="width: 500px">
+                        <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
+                        <form method="post" action='/staff/viewCategoryDetail/Comment'>
+                            <input type="hidden" name="idCategory" value="{{../idCategory}}">
+                            <input type="hidden" name="idIdea" value="{{id}}" />
+                            <div class="form-group">
+                                <textarea class="form-control" name="comment" row="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </form>
+                    </div>
+                    <div class="row">
+                        {{#ifCond idLikeds id}}
+                        <form class="form" class="m-lg-2" method="POST" action="/staff/addLike">
+                            <input type="hidden" name="idCategory" value="{{idCategory}}">
+                            <input type="hidden" name="ideaID" value="{{id}}">
+                            <button class="btn btn-primary" type="submit">
+                                <i style="font-size:24px; background-color:black" class="fa fa-thumbs-up"></i>
+                                <i style="font-size:24px">{{n_likes}}</i>
+                            </button>
+                        </form>
+                        {{else}}
+                        {{#ifCond idDislikes id}}
+                        <form class="form" class="m-lg-2" method="POST" action="/staff/addDislike">
+                            <input type="hidden" name="idCategory" value="{{idCategory}}">
+                            <input type="hidden" name="ideaID" value="{{id}}">
+                            <button class="btn btn-danger" type="submit">
+                                <i style="font-size:24px; background-color:black" class="fa fa-thumbs-down"></i>
+                                <i style="font-size:24px">{{n_dislikes}}</i>
+                            </button>
+                        </form>
+                        {{else}}
+                        <form class="form" class="m-lg-2" method="POST" action="/staff/addLike">
+                            <input type="hidden" name="idCategory" value="{{idCategory}}">
+                            <input type="hidden" name="ideaID" value="{{id}}">
+                            <button class="btn btn-primary" style="background-color: none" type="submit">
+                                <i style="font-size:24px" class="fa fa-thumbs-up"></i>
+                                <i style="font-size:24px">{{n_likes}}</i>
+                            </button>
+
+                        </form>
+                        <form class="form" class="m-lg-2" method="POST" action="/staff/addDislike">
+                            <input type="hidden" name="idCategory" value="{{idCategory}}">
+                            <input type="hidden" name="ideaID" value="{{id}}">
+                            <button class="btn btn-danger" type="submit">
+                                <i style="font-size:24px" class="fa fa-thumbs-down"></i>
+                                <i style="font-size:24px">{{n_dislikes}}</i>
+                            </button>
+                        </form>
+                        {{/ifCond}}
+                        {{/ifCond}}
+                    </div>
                 </div>
+                {{/each}}
             </div>
-            {{/each}}
-        </div>
-        <div class="col" style="margin-left: -15%; width: 500px">
-            <h4>List Comments of {{nameIdea}} <span class="glyphicon glyphicon-comment"></span></h4>
-            {{#each listComment}}
-            <div class="well" style="width: 500px">
+            <div class="col" style="margin-left: -15%; width: 500px">
+                <h4>List Comments of {{nameIdea}} <span class="glyphicon glyphicon-comment"></span></h4>
+                {{#each listComment}}
+                <div class="well" style="width: 500px">
                     <div class="form-group">
                         <textarea class="form-control" name="comment" row="3">{{this.comment}}</textarea>
                     </div>
-                </form>
+                    </form>
+                </div>
+                {{/each}}
             </div>
-            {{/each}}
         </div>
-    </div>
 </body>
 
 

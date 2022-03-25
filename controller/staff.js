@@ -5,7 +5,9 @@ const category = require('../models/category');
 const comment = require('../models/comments');
 const multer = require('multer');
 const { redirect } = require('express/lib/response');
-
+const likes = require('../models/likes');
+const dislikes = require('../models/dislikes');
+const Staff = require('../models/staff');
 
 exports.getStaff = async (req, res) => {
     res.render('staff/staff', { loginName: req.session.email })
@@ -78,40 +80,57 @@ exports.viewCategoryDetail = async (req, res) => {
     let id;
     let listComment;
     let nameIdea;
-    if(req.query.id === undefined){
+    if (req.query.id === undefined) {
         id = req.body.idCategory;
-        listComment = await comment.find({ideaID : req.body.idIdea })
-        nameIdea = await idea.findById( req.body.idIdea)
+        listComment = await comment.find({ ideaID: req.body.idIdea })
+        nameIdea = await idea.findById(req.body.idIdea)
         nameIdea = nameIdea.name
-    //console.log(nameIdea);
-    }else{
+        //console.log(nameIdea);
+    } else {
         id = req.query.id;
     }
-    // console.log(id );
-    let listIdeas = await idea.find({ categoryID: id }).sort({"name": -1})
-    
-    let aCategory = await category.findById(id);
-    let tempDate = new Date();
-    let compare = tempDate > aCategory.dateEnd;
-    const fs = require("fs");
     let listFiles = [];
-    await listIdeas.forEach(async (i) => {
-        fs.readdir(i.url, (err, files) => {
-            listFiles.push({
-                id: i._id,
-                value: files,
-                linkValue: i.url.slice(7),
-                name: i.name,
-                comment: i.comment
+    try {
+        let listIdeas = await idea.find({ categoryID: id }).sort({ "name": -1 })
+        let email = req.session.email;
+        let staff = await Staff.findOne({ email: email });
+        let listLikes = await likes.find({ staffID: { $all: staff._id } });
+        let listDislikes = await dislikes.find({ staffID: { $all: staff._id } });;
+        let likedIDs = [];
+        for (let like of listLikes) {
+            likedIDs.push(like.ideaID);
+        }
+        let dislikeIDs = [];
+        for (let dislike of listDislikes) {
+            dislikeIDs.push(dislike.ideaID);
+        }
+        let aCategory = await category.findById(id);
+        let tempDate = new Date();
+        let compare = tempDate > aCategory.dateEnd;
+        const fs = require("fs");
+        
+        await listIdeas.forEach(async (i) => {
+            fs.readdir(i.url, (err, files) => {
+                listFiles.push({
+                    id: i._id,
+                    value: files,
+                    linkValue: i.url.slice(7),
+                    name: i.name,
+                    comment: i.comment,
+                    idCategory: id,
+                    idLikeds: likedIDs,
+                    idDislikes: dislikeIDs,
+                    n_likes: i.like,
+                    n_dislikes: i.dislike
+                });
             });
-        });
-        // console.log(listFiles);
-    })
-    res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment:listComment, compare: compare,  loginName: req.session.email });
+        })
+        res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+    } catch (e) {
+        console.log(e);
+        res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, loginName: req.session.email });
+    }
 }
-
-
-
 
 exports.doComment = async (req, res) => {
     let id = req.body.idCategory;
@@ -121,11 +140,126 @@ exports.doComment = async (req, res) => {
         author: req.session.user._id,
         comment: req.body.comment,
     })
-    let aIdea = await idea.findById( req.body.idIdea)
-    aIdea.comment +=1;
+    let aIdea = await idea.findById(req.body.idIdea)
+    aIdea.comment += 1;
     aIdea = aIdea.save();
     newComment = await newComment.save();
     //console.log(newComment.comment);
     res.redirect('../viewCategoryDetail?id=' + id);
 }
 
+exports.addLike = async (req, res) => {
+    let id = req.body.idCategory;
+    let ideaID = req.body.ideaID;
+    let email = req.session.email;
+    let staff = await Staff.findOne({ email: email });
+    let n_staffs = 0;
+    try {
+        let staffID = staff._id;
+        let checkExistedStaff = false;
+        await likes.findOne({ ideaID: ideaID }).then(data => {
+            if (data) {
+                n_staffs = data.staffID.length;
+                try {
+                    let idxRemove = -1;
+                    for (let i = 0; i < data.staffID.length; i++) {
+                        if (staffID.equals(data.staffID[i])) {
+                            idxRemove = i;
+                            checkExistedStaff = true;
+                            break;
+                        }
+                    }
+                    if (checkExistedStaff) {
+                        data.staffID.splice(idxRemove, 1);
+                        console.log('Removed existed staff liked idea');
+                        n_staffs -= 1;
+                        data.save();
+                    } else {
+                        data.staffID.push(staffID);
+                        n_staffs += 1;
+                        data.save();
+                        console.log('Add a new staff');
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+
+            }
+            else {
+                newLike = new likes({
+                    ideaID: ideaID,
+                    staffID: staffID
+                })
+                newLike.save();
+                n_staffs += 1;
+                console.log('Add new like');
+            }
+        });
+    }
+    catch (e) {
+        console.log(e);
+    }
+    let objIdea = await idea.findById(ideaID);
+    objIdea.like = n_staffs;
+    objIdea.save();
+    res.redirect('viewCategoryDetail?id=' + id);
+}
+
+exports.addDislike = async (req, res) => {
+    let id = req.body.idCategory;
+    let ideaID = req.body.ideaID;
+    let email = req.session.email;
+    let staff = await Staff.findOne({ email: email });
+
+    let n_staffs = 0;
+    try {
+        let staffID = staff._id;
+        console.log(staffID);
+        let checkExistedStaff = false;
+        await dislikes.findOne({ ideaID: ideaID }).then(data => {
+            if (data) {
+                n_staffs = data.staffID.length;
+                try {
+                    let idxRemove = -1;
+                    for (let i = 0; i < data.staffID.length; i++) {
+                        if (staffID.equals(data.staffID[i])) {
+                            idxRemove = i;
+                            checkExistedStaff = true;
+                            break;
+                        }
+                    }
+                    if (checkExistedStaff) {
+                        data.staffID.splice(idxRemove, 1);
+                        n_staffs -= 1;
+                        console.log('Removed existed staff disliked idea');
+                        data.save();
+
+                    } else {
+                        data.staffID.push(staffID);
+                        data.save();
+                        n_staffs += 1;
+                        console.log('Add a new staff');
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+            else {
+                newDislike = new dislikes({
+                    ideaID: ideaID,
+                    staffID: staffID
+                })
+                newDislike.save();
+                n_staffs += 1;
+                console.log('Add new dislike');
+            }
+        });
+    }
+    catch (e) {
+        console.log(e);
+    }
+    let objIdea = await idea.findOne({ _id: ideaID });
+    objIdea.dislike = n_staffs;
+    objIdea.save();
+    res.redirect('viewCategoryDetail?id=' + id);
+}

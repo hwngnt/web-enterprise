@@ -6,7 +6,7 @@ router.get('/qac',qacController.getQAC);
 
 router.get('/qac/most_popular_ideas',qacController.mostPopularIdeas);
 
-router.get('/qac/most_view_ideas',qacController.mostViewIdeas);
+router.get('/qac/mostViewedIdeas',qacController.mostViewIdeas);
 
 router.get('/qac/viewLastestIdeas',qacController.viewLastestIdeas);
 module.exports = router;

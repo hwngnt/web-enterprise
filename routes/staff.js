@@ -32,4 +32,7 @@ router.get('/staff/viewSubmittedIdeas', staffController.viewSubmittedIdeas);
 router.get('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
 router.post('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
 router.post('/staff/viewCategoryDetail/Comment', staffController.doComment);
+
+router.post('/staff/addLike', staffController.addLike);
+router.post('/staff/addDislike', staffController.addDislike);
 module.exports = router;
