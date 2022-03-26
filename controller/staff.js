@@ -77,24 +77,25 @@ exports.viewSubmittedIdeas = async (req, res) => {
 }
 
 exports.viewCategoryDetail = async (req, res) => {
-    let id;
-    let listComment;
-    let nameIdea;
-    if (req.query.id === undefined) {
-        id = req.body.idCategory;
-        listComment = await comment.find({ ideaID: req.body.idIdea })
-        nameIdea = await idea.findById(req.body.idIdea)
-        nameIdea = nameIdea.name
-        //console.log(nameIdea);
-    } else {
-        id = req.query.id;
-    }
+    // let id;
+    // let listComment;
+    // let nameIdea;
+    // if (req.query.id === undefined) {
+    //     id = req.body.idCategory;
+    //     listComment = await comment.find({ ideaID: req.body.idIdea })
+    //     nameIdea = await idea.findById(req.body.idIdea)
+    //     nameIdea = nameIdea.name
+    //     //console.log(nameIdea);
+    // } else {
+    //     id = req.query.id;
+    // }
+    let id = req.query.id;
     let listFiles = [];
     try {
         let listIdeas = await idea.find({ categoryID: id }).sort({ "name": -1 })
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
-        let listLikes = await likes.find({ staffID: { $all: staff._id } });
+        let listLikes = await likes.find({ staffID: { $all: staff._id} });
         let listDislikes = await dislikes.find({ staffID: { $all: staff._id } });;
         let likedIDs = [];
         for (let like of listLikes) {
@@ -112,20 +113,15 @@ exports.viewCategoryDetail = async (req, res) => {
         await listIdeas.forEach(async (i) => {
             fs.readdir(i.url, (err, files) => {
                 listFiles.push({
-                    id: i._id,
                     value: files,
                     linkValue: i.url.slice(7),
-                    name: i.name,
-                    comment: i.comment,
-                    idCategory: id,
-                    idLikeds: likedIDs,
-                    idDislikes: dislikeIDs,
-                    n_likes: i.like,
-                    n_dislikes: i.dislike
+                    idea: i,
+                    listComment: i.populate('comments')
                 });
             });
         })
-        res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+        //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+        res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
         console.log(e);
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, loginName: req.session.email });
@@ -139,11 +135,12 @@ exports.doComment = async (req, res) => {
         ideaID: req.body.idIdea,
         author: req.session.user._id,
         comment: req.body.comment,
-    })
-    let aIdea = await idea.findById(req.body.idIdea)
-    aIdea.comment += 1;
-    aIdea = aIdea.save();
+    });
     newComment = await newComment.save();
+    let aIdea = await idea.findById(req.body.idIdea)
+    aIdea.comments.push(newComment);
+    aIdea = await aIdea.save();
+    
     //console.log(newComment.comment);
     res.redirect('../viewCategoryDetail?id=' + id);
 }

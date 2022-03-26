@@ -3,6 +3,7 @@ const Staff = require('../models/staff');
 const QAcoordinator = require('../models/QAcoordinator');
 const QAmanager = require('../models/QAmanager');
 const category = require('../models/category');
+const idea = require('../models/ideas');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 exports.getAdmin = async (req, res) => {
@@ -329,7 +330,7 @@ exports.searchStaff = async (req, res) => {
     }
     res.render('admin/viewStaff', { listStaff: listStaff, loginName: req.session.email });
 }
-
+//Edit date
 exports.viewCategory = async (req, res) => {
     let listCategory = await category.find();
     res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email })
@@ -358,6 +359,7 @@ exports.doEditDate = async (req, res) => {
     }
 }
 
+//view
 exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
@@ -372,5 +374,48 @@ exports.viewLastestIdeas = async (req, res) => {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
     res.render('admin/viewLastestIdeas',{listIdeas: last_ideas});
+}
+exports.viewSubmittedIdeas = async (req, res) => {
+    let listCategory = await category.find();
+    res.render('admin/viewSubmittedIdeas', { listCategory: listCategory, loginName: req.session.email })
+}
+exports.viewCategoryDetail = async (req, res) => {
+    // let id;
+    // let listComment;
+    // let nameIdea;
+    // if (req.query.id === undefined) {
+    //     id = req.body.idCategory;
+    //     listComment = await comment.find({ ideaID: req.body.idIdea })
+    //     nameIdea = await idea.findById(req.body.idIdea)
+    //     nameIdea = nameIdea.name
+    //     //console.log(nameIdea);
+    // } else {
+    //     id = req.query.id;
+    // }
+    let id = req.query.id;
+    let listFiles = [];
+    try {
+        let listIdeas = await idea.find({ categoryID: id }).sort({ "name": -1 })
+        let aCategory = await category.findById(id);
+        let tempDate = new Date();
+        let compare = tempDate > aCategory.dateEnd;
+        const fs = require("fs");
+        
+        listIdeas.forEach(async (i) => {
+            fs.readdir(i.url, (err, files) => {
+                listFiles.push({
+                    value: files,
+                    linkValue: i.url.slice(7),
+                    idea: i,
+                    listComment: i.populate('comments')
+                });
+            });
+        })
+        //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+        res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+    } catch (e) {
+        console.log(e);
+        res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+    }
 }
 

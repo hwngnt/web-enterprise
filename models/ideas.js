@@ -31,10 +31,10 @@ const ideas = new mongoose.Schema({
         type: Number,
         required: true
     },
-    comment:{
-        type: Number,
-        required: true
-    }
+    comments:[{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'comments'
+    }]
 });
 
 module.exports = mongoose.model('ideas', ideas);
