@@ -92,7 +92,7 @@ exports.viewCategoryDetail = async (req, res) => {
     let id = req.query.id;
     let listFiles = [];
     try {
-        let listIdeas = await idea.find({ categoryID: id }).sort({ "name": -1 })
+        let listIdeas = await idea.find({ categoryID: id }).populate('comments')
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
         let listLikes = await likes.find({ staffID: { $all: staff._id} });
@@ -116,7 +116,8 @@ exports.viewCategoryDetail = async (req, res) => {
                     value: files,
                     linkValue: i.url.slice(7),
                     idea: i,
-                    listComment: i.populate('comments')
+                    idLikeds: likedIDs,
+                    idDislikes: dislikeIDs,
                 });
             });
         })
@@ -199,7 +200,7 @@ exports.addLike = async (req, res) => {
     }
     let objIdea = await idea.findById(ideaID);
     objIdea.like = n_staffs;
-    objIdea.save();
+    await objIdea.save();
     res.redirect('viewCategoryDetail?id=' + id);
 }
 
@@ -258,7 +259,7 @@ exports.addDislike = async (req, res) => {
     }
     let objIdea = await idea.findOne({ _id: ideaID });
     objIdea.dislike = n_staffs;
-    objIdea.save();
+    await objIdea.save();
     res.redirect('viewCategoryDetail?id=' + id);
 }
 

@@ -395,7 +395,7 @@ exports.viewCategoryDetail = async (req, res) => {
     let id = req.query.id;
     let listFiles = [];
     try {
-        let listIdeas = await idea.find({ categoryID: id }).sort({ "name": -1 })
+        let listIdeas = await idea.find({ categoryID: id }).populate('comments').sort({ "time": -1 })
         let aCategory = await category.findById(id);
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
@@ -406,8 +406,7 @@ exports.viewCategoryDetail = async (req, res) => {
                 listFiles.push({
                     value: files,
                     linkValue: i.url.slice(7),
-                    idea: i,
-                    listComment: i.populate('comments')
+                    idea: i
                 });
             });
         })

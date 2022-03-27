@@ -20,18 +20,18 @@
         </div>
     </div>
     <div class="row">
-        <div class="col" style="margin-left: 15%; width: 1000px">
+        <div class="col" style="margin: 0% 30%;">
             {{#each listFiles}}
-            <div class="container py-5">
+            <div class="container py-5" style="margin-bottom: 3% ; background-color: rgba(147, 160, 181, 0.481);">
                 <div class="row">
                     <div class="col">
                         <div class="row" style="margin-left: 1px;">
-                            <ul class="list-group mt-99 text-white" style="width: 500px">
+                            <ul class="list-group mt-99 text-white">
                                 <li class="list-group-item d-flex justify-content-between align-content-center"
-                                    style="width: 500px">
+                                    style="width: 700px">
                                     <div class="d-flex flex-row"> <img
                                             src="https://img.icons8.com/color/100/000000/folder-invoices.png"
-                                            width="40" />
+                                            width="80" height="60"/>
                                         <div class="ml-2">
                                             <h1 class="mb-0">{{idea.name}}</h1>
                                             <ul>
@@ -47,18 +47,14 @@
                             </ul>
                         </div>
                         <div class="row">
-                            <div class="col">
-                                <form method="post" action='/staff/viewCategoryDetail'>
-                                    <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                                    <input type="hidden" name="idIdea" value="{{idea._id}}" />
-                                    <button type="submit" class="btn-outline-primary"
-                                        style="font-weight: 900; font-size: 1.2rem; margin-top: 3px; border: none;">Read {{idea.comments.length}}
-                                        Comment</button>
-                                </form>
+                            <div class="col-sm-10">
+                                <div style="font-weight: 900; font-size: 1.2rem; margin-top: 3px; border: none;">
+                                    {{idea.comments.length}} Comments
+                                </div>
                             </div>
-                            {{!-- <div class="col">
+                            <div class="col">
                                 <div class="row">
-                                    {{#ifCond idLikeds id}}
+                                    {{#ifCond idLikeds idea._id}}
                                     <form class="form" class="m-lg-2" method="POST" action="/staff/addLike">
                                         <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                         <input type="hidden" name="ideaID" value="{{idea._id}}">
@@ -68,7 +64,7 @@
                                         </button>
                                     </form>
                                     {{else}}
-                                    {{#ifCond idDislikes id}}
+                                    {{#ifCond idDislikes idea._id}}
                                     <form class="form" class="m-lg-2" method="POST" action="/staff/addDislike">
                                         <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                         <input type="hidden" name="ideaID" value="{{idea._id}}">
@@ -78,7 +74,7 @@
                                         </button>
                                     </form>
                                     {{else}}
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-4">
                                         <form class="form" class="m-lg-2" method="POST" action="/staff/addLike">
                                             <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                             <input type="hidden" name="ideaID" value="{{idea._id}}">
@@ -101,13 +97,53 @@
                                     {{/ifCond}}
                                     {{/ifCond}}
                                 </div>
-                            </div> --}}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <div class="well" style="width: 500px">
+                        <div class="well" style="width: 700px">
+                            {{!-- <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4> --}}
+                            {{#each idea.comments}}
+                            <div style="border-bottom: 1px dotted #ccc;">
+                                <p class="pull-right"><small>
+                                        <script>
+                                            var d1 = new Date("{{this.time}}");
+                                            var d2 = Date.now();
+                                            var diff = Math.floor((d2 - d1) / 1000 / 60)
+                                            if (diff < 60) {
+                                                document.write(diff + " minutes ago");
+                                            } else {
+
+                                                diff = Math.floor(diff / 60);
+                                                if (diff < 24) {
+                                                    document.write(diff + " hours ago");
+                                                } else {
+                                                    diff = Math.floor(diff / 24);
+                                                    if (diff < 365) {
+                                                        document.write(diff + " days ago");
+                                                    }
+                                                    else {
+                                                        diff = Math.floor(diff / 365);
+                                                        document.write(diff + " years ago");
+                                                    }
+                                                }
+                                            }  
+                                        </script>
+                                    </small></p>
+                                <div class="media-body">
+                                    <p style="margin-top: 5px; font-size:large;">{{this.comment}}</p>
+                                </div>
+                            </div>
+                            {{!-- <textarea class="form-control" name="comment" row="3">{{this.comment}}</textarea> --}}
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="well" style="width: 700px">
                             <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
                             <form method="post" action='/staff/viewCategoryDetail/Comment'>
                                 <input type="hidden" name="idCategory" value="{{../idCategory}}">
@@ -123,17 +159,6 @@
             </div>
             {{/each}}
         </div>
-        {{!-- <div class="col" style="margin-left: -15%; width: 500px">
-            <h4>List Comments of {{nameIdea}} <span class="glyphicon glyphicon-comment"></span></h4>
-            {{#each listComment}}
-            <div class="well" style="width: 500px">
-                <div class="form-group">
-                    <textarea class="form-control" name="comment" row="3">{{this.comment}}</textarea>
-                </div>
-                </form>
-            </div>
-            {{/each}}
-        </div> --}}
     </div>
 </body>
 

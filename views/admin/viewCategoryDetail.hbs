@@ -4,35 +4,21 @@
 
 <body class="sb-nav-fixed">
     {{> adminHeader}}
-    <div class="container py-5" style="margin-top: 3%; margin-left: 15%">
-        <div class="form-group">
-            {{#if compare}}
-            <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success" style="margin-left: 5%;" disabled>
-                <span class="glyphicon glyphicon-plus"></span>
-                <span><strong>Add new Idea</strong></span>
-            </a>
-            {{else}}
-            <a href="/staff/addIdea?id={{idCategory}}" class="btn btn-success" style="margin-left: 5%;">
-                <span class="glyphicon glyphicon-plus"></span>
-                <span><strong>Add new Idea</strong></span>
-            </a>
-            {{/if}}
-        </div>
-    </div>
+
     <div class="row">
-        <div class="col" style="margin-left: 15%; width: 1000px">
+        <div class="col" style="margin: 5% 30%;">
             {{#each listFiles}}
             <div class="container py-5">
                 <div class="row">
                     <div class="col">
                         <div class="row" style="margin-left: 1px;">
-                            <ul class="list-group mt-99 text-white" style="width: 500px">
+                            <ul class="list-group mt-99 text-white">
                                 <li class="list-group-item d-flex justify-content-between align-content-center"
-                                    style="width: 500px">
+                                    style="width: 700px">
                                     <div class="d-flex flex-row"> <img
-                                            src="https://img.icons8.com/color/100/000000/folder-invoices.png"
-                                            width="40" />
-                                        <div class="ml-2">
+                                            src="https://img.icons8.com/color/100/000000/folder-invoices.png" width="40"
+                                            height="60" />
+                                        <div class="ml-1">
                                             <h1 class="mb-0">{{idea.name}}</h1>
                                             <ul>
                                                 {{#each value}}
@@ -47,24 +33,21 @@
                             </ul>
                         </div>
                         <div class="row">
-                            <div class="col">
-                                <form method="post" action='/staff/viewCategoryDetail'>
-                                    <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                                    <input type="hidden" name="idIdea" value="{{idea._id}}" />
-                                    <button type="submit" class="btn-outline-primary"
-                                        style="font-weight: 900; font-size: 1.2rem; margin-top: 3px; border: none;">Read {{idea.comments.length}}
-                                        Comment</button>
-                                </form>
+                            <div class="col-sm-10">
+                                <div style="font-weight: 900; font-size: 1.2rem; margin-top: 3px; border: none;">
+                                    {{idea.comments.length}} Comments
+                                </div>
                             </div>
                             <div class="col">
                                 <div class="row">
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-4">
                                         <form class="form" class="m-lg-2" method="POST" action="/staff/addLike">
                                             <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                             <input type="hidden" name="ideaID" value="{{idea._id}}">
-                                            <button class="btn btn-outline-secondary" type="submit" style="font-size: 15px; border: none;">
+                                            <button class="btn btn-outline-secondary" type="submit"
+                                                style="font-size: 15px; border: none;">
                                                 <i class="fa fa-thumbs-up"></i>
-                                                <i >{{idea.like}}</i>
+                                                <i>{{idea.like}}</i>
                                             </button>
                                         </form>
                                     </div>
@@ -72,9 +55,10 @@
                                         <form class="form" class="m-lg-2" method="POST" action="/staff/addDislike">
                                             <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                             <input type="hidden" name="ideaID" value="{{idea._id}}">
-                                            <button class="btn btn-outline-secondary" type="submit" style="font-size: 15px; border: none;">
+                                            <button class="btn btn-outline-secondary" type="submit"
+                                                style="font-size: 15px; border: none;">
                                                 <i class="fa fa-thumbs-down"></i>
-                                                <i >{{idea.dislike}}</i>
+                                                <i>{{idea.dislike}}</i>
                                             </button>
                                         </form>
                                     </div>
@@ -83,21 +67,46 @@
                         </div>
                     </div>
                 </div>
-                {{!-- <div class="row">
+                <div class="row">
                     <div class="col">
-                        <div class="well" style="width: 500px">
+                        <div class="well" style="width: 700px">
                             <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
-                            <form method="post" action='/staff/viewCategoryDetail/Comment'>
-                                <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                                <input type="hidden" name="idIdea" value="{{idea._id}}" />
-                                <div class="form-group">
-                                    <textarea class="form-control" name="comment" row="3"></textarea>
+                            {{#each idea.comments}}
+                            <div style="border-bottom: 1px dotted #ccc;">
+                                <p class="pull-right"><small>
+                                        <script>
+                                            var d1 = new Date("{{this.time}}");
+                                            var d2 = Date.now();
+                                            var diff = Math.floor((d2 - d1) / 1000 / 60)
+                                            if (diff < 60) {
+                                                document.write(diff + " minutes ago");
+                                            } else {
+
+                                                diff = Math.floor(diff / 60);
+                                                if (diff < 24) {
+                                                    document.write(diff + " hours ago");
+                                                } else {
+                                                    diff = Math.floor(diff / 24);
+                                                    if (diff < 365) {
+                                                        document.write(diff + " days ago");
+                                                    }
+                                                    else {
+                                                        diff = Math.floor(diff / 365);
+                                                        document.write(diff + " years ago");
+                                                    }
+                                                }
+                                            }  
+                                        </script>
+                                    </small></p>
+                                <div class="media-body">
+                                    <p style="margin-top: 5px; font-size:large;">{{this.comment}}</p>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Send</button>
-                            </form>
+                            </div>
+                            {{!-- <textarea class="form-control" name="comment" row="3">{{this.comment}}</textarea> --}}
+                            {{/each}}
                         </div>
                     </div>
-                </div> --}}
+                </div>
             </div>
             {{/each}}
         </div>
@@ -113,6 +122,11 @@
             {{/each}}
         </div> --}}
     </div>
+    <script>
+        var d1 = new Date("06/30/2019");
+        var d2 = Date.now();
+        document.getElementById("demo").innerHTML = d2;   
+    </script>
 </body>
 
 </html>
