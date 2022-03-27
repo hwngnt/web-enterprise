@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col" style="margin: 5% 30%;">
             {{#each listFiles}}
-            <div class="container py-5">
+            <div class="container py-5" style="margin-bottom: 3% ; background-color: rgba(147, 160, 181, 0.481);">
                 <div class="row">
                     <div class="col">
                         <div class="row" style="margin-left: 1px;">
@@ -41,26 +41,16 @@
                             <div class="col">
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <form class="form" class="m-lg-2" method="POST" action="/staff/addLike">
-                                            <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                                            <input type="hidden" name="ideaID" value="{{idea._id}}">
-                                            <button class="btn btn-outline-secondary" type="submit"
-                                                style="font-size: 15px; border: none;">
-                                                <i class="fa fa-thumbs-up"></i>
-                                                <i>{{idea.like}}</i>
-                                            </button>
-                                        </form>
+                                        <div class="btn " style="font-size: 15px; border: none;" /disabled>
+                                            <i class="fa fa-thumbs-up"></i>
+                                            <i>{{idea.like}}</i>
+                                        </div>
                                     </div>
                                     <div class="col">
-                                        <form class="form" class="m-lg-2" method="POST" action="/staff/addDislike">
-                                            <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                                            <input type="hidden" name="ideaID" value="{{idea._id}}">
-                                            <button class="btn btn-outline-secondary" type="submit"
-                                                style="font-size: 15px; border: none;">
-                                                <i class="fa fa-thumbs-down"></i>
-                                                <i>{{idea.dislike}}</i>
-                                            </button>
-                                        </form>
+                                        <div class="btn " type="submit" style="font-size: 15px; border: none;" /disabled>
+                                            <i class="fa fa-thumbs-down"></i>
+                                            <i>{{idea.dislike}}</i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -102,7 +92,6 @@
                                     <p style="margin-top: 5px; font-size:large;">{{this.comment}}</p>
                                 </div>
                             </div>
-                            {{!-- <textarea class="form-control" name="comment" row="3">{{this.comment}}</textarea> --}}
                             {{/each}}
                         </div>
                     </div>
@@ -110,23 +99,7 @@
             </div>
             {{/each}}
         </div>
-        {{!-- <div class="col" style="margin-left: -15%; width: 500px">
-            <h4>List Comments of {{nameIdea}} <span class="glyphicon glyphicon-comment"></span></h4>
-            {{#each listComment}}
-            <div class="well" style="width: 500px">
-                <div class="form-group">
-                    <textarea class="form-control" name="comment" row="3">{{this.comment}}</textarea>
-                </div>
-                </form>
-            </div>
-            {{/each}}
-        </div> --}}
     </div>
-    <script>
-        var d1 = new Date("06/30/2019");
-        var d2 = Date.now();
-        document.getElementById("demo").innerHTML = d2;   
-    </script>
 </body>
 
 </html>
