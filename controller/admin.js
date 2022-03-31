@@ -6,6 +6,7 @@ const category = require('../models/category');
 const idea = require('../models/ideas');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
+const idea = require('../models/ideas');
 exports.getAdmin = async (req, res) => {
     res.render('admin/admin', { loginName: req.session.email })
 }
@@ -364,16 +365,33 @@ exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
     let last_ideas = [];
-    if(len_ideas == 0){
+    if (len_ideas == 0) {
         last_ideas = [];
     }
-    else if(len_ideas < 5){
+    else if (len_ideas < 5) {
         last_ideas = listIdeas.reverse();
     }
-    else{
+    else {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
-    res.render('admin/viewLastestIdeas',{listIdeas: last_ideas});
+    let lastestIdeas = [];
+    const fs = require('fs');
+    await last_ideas.forEach(async (i) => {
+        fs.readdir(i.url, (err, files) => {
+            lastestIdeas.push({
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comment,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                time: i.time
+            });
+        });
+    });
+    res.render('admin/viewLastestIdeas',{listIdeas: lastestIdeas});
 }
 exports.viewSubmittedIdeas = async (req, res) => {
     let listCategory = await category.find();
