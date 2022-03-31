@@ -6,7 +6,6 @@ const category = require('../models/category');
 const idea = require('../models/ideas');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
-const idea = require('../models/ideas');
 exports.getAdmin = async (req, res) => {
     res.render('admin/admin', { loginName: req.session.email })
 }

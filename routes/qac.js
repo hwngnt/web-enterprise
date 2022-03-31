@@ -4,7 +4,7 @@ const qacController = require('../controller/qac');
 
 router.get('/qac',qacController.getQAC);
 
-router.get('/qac/most_popular_ideas',qacController.mostPopularIdeas);
+router.get('/qac/viewLastestComment',qacController.viewLastestComment);
 
 router.get('/qac/mostViewedIdeas',qacController.mostViewIdeas);
 
