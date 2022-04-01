@@ -38,5 +38,5 @@ router.post('/staff/addLike', staffController.addLike);
 router.post('/staff/addDislike', staffController.addDislike);
 
 router.get('/staff/viewLatestComments', staffController.viewLatestComment);
-
+router.get('/staff/viewMostViewedIdeas', staffController.viewMostViewedIdeas)
 module.exports = router;
