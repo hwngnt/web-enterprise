@@ -4,9 +4,30 @@
 
 <body class="sb-nav-fixed">
     {{> adminHeader}}
+    <div class="container py-5" style="position: fixed; top: 6%; margin-left: 80%;">
+        <p style="margin-bottom: 0%;"><label>Sort By:</label></p>
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <form method="post" action='/admin/viewCategoryDetail/'>
+                <input type="hidden" name="idCategory" value="{{idCategory}}">
+                <input type="hidden" name="sortBy" value="like" />
+                <button type="submit" class="btn btn-secondary">Most Likes</button>
+            </form>
+            <form method="post" action='/admin/viewCategoryDetail'>
+                <input type="hidden" name="idCategory" value="{{idCategory}}">
+                <input type="hidden" name="sortBy" value="comment" />
+                <button type="submit" class="btn btn-secondary">Most Comments</button>
+            </form>
+            <form method="post" action='/admin/viewCategoryDetail'>
+                <input type="hidden" name="idCategory" value="{{idCategory}}">
+                <input type="hidden" name="sortBy" value="time" />
+                <button type="submit" class="btn btn-secondary">Lastest Time</button>
+            </form>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col" style="margin: 5% 30%;">
+            <p id="demo" hidden>{{listFiles.length}}</p>
             {{#each listFiles}}
             <div class="container py-5" style="margin-bottom: 3% ; background-color: rgba(147, 160, 181, 0.481);">
                 <div class="row">
@@ -47,7 +68,8 @@
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <div class="btn " type="submit" style="font-size: 15px; border: none;" /disabled>
+                                        <div class="btn " type="submit" style="font-size: 15px; border: none;"
+                                            /disabled>
                                             <i class="fa fa-thumbs-down"></i>
                                             <i>{{idea.dislike}}</i>
                                         </div>
@@ -60,9 +82,13 @@
                 <div class="row">
                     <div class="col">
                         <div class="well" style="width: 700px">
-                            <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
+                            <button class="see-less" style=" font-size: 1.2rem; border: none; color: #3e5745; ">See
+                                Less...</button>
+                            <button class="see-more" style=" font-size: 1.2rem; border: none; color:#3e5745; ">Read more
+                                comments...</button>
+
                             {{#each idea.comments}}
-                            <div style="border-bottom: 1px dotted #ccc;">
+                            <div class="user-comment-box" style="border-bottom: 1px dotted #ccc; display:none;">
                                 <p class="pull-right"><small>
                                         <script>
                                             var d1 = new Date("{{this.time}}");
@@ -85,7 +111,7 @@
                                                         document.write(diff + " years ago");
                                                     }
                                                 }
-                                            }  
+                                            }
                                         </script>
                                     </small></p>
                                 <div class="media-body">
@@ -101,5 +127,22 @@
         </div>
     </div>
 </body>
+<script>
+    $(function () {
+
+        $(".see-more").click(function (e) { // click event for load more
+            e.preventDefault();
+            $(this).siblings(".user-comment-box:hidden").slice(-4).show(); // select next 5 hidden divs and show them
+            if ($(this).siblings(".user-comment-box:hidden").length == 0) { // check if any hidden divs
+                $(this).hide(); // if there are none left
+            }
+        });
+        $(".see-less").click(function (e) { // click event for load more
+            e.preventDefault();
+            $(this).siblings(".user-comment-box").hide();
+            $(this).siblings(".see-more").show();
+        });
+    });
+</script>
 
 </html>

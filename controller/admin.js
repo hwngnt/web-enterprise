@@ -7,6 +7,33 @@ const idea = require('../models/ideas');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 exports.getAdmin = async (req, res) => {
+    // const students = [
+    //     { name: "Alex",   grade: 15 },
+    //     { name: "Devlin", grade: 15 },
+    //     { name: "Eagle",  grade: 13 },
+    //     { name: "Sam",    grade: 14 }
+    //   ];
+    //   students.sort((firstItem, secondItem) => firstItem.grade - secondItem.grade);
+    // const students = [
+    //     { name: "Alex", grade: 15 },
+    //     { name: "Eagle", grade: 13 },
+    //     { name: "Devlin", grade: 15 },
+    //     { name: "Sam", grade: 14 }
+    // ];
+    // students.sort(function (a, b) {
+    //     const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+    //     const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+    //     if (nameA < nameB) {
+    //         return -1;
+    //     }
+    //     if (nameA > nameB) {
+    //         return 1;
+    //     }
+
+    //     // names must be equal
+    //     return 0;
+    // });
+    // console.log(students)
     res.render('admin/admin', { loginName: req.session.email })
 }
 
@@ -63,16 +90,16 @@ exports.editQAmanager = async (req, res) => {
     let id = req.query.id;
     let aQAmanager = await QAmanager.findById(id);
 
-    res.render('admin/editQAmanager', {aQAmanager:aQAmanager, loginName: req.session.email });
+    res.render('admin/editQAmanager', { aQAmanager: aQAmanager, loginName: req.session.email });
 }
 exports.doEditQAmanager = async (req, res) => {
     let id = req.body.id;
     let aQAmanager = await QAmanager.findById(id);
     // console.log(aQAmanager);
-    
+
     try {
         if (req.file) {
-            aQAmanager.img=req.file.filename;
+            aQAmanager.img = req.file.filename;
         }
         aQAmanager.name = req.body.name;
         aQAmanager.dateOfBirth = new Date(req.body.date);
@@ -90,7 +117,7 @@ exports.deleteQAmanager = async (req, res) => {
     let aQAmanager = await QAmanager.findById(id);
     let email = aQAmanager.email;
     console.log(email);
-    Account.deleteOne({'email': email }, (err) => {
+    Account.deleteOne({ 'email': email }, (err) => {
         if (err)
             throw err;
         else
@@ -171,15 +198,15 @@ exports.editQAcoordinator = async (req, res) => {
     let id = req.query.id;
     let aQAcoordinator = await QAcoordinator.findById(id);
 
-    res.render('admin/editQAcoordinator', {aQAcoordinator: aQAcoordinator, loginName: req.session.email });
+    res.render('admin/editQAcoordinator', { aQAcoordinator: aQAcoordinator, loginName: req.session.email });
 }
 exports.doEditQAcoordinator = async (req, res) => {
     let id = req.body.id;
     let aQAcoordinator = await QAcoordinator.findById(id);
-    
+
     try {
         if (req.file) {
-            aQAcoordinator.img=req.file.filename;
+            aQAcoordinator.img = req.file.filename;
         }
         aQAcoordinator.name = req.body.name;
         aQAcoordinator.dateOfBirth = new Date(req.body.date);
@@ -196,7 +223,7 @@ exports.deleteQAcoordinator = async (req, res) => {
     let id = req.query.id;
     let aQAcoordinator = await QAcoordinator.findById(id);
     let email = aQAcoordinator.email;
-    Account.deleteOne({'email': email }, (err) => {
+    Account.deleteOne({ 'email': email }, (err) => {
         if (err)
             throw err;
         else
@@ -219,7 +246,7 @@ exports.searchQAcoordinator = async (req, res) => {
         res.redirect('/admin/viewQualityAssuranceCoordinator');
     }
     else if (checkAlphaName) {
-        listQAcoordinator = await QAcoordinator.find({name: searchCondition });
+        listQAcoordinator = await QAcoordinator.find({ name: searchCondition });
     }
     res.render('admin/viewQAcoordinator', { listQAcoordinator: listQAcoordinator, loginName: req.session.email });
 }
@@ -277,15 +304,15 @@ exports.editStaff = async (req, res) => {
     let id = req.query.id;
     let aStaff = await Staff.findById(id);
 
-    res.render('admin/editStaff', {aStaff: aStaff, loginName: req.session.email });
+    res.render('admin/editStaff', { aStaff: aStaff, loginName: req.session.email });
 }
 exports.doEditStaff = async (req, res) => {
     let id = req.body.id;
     let aStaff = await Staff.findById(id);
-    
+
     try {
         if (req.file) {
-            aStaff.img=req.file.filename;
+            aStaff.img = req.file.filename;
         }
         aStaff.name = req.body.name;
         aStaff.dateOfBirth = new Date(req.body.date);
@@ -303,7 +330,7 @@ exports.deleteStaff = async (req, res) => {
     let aStaff = await Staff.findById(id);
     let email = aStaff.email;
     console.log(email);
-    Account.deleteOne({'email': email }, (err) => {
+    Account.deleteOne({ 'email': email }, (err) => {
         if (err)
             throw err;
         else
@@ -338,12 +365,12 @@ exports.viewCategory = async (req, res) => {
 exports.editDate = async (req, res) => {
     let id = req.query.id;
     let aCategory = await category.findById(id);
-    res.render('admin/editDate', { aCategory:aCategory, loginName: req.session.email })
+    res.render('admin/editDate', { aCategory: aCategory, loginName: req.session.email })
 }
 exports.doEditDate = async (req, res) => {
     console.log(req.body)
     let id = req.body.id;
-    
+
     let aCategory = await category.findById(id);
     console.log(req.body.dateStart)
     console.log(req.body.dateEnd)
@@ -373,59 +400,113 @@ exports.viewLastestIdeas = async (req, res) => {
     else {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
-    let lastestIdeas = [];
-    const fs = require('fs');
-    await last_ideas.forEach(async (i) => {
-        fs.readdir(i.url, (err, files) => {
-            lastestIdeas.push({
-                id: i._id,
-                value: files,
-                linkValue: i.url.slice(7),
-                name: i.name,
-                comment: i.comment,
-                idCategory: i.categoryID,
-                n_likes: i.like,
-                n_dislikes: i.dislike,
-                time: i.time
-            });
-        });
-    });
-    res.render('admin/viewLastestIdeas',{listIdeas: lastestIdeas});
+    res.render('admin/viewLastestIdeas', { listIdeas: last_ideas });
 }
 exports.viewSubmittedIdeas = async (req, res) => {
     let listCategory = await category.find();
     res.render('admin/viewSubmittedIdeas', { listCategory: listCategory, loginName: req.session.email })
 }
 exports.viewCategoryDetail = async (req, res) => {
-    // let id;
-    // let listComment;
-    // let nameIdea;
-    // if (req.query.id === undefined) {
-    //     id = req.body.idCategory;
-    //     listComment = await comment.find({ ideaID: req.body.idIdea })
-    //     nameIdea = await idea.findById(req.body.idIdea)
-    //     nameIdea = nameIdea.name
-    //     //console.log(nameIdea);
-    // } else {
-    //     id = req.query.id;
-    // }
-    let id = req.query.id;
+    let id;
+    let sortBy;
+    if (req.query.id === undefined) {
+        id = req.body.idCategory;
+        sortBy = req.body.sortBy;
+    } else {
+        id = req.query.id;
+    }
+    // let id = req.query.id;
     let listFiles = [];
     try {
-        let listIdeas = await idea.find({ categoryID: id }).populate('comments').sort({ "time": -1 })
+        let listIdeas = await idea.find({ categoryID: id }).populate('comments')
         let aCategory = await category.findById(id);
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
         const fs = require("fs");
-        
+        var counter = 0;
+        function callBack() {
+            if (listIdeas.length === counter) {
+                if (sortBy === 'like') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.like < a.idea.like) {
+                            return -1;
+                        }
+                        else if (b.idea.like > a.idea.like) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('like');
+                }
+                else if (sortBy === 'comment') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.comments.length < a.idea.comments.length) {
+                            return -1;
+                        }
+                        else if (b.idea.comments.length > a.idea.comments.length) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('comment');
+                }
+                else if (sortBy === 'time') {
+                    listFiles.sort((a, b) => {
+                        const A = new Date(a.idea.time)
+                        const B = new Date(b.idea.time)
+                        if (A < B) {
+                            return 1;
+                        }
+                        else if (A > B) {
+                            return -1;
+                        }
+                        else{
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('time');
+                } else {
+                    listFiles.sort((a, b) => {
+                        if (a.idea._id < b.idea._id) {
+                            return -1;
+                        }
+                        if (a.idea._id > b.idea._id) {
+                            return 1;
+                        }
+                    });
+                    console.log('id');
+                }
+            };
+        };
         listIdeas.forEach(async (i) => {
             fs.readdir(i.url, (err, files) => {
                 listFiles.push({
+                    counter: counter,
                     value: files,
                     linkValue: i.url.slice(7),
                     idea: i
                 });
+                counter = counter + 1;
+                callBack();
             });
+
         })
         //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
         res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
