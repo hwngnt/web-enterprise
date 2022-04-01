@@ -78,18 +78,6 @@ exports.viewSubmittedIdeas = async (req, res) => {
 }
 
 exports.viewCategoryDetail = async (req, res) => {
-    // let id;
-    // let listComment;
-    // let nameIdea;
-    // if (req.query.id === undefined) {
-    //     id = req.body.idCategory;
-    //     listComment = await comment.find({ ideaID: req.body.idIdea })
-    //     nameIdea = await idea.findById(req.body.idIdea)
-    //     nameIdea = nameIdea.name
-    //     //console.log(nameIdea);
-    // } else {
-    //     id = req.query.id;
-    // }
     let id = req.query.id;
     let listFiles = [];
     try {
@@ -122,7 +110,10 @@ exports.viewCategoryDetail = async (req, res) => {
                 });
             });
         })
-        //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+        listFiles.countDocuments((err, count)=>{
+            console.log(err)
+        })
+       
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
         console.log(e);
