@@ -3,6 +3,7 @@ const Staff = require('../models/staff');
 const QAcoordinator = require('../models/QAcoordinator');
 const QAmanager = require('../models/QAmanager');
 const category = require('../models/category');
+const idea = require('../models/ideas');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 exports.getAdmin = async (req, res) => {
@@ -329,7 +330,7 @@ exports.searchStaff = async (req, res) => {
     }
     res.render('admin/viewStaff', { listStaff: listStaff, loginName: req.session.email });
 }
-
+//Edit date
 exports.viewCategory = async (req, res) => {
     let listCategory = await category.find();
     res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email })
@@ -358,19 +359,79 @@ exports.doEditDate = async (req, res) => {
     }
 }
 
+//view
 exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
     let last_ideas = [];
-    if(len_ideas == 0){
+    if (len_ideas == 0) {
         last_ideas = [];
     }
-    else if(len_ideas < 5){
+    else if (len_ideas < 5) {
         last_ideas = listIdeas.reverse();
     }
-    else{
+    else {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
-    res.render('admin/viewLastestIdeas',{listIdeas: last_ideas});
+    let lastestIdeas = [];
+    const fs = require('fs');
+    await last_ideas.forEach(async (i) => {
+        fs.readdir(i.url, (err, files) => {
+            lastestIdeas.push({
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comment,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                time: i.time
+            });
+        });
+    });
+    res.render('admin/viewLastestIdeas',{listIdeas: lastestIdeas});
+}
+exports.viewSubmittedIdeas = async (req, res) => {
+    let listCategory = await category.find();
+    res.render('admin/viewSubmittedIdeas', { listCategory: listCategory, loginName: req.session.email })
+}
+exports.viewCategoryDetail = async (req, res) => {
+    // let id;
+    // let listComment;
+    // let nameIdea;
+    // if (req.query.id === undefined) {
+    //     id = req.body.idCategory;
+    //     listComment = await comment.find({ ideaID: req.body.idIdea })
+    //     nameIdea = await idea.findById(req.body.idIdea)
+    //     nameIdea = nameIdea.name
+    //     //console.log(nameIdea);
+    // } else {
+    //     id = req.query.id;
+    // }
+    let id = req.query.id;
+    let listFiles = [];
+    try {
+        let listIdeas = await idea.find({ categoryID: id }).populate('comments').sort({ "time": -1 })
+        let aCategory = await category.findById(id);
+        let tempDate = new Date();
+        let compare = tempDate > aCategory.dateEnd;
+        const fs = require("fs");
+        
+        listIdeas.forEach(async (i) => {
+            fs.readdir(i.url, (err, files) => {
+                listFiles.push({
+                    value: files,
+                    linkValue: i.url.slice(7),
+                    idea: i
+                });
+            });
+        })
+        //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+        res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+    } catch (e) {
+        console.log(e);
+        res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+    }
 }
 

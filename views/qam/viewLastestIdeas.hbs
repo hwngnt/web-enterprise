@@ -20,6 +20,7 @@
                                     <th class="max-width" style="text-align:center">URL</th>
                                     <th class="sortable" style="text-align:center">Like</th>
                                     <th style="text-align:center">Dislike</th>
+                                    <th class="sortable" style="text-align:center">Comment</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -27,9 +28,14 @@
                                 <tr>
                                     <td>{{@index}}</td>
                                     <td class="text-nowrap align-middle">{{name}}</td>
-                                    <td class="text-nowrap align-middle">{{url}}</td>
-                                    <td class="text-nowrap align-middle">{{like}}</td>
-                                    <td class="text-nowrap align-middle">{{dislike}}</td>
+                                    <td class="text-nowrap align-middle">
+                                        {{#each value}}
+                                            <p><a href="../../{{../this.linkValue}}/{{this}}">{{this}}</a></p>
+                                        {{/each}}
+                                    </td>
+                                    <td class="text-nowrap align-middle">{{n_likes}}</td>
+                                    <td class="text-nowrap align-middle">{{n_dislikes}}</td>
+                                    <td class="text-nowrap align-middle">{{comment}}</td>
                                 </tr>
                                 {{/each}}
                             </tbody>
