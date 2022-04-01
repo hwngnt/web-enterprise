@@ -5,7 +5,7 @@
 <body class="sb-nav-fixed">
     {{> staffHeader}}
     <div class="container py-5" style="margin-top: 3%; margin-left: 15%">
-        <h1 class="display-1 font-weight-bold" style="text-align:center">5 Lastest Ideas</h1>
+        <h1 class="display-1 font-weight-bold" style="text-align:center">Most Viewed Ideas</h1>
         <div class="e-panel card" style="width: 90%; margin-left: 5%">
             <div class="card-body">
                 <div class="card-title">
@@ -24,7 +24,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {{#each lastestIdeas}}
+                                {{#each mostViewedIdeas}}
                                 <tr>
                                     <td class="text-nowrap align-middle">{{time}}</td>
                                     <td class="text-nowrap align-middle">{{name}}</td>
