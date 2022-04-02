@@ -4,7 +4,7 @@
 
 <body class="sb-nav-fixed">
     {{> adminHeader}}
-    <div class="container py-5" style="position: fixed; top: 6%; margin-left: 80%;">
+    <div class="container py-5" style="position: fixed; top: 10%; margin-left: 80%;">
         <p style="margin-bottom: 0%;"><label>Sort By:</label></p>
         <div class="btn-group" role="group" aria-label="Basic example">
             <form method="post" action='/admin/viewCategoryDetail/'>
@@ -29,19 +29,19 @@
         <div class="col" style="margin: 5% 30%;">
             <p id="demo" hidden>{{listFiles.length}}</p>
             {{#each listFiles}}
-            <div class="container py-5" style="margin-bottom: 3% ; background-color: rgba(147, 160, 181, 0.481);">
+            <div class="container py-5" style="margin-bottom: 3% ; background-color: rgba(225, 230, 238, 0.481);">
                 <div class="row">
                     <div class="col">
                         <div class="row" style="margin-left: 1px;">
                             <ul class="list-group mt-99 text-white">
                                 <li class="list-group-item d-flex justify-content-between align-content-center"
                                     style="width: 700px">
-                                    <div class="d-flex flex-row"> <img
-                                            src="https://img.icons8.com/color/100/000000/folder-invoices.png" width="40"
+                                    <div class="d-flex flex-row"> 
+                                        <img src="https://img.icons8.com/color/100/000000/folder-invoices.png" width="70"
                                             height="60" />
                                         <div class="ml-1">
-                                            <h1 class="mb-0">{{idea.name}}</h1>
-                                            <ul>
+                                            <h1 >{{idea.name}}</h1> <span>- {{dateFormat idea.time "MMMM DD, YYYY HH:mm:ss"}}</span> <br>
+                                            <ul style="margin-left: -60px; margin-top: 5px;">
                                                 {{#each value}}
                                                 <li>
                                                     <p><a href="../../{{../this.linkValue}}/{{this}}">{{this}}</a></p>
@@ -54,26 +54,21 @@
                             </ul>
                         </div>
                         <div class="row">
-                            <div class="col-sm-10">
-                                <div style="font-weight: 900; font-size: 1.2rem; margin-top: 3px; border: none;">
-                                    {{idea.comments.length}} Comments
+                            <div class="col-sm-1">
+                                <div class="btn " style="font-size: 15px; border: none;" /disabled>
+                                    <i class="far fa-thumbs-up"></i>
+                                    <i>{{idea.like}}</i>
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="btn " type="submit" style="font-size: 15px; border: none;" /disabled>
+                                    <i class="far fa-thumbs-down"></i>
+                                    <i>{{idea.dislike}}</i>
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <div class="btn " style="font-size: 15px; border: none;" /disabled>
-                                            <i class="fa fa-thumbs-up"></i>
-                                            <i>{{idea.like}}</i>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="btn " type="submit" style="font-size: 15px; border: none;"
-                                            /disabled>
-                                            <i class="fa fa-thumbs-down"></i>
-                                            <i>{{idea.dislike}}</i>
-                                        </div>
-                                    </div>
+                                <div style="font-weight: 900px; font-size: 1.2rem; margin-top: 3px; border: none;">
+                                    {{idea.comments.length}} Comments
                                 </div>
                             </div>
                         </div>
@@ -88,34 +83,39 @@
                                 comments...</button>
 
                             {{#each idea.comments}}
-                            <div class="user-comment-box" style="border-bottom: 1px dotted #ccc; display:none;">
-                                <p class="pull-right"><small>
-                                        <script>
-                                            var d1 = new Date("{{this.time}}");
-                                            var d2 = Date.now();
-                                            var diff = Math.floor((d2 - d1) / 1000 / 60)
-                                            if (diff < 60) {
-                                                document.write(diff + " minutes ago");
-                                            } else {
+                            <div class="user-comment-box commented-section py-2"
+                                style="border-bottom: 1px dotted #ccc; display:none;">
+                                <div class="second py-2 px-2"> 
+                                    <p style="font-size:medium; text-align: justify;">{{this.comment}}</p>
+                                    <div class="d-flex justify-content-between py-1 pt-2">
+                                        <div><img src="/images/images.png" width="15px" height="15px">
+                                            <span class="text2"> -
+                                                <script>
+                                                    var d1 = new Date("{{this.time}}");
+                                                    var d2 = Date.now();
+                                                    var diff = Math.floor((d2 - d1) / 1000 / 60)
+                                                    if (diff < 60) {
+                                                        document.write(diff + " minutes ago");
+                                                    } else {
 
-                                                diff = Math.floor(diff / 60);
-                                                if (diff < 24) {
-                                                    document.write(diff + " hours ago");
-                                                } else {
-                                                    diff = Math.floor(diff / 24);
-                                                    if (diff < 365) {
-                                                        document.write(diff + " days ago");
+                                                        diff = Math.floor(diff / 60);
+                                                        if (diff < 24) {
+                                                            document.write(diff + " hours ago");
+                                                        } else {
+                                                            diff = Math.floor(diff / 24);
+                                                            if (diff < 365) {
+                                                                document.write(diff + " days ago");
+                                                            }
+                                                            else {
+                                                                diff = Math.floor(diff / 365);
+                                                                document.write(diff + " years ago");
+                                                            }
+                                                        }
                                                     }
-                                                    else {
-                                                        diff = Math.floor(diff / 365);
-                                                        document.write(diff + " years ago");
-                                                    }
-                                                }
-                                            }
-                                        </script>
-                                    </small></p>
-                                <div class="media-body">
-                                    <p style="margin-top: 5px; font-size:large;">{{this.comment}}</p>
+                                                </script>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             {{/each}}
@@ -129,16 +129,20 @@
 </body>
 <script>
     $(function () {
-
+        $(".see-less").hide();
         $(".see-more").click(function (e) { // click event for load more
             e.preventDefault();
             $(this).siblings(".user-comment-box:hidden").slice(-4).show(); // select next 5 hidden divs and show them
-            if ($(this).siblings(".user-comment-box:hidden").length == 0) { // check if any hidden divs
-                $(this).hide(); // if there are none left
+            if ($(this).siblings(".user-comment-box:hidden").length == 0) {
+                $(this).hide();
+            }
+            if ($(this).siblings(".user-comment-box").length != 0) {
+                $(this).siblings(".see-less").show();
             }
         });
         $(".see-less").click(function (e) { // click event for load more
             e.preventDefault();
+            $(this).hide();
             $(this).siblings(".user-comment-box").hide();
             $(this).siblings(".see-more").show();
         });
