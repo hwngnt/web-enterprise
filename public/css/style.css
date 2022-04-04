@@ -2172,9 +2172,9 @@ progress {
   transition: all 0.3s ease-in-out
 }
 
-.list-group-item:hover {
+/* .list-group-item:hover {
   transform: scaleX(1.1)
-}
+} */
 
 .check {
   opacity: 0;
