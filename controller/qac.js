@@ -7,6 +7,7 @@ exports.getQAC = async (req, res) => {
     res.render('qac/index', { loginName: req.session.email })
 }
 
+// Done
 exports.viewLastestComment = async (req, res) => {
     let listComments = await comment.find()
     let len_comments = listComments.length;
@@ -44,6 +45,7 @@ exports.viewLastestComment = async (req, res) => {
     res.render('qac/viewLastestComment', { lastComments_detail: lastComments_detail, loginName: req.session.email })
 }
 
+// Done
 exports.filterLastestComment = async (req, res) => {
     let n_last = Number(req.body.last);
     let listComments = await comment.find()
@@ -84,8 +86,9 @@ exports.filterLastestComment = async (req, res) => {
     res.render('qac/viewLastestComment', { lastComments_detail: lastComments_detail, loginName: req.session.email })
 }
 
+
 exports.mostViewIdeas = async (req, res) => {
-    let listIdeas = await idea.find();
+    let listIdeas = await idea.find().populate('comments');
     let n_ideas = listIdeas.length;
     // check if idea was added
     let visited_max = [];
@@ -114,29 +117,47 @@ exports.mostViewIdeas = async (req, res) => {
         top5Views.push(listIdeas[idx_max]);
         i++;
     }
-    // console.log(top5Views);
     let mostViewedIdeas = [];
-    await top5Views.forEach(async (i) => {
+    let counter = 0;
+    for(let i of top5Views) {
+        // let authors_name = [];
+        // let comments_contents = [];
+        // let time_comments = [];
+        // for (let commentID of i.comments) {
+        //     let objComment = await comment.findOne(commentID);
+        //     time_comments.push(objComment.time.toString().slice(0, -25));
+        //     comments_contents.push(objComment.comment);
+        //     let objAuthor = await staff.findOne(objComment.author);
+        //     authors_name.push(objAuthor.name);
+        // }
+        // console.log(comments_contents);
+        // console.log("----");
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
+                idea: i,
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
                 name: i.name,
                 comment: i.comments.length,
+                // comment_content: comments_contents,
                 idCategory: i.categoryID,
                 n_likes: i.like,
                 n_dislikes: i.dislike,
-                time: i.time.toString().slice(0, -25)
+                // authors: authors_name,
+                time: i.time.toString().slice(0, -25),
+                // time_comment: time_comments
             });
         });
-    });
+        counter = counter + 1;
+    };
+    console.log(mostViewedIdeas.length);
     res.render('qac/mostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }
 
 
 exports.filterMostViewIdeas = async function (req, res) {
-    let listIdeas = await idea.find();
+    let listIdeas = await idea.find().populate('comments');
     let n_ideas = listIdeas.length;
     let n_last = Number(req.body.last);
     let n_times = n_last;
@@ -173,6 +194,7 @@ exports.filterMostViewIdeas = async function (req, res) {
     await topViews.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
+                idea: i,
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
@@ -190,7 +212,7 @@ exports.filterMostViewIdeas = async function (req, res) {
 
 
 exports.viewLastestIdeas = async (req, res) => {
-    let listIdeas = await idea.find();
+    let listIdeas = await idea.find().populate('comments');
     let len_ideas = listIdeas.length;
     let last_ideas = [];
     if (len_ideas == 0) {
@@ -206,6 +228,7 @@ exports.viewLastestIdeas = async (req, res) => {
     await last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             lastestIdeas.push({
+                idea: i,
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
@@ -223,7 +246,7 @@ exports.viewLastestIdeas = async (req, res) => {
 
 exports.filterLastestIdeas = async (req, res) => {
     let n_last = Number(req.body.last);
-    let listIdeas = await idea.find();
+    let listIdeas = await idea.find().populate('comments');
     let len_ideas = listIdeas.length;
     if (len_ideas < n_last) {
         n_last = len_ideas;
@@ -242,6 +265,7 @@ exports.filterLastestIdeas = async (req, res) => {
     await last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             lastestIdeas.push({
+                idea: i,
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),

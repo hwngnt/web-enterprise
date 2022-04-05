@@ -120,9 +120,35 @@
                                 style="border-bottom: 1px dotted #ccc;">
                                 <div class="second py-2 px-2">
                                     <p style="font-size:medium; text-align: justify;">
-                                        <b>{{author}}</b>
+                                        <b>{{author}} - </b> 
+                                        <script>
+                                            var d1 = new Date("{{time}}");
+                                            var d2 = Date.now();
+                                            var diff = Math.floor((d2 - d1) / 1000 / 60)
+                                            if (diff < 60) {
+                                                document.write(diff + " minutes ago");
+                                            } else {
+
+                                                diff = Math.floor(diff / 60);
+                                                if (diff < 24) {
+                                                    document.write(diff + " hours ago");
+                                                } else {
+                                                    diff = Math.floor(diff / 24);
+                                                    if (diff < 365) {
+                                                        document.write(diff + " days ago");
+                                                    }
+                                                    else {
+                                                        diff = Math.floor(diff / 365);
+                                                        document.write(diff + " years ago");
+                                                    }
+                                                }
+                                            }
+                                        </script>
                                         <br>
-                                        {{comment_content}}
+                                        <span style="font-size: 14px">
+                                            {{comment_content}}
+                                        </span>
+                                        
                                     </p>
                                 </div>
                             </div>
