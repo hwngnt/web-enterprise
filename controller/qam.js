@@ -83,11 +83,113 @@ exports.getViewCategory = async (req, res) => {
 }
 
 exports.getCategoryDetail = async (req, res) => {
-    let id = req.query.id;
-    let aCategory = await category.findById(id);
-    let listIdeas = await idea.find({categoryID: id})
-    console.log(listIdeas)
-    res.render('qam/qamViewCategoryDetail', { aCategory: aCategory, listIdeas: listIdeas, loginName: req.session.email })
+    let id;
+    let sortBy;
+    if (req.query.id === undefined) {
+        id = req.body.idCategory;
+        sortBy = req.body.sortBy;
+    } else {
+        id = req.query.id;
+    }
+    // let id = req.query.id;
+    let listFiles = [];
+    try {
+        let listIdeas = await idea.find({ categoryID: id }).populate('comments')
+        let aCategory = await category.findById(id);
+        let tempDate = new Date();
+        let compare = tempDate > aCategory.dateEnd;
+        const fs = require("fs");
+        var counter = 0;
+        function callBack() {
+            if (listIdeas.length === counter) {
+                if (sortBy === 'like') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.like < a.idea.like) {
+                            return -1;
+                        }
+                        else if (b.idea.like > a.idea.like) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('like');
+                }
+                else if (sortBy === 'comment') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.comments.length < a.idea.comments.length) {
+                            return -1;
+                        }
+                        else if (b.idea.comments.length > a.idea.comments.length) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('comment');
+                }
+                else if (sortBy === 'time') {
+                    listFiles.sort((a, b) => {
+                        const A = new Date(a.idea.time)
+                        const B = new Date(b.idea.time)
+                        if (A < B) {
+                            return 1;
+                        }
+                        else if (A > B) {
+                            return -1;
+                        }
+                        else{
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('time');
+                } else {
+                    listFiles.sort((a, b) => {
+                        if (a.idea._id < b.idea._id) {
+                            return -1;
+                        }
+                        if (a.idea._id > b.idea._id) {
+                            return 1;
+                        }
+                    });
+                    console.log('id');
+                }
+            };
+        };
+        listIdeas.forEach(async (i) => {
+            fs.readdir(i.url, (err, files) => {
+                listFiles.push({
+                    counter: counter,
+                    value: files,
+                    linkValue: i.url.slice(7),
+                    idea: i
+                });
+                counter = counter + 1;
+                callBack();
+            });
+
+        })
+        //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+        res.render('qam/qamViewCategoryDetail', { idCategory: id, listFiles: listFiles, aCategory: aCategory, compare: compare, loginName: req.session.email });
+    } catch (e) {
+        console.log(e);
+        res.render('qam/qamViewCategoryDetail', { idCategory: id, listFiles: listFiles, aCategory: aCategory, compare: compare, loginName: req.session.email });
+    }
 }
 
 exports.deleteCategory = async (req, res) => {
@@ -103,6 +205,7 @@ exports.deleteCategory = async (req, res) => {
 
 
 exports.viewLastestIdeas = async (req, res) => {
+    const fs = require("fs");
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
     let last_ideas = [];
@@ -116,7 +219,6 @@ exports.viewLastestIdeas = async (req, res) => {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
     let lastestIdeas = [];
-    const fs = require('fs');
     await last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             lastestIdeas.push({
@@ -132,7 +234,7 @@ exports.viewLastestIdeas = async (req, res) => {
             });
         });
     });
-    res.render('qam/viewLastestIdeas',{listIdeas: lastestIdeas});
+    res.render('qam/viewLastestIdeas', { lastestIdeas: lastestIdeas, loginName: req.session.email });
 }
 
 exports.editCategory = async (req,  res) => {
@@ -160,26 +262,27 @@ exports.updateCategory = async (req, res) => {
 }
 
 exports.getMostViewed = async (req, res) => {
+    const fs = require("fs");
     let listIdeas = await idea.find();
     let n_ideas = listIdeas.length;
     let visited_max = [];
-    for(let m = 0; m<n_ideas; m++) {
+    for (let m = 0; m < n_ideas; m++) {
         visited_max.push(0);
     }
     let countViews = [];
-    console.log(listIdeas);
-    for(let idea of listIdeas) {
-        countViews.push(idea.like + idea.dislike + idea.comment);
+    // console.log(listIdeas);
+    for (let idea of listIdeas) {
+        countViews.push(idea.like + idea.dislike + idea.comments.length);
     }
-    console.log(countViews);
+    // console.log(countViews);
     let top5Views = [];
     let i = 0;
-    while(i < 5){
+    while (i < 5) {
         let fake_max = -1;
         let idx_max = -1;
         let j = 0;
-        while(j < n_ideas ){
-            if(visited_max[j]==0 && countViews[j] >= fake_max){
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
                 fake_max = countViews[j];
                 idx_max = j;
             }
@@ -189,16 +292,17 @@ exports.getMostViewed = async (req, res) => {
         top5Views.push(listIdeas[idx_max]);
         i++;
     }
+    // console.log(top5Views);
     let mostViewedIdeas = [];
-    const fs = require('fs');
     await top5Views.forEach(async (i) => {
+        console.log(i);
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
                 name: i.name,
-                comment: i.comment,
+                comment: i.comments.length,
                 idCategory: i.categoryID,
                 n_likes: i.like,
                 n_dislikes: i.dislike,
