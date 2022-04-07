@@ -2,6 +2,9 @@ const Account = require('../models/user');
 const bcrypt = require('bcryptjs');
 const category = require('../models/category');
 const idea = require('../models/ideas');
+const AdmZip = require('adm-zip');
+
+const zipdir = require('zip-dir');
 
 exports.getQAM = async (req, res) => {
     res.render('qam/qam_index', { loginName: req.session.email })
@@ -118,7 +121,7 @@ exports.getCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('like');
+                    // console.log('like');
                 }
                 else if (sortBy === 'comment') {
                     listFiles.sort((a, b) => {
@@ -136,7 +139,7 @@ exports.getCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('comment');
+                    // console.log('comment');
                 }
                 else if (sortBy === 'time') {
                     listFiles.sort((a, b) => {
@@ -157,7 +160,7 @@ exports.getCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('time');
+                    // console.log('time');
                 } else {
                     listFiles.sort((a, b) => {
                         if (a.idea._id < b.idea._id) {
@@ -167,7 +170,7 @@ exports.getCategoryDetail = async (req, res) => {
                             return 1;
                         }
                     });
-                    console.log('id');
+                    // console.log('id');
                 }
             };
         };
@@ -179,6 +182,7 @@ exports.getCategoryDetail = async (req, res) => {
                     linkValue: i.url.slice(7),
                     idea: i
                 });
+                // console.log(listFiles)
                 counter = counter + 1;
                 callBack();
             });
@@ -311,4 +315,23 @@ exports.getMostViewed = async (req, res) => {
         });
     });
     res.render('qam/qamMostViewed', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+}
+
+exports.downloadZip = async (req, res) => {
+    const fs = require("fs");
+    let id = req.query.id;
+    let aCategory = await category.findById(id);
+    let folderpath = (__dirname.slice(0,-10) + aCategory.url)
+    var zp = new AdmZip();
+    zp.addLocalFolder(folderpath);
+    // here we assigned the name to our downloaded file!
+    const file_after_download = 'downloaded_file.zip';
+  
+    // toBuffer() is used to read the data and save it
+    // for downloading process!
+    const data = zp.toBuffer();
+    res.set('Content-Type','application/octet-stream');
+    res.set('Content-Disposition',`attachment; filename=${file_after_download}`);
+    res.set('Content-Length',data.length);
+    res.send(data);
 }

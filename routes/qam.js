@@ -17,5 +17,6 @@ router.get('/qam/viewLastestIdeas', qamController.viewLastestIdeas);
 
 router.get('/qam/qamEditCategory', qamController.editCategory);
 router.post('/qam/doEditCategory', qamController.updateCategory);
-router.get('/qam/viewMostViewed', qamController.getMostViewed); 
+router.get('/qam/viewMostViewed', qamController.getMostViewed);
+router.get('/qam/downloadZip', qamController.downloadZip);
 module.exports = router;

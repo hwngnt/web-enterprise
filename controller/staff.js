@@ -110,9 +110,9 @@ exports.viewCategoryDetail = async (req, res) => {
                 });
             });
         })
-        listFiles.countDocuments((err, count)=>{
-            console.log(err)
-        })
+        // listFiles.countDocuments((err, count)=>{
+        //     console.log(err)
+        // })
        
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
