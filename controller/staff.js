@@ -161,11 +161,21 @@ exports.viewCategoryDetail = async (req, res) => {
 exports.doComment = async (req, res) => {
     let id = req.body.idCategory;
     //console.log(req.body.idCategory);
-    newComment = new comment({
-        ideaID: req.body.idIdea,
-        author: req.session.user._id,
-        comment: req.body.comment,
-    });
+    if(req.body.annonymously != undefined){
+        newComment = new comment({
+            ideaID: req.body.idIdea,
+            author: req.session.user._id,
+            comment: req.body.comment,
+            annonymously : true
+        });
+    }else{
+        newComment = new comment({
+            ideaID: req.body.idIdea,
+            author: req.session.user._id,
+            comment: req.body.comment,
+        });
+    }
+    
     newComment = await newComment.save();
     let aIdea = await idea.findById(req.body.idIdea)
     aIdea.comments.push(newComment);
