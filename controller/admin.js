@@ -240,7 +240,8 @@ exports.doAddStaff = async (req, res) => {
             email: req.body.email,
             dateOfBirth: new Date(req.body.date),
             address: req.body.address,
-            img: req.file.filename
+            img: req.file.filename,
+            type: req.body.department
         })
     }
     else {
@@ -248,7 +249,8 @@ exports.doAddStaff = async (req, res) => {
             name: req.body.name,
             email: req.body.email,
             dateOfBirth: new Date(req.body.date),
-            address: req.body.address
+            address: req.body.address,
+            type: req.body.department
         })
     }
     let newAccount = new Account({
@@ -290,6 +292,7 @@ exports.doEditStaff = async (req, res) => {
         aStaff.name = req.body.name;
         aStaff.dateOfBirth = new Date(req.body.date);
         aStaff.address = req.body.address;
+        aStaff.type = req.body.department
         aStaff = await aStaff.save();
         res.redirect('/admin/viewStaff');
     }
