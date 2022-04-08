@@ -35,6 +35,10 @@ const ideas = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'comments'
     }],
+    annonymously: {
+        type: Boolean,
+        require : false
+    },
 });
 
 module.exports = mongoose.model('ideas', ideas);

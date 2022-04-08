@@ -16,8 +16,7 @@ const accSchema = new mongoose.Schema({
     },
     ideaID: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'ideas',
-        require : true
+        ref: 'ideas'
     }
 });
 

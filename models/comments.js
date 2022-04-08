@@ -21,7 +21,7 @@ const comments = new mongoose.Schema({
     },
     annonymously: {
         type: Boolean,
-        require : true
+        require : false
     },
 });
 
