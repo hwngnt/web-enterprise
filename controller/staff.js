@@ -133,16 +133,10 @@ exports.viewCategoryDetail = async (req, res) => {
                 });
             });
         })
-<<<<<<< HEAD
         listFiles.countDocuments((err, count) => {
             console.log(err)
         })
 
-=======
-        // listFiles.countDocuments((err, count)=>{
-        //     console.log(err)
-        // })
->>>>>>> b5e281e82cf6dec21b18fb2f4efcf63650ccac96
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
         console.log(e);
@@ -321,10 +315,6 @@ exports.viewLatestComments = async (req, res) => {
     let listComments = await comment.find()
     let len_comments = listComments.length;
     let last_comments = [];
-<<<<<<< HEAD
-    
-=======
->>>>>>> b5e281e82cf6dec21b18fb2f4efcf63650ccac96
     if (len_comments == 0) {
         last_comments = [];
     }
