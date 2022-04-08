@@ -20,36 +20,43 @@ exports.addIdea = async (req, res) => {
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
-
+    req.body.name = req.body.name.replace(" ", "_");
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
-    // console.log(aCategory);
     let path = aCategory.url + '/' + req.body.name;
-    // console.log(req.session.user._id);
-    await fs.access(path, (error) => {
-        if (error) {
-            fs.mkdir(path, (error) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("New Directory created successfully !!");
-                    let newIdea = new idea({
-                        categoryID: aCategory._id,
-                        name: req.body.name,
-                        author: req.session.user._id,
-                        url: path,
-                        like: 0,
-                        dislike: 0,
-                        comment: 0
-                    })
-                    newIdea = newIdea.save();
-                }
-            });
-        } else {
-            console.log("Given Directory already exists !!");
-        }
-    });
-    res.render('staff/addFileToIdea', { idCategory: idCategory, path: path, loginName: req.session.email })
+    let count = 0;
+    function loop() {
+        console.log(path);
+        fs.access(path, (error) => {
+            if (error) {
+                fs.mkdir(path, (error) => {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        let newIdea = new idea({
+                            categoryID: aCategory._id,
+                            name: req.body.name,
+                            author: req.session.user._id,
+                            url: path,
+                            like: 0,
+                            dislike: 0,
+                            comment: 0
+                        })
+                        newIdea = newIdea.save();
+                        console.log("New Directory created successfully !!");
+                    }
+                });
+                res.render('staff/addFileToIdea', { idCategory: idCategory, path: path, loginName: req.session.email });
+            } else {
+                console.log("Given Directory already exists !!");
+                count += 1;
+                path = path + "_(" + count + ")";
+                req.body.name = req.body.name + "_(" + count + ")";
+                loop();
+            }
+        });
+    };
+    await loop();
 }
 exports.doAddFile = async (req, res) => {
     let id = req.body.idCategory;
@@ -84,7 +91,7 @@ exports.viewCategoryDetail = async (req, res) => {
         let listIdeas = await idea.find({ categoryID: id }).populate('comments')
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
-        let listLikes = await likes.find({ staffID: { $all: staff._id} });
+        let listLikes = await likes.find({ staffID: { $all: staff._id } });
         let listDislikes = await dislikes.find({ staffID: { $all: staff._id } });;
         let likedIDs = [];
         for (let like of listLikes) {
@@ -98,7 +105,7 @@ exports.viewCategoryDetail = async (req, res) => {
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
         const fs = require("fs");
-        
+
         await listIdeas.forEach(async (i) => {
             fs.readdir(i.url, (err, files) => {
                 listFiles.push({
@@ -113,7 +120,6 @@ exports.viewCategoryDetail = async (req, res) => {
         // listFiles.countDocuments((err, count)=>{
         //     console.log(err)
         // })
-       
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
         console.log(e);
@@ -133,7 +139,7 @@ exports.doComment = async (req, res) => {
     let aIdea = await idea.findById(req.body.idIdea)
     aIdea.comments.push(newComment);
     aIdea = await aIdea.save();
-    
+
     //console.log(newComment.comment);
     res.redirect('../viewCategoryDetail?id=' + id);
 }
@@ -259,16 +265,16 @@ exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
     let last_ideas = [];
-    if(len_ideas == 0){
+    if (len_ideas == 0) {
         last_ideas = [];
     }
-    else if(len_ideas < 5){
+    else if (len_ideas < 5) {
         last_ideas = listIdeas.reverse();
     }
-    else{
+    else {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
-    
+
     let lastestIdeas = [];
     await last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
@@ -285,47 +291,47 @@ exports.viewLastestIdeas = async (req, res) => {
             });
         });
     });
-    res.render('staff/viewLastestIdeas',{listIdeas: last_ideas, lastestIdeas: lastestIdeas, loginName: req.session.email});
+    res.render('staff/viewLastestIdeas', { listIdeas: last_ideas, lastestIdeas: lastestIdeas, loginName: req.session.email });
 }
 
 exports.viewLatestComment = async (req, res) => {
     let listComments = await comment.find()
     let len_comments = listComments.length;
     let last_comments = [];
-    if(len_comments == 0){
+    if (len_comments == 0) {
         last_comments = [];
     }
-    else if(len_comments < 5){
+    else if (len_comments < 5) {
         last_comments = listComments.reverse();
     }
-    else{
+    else {
         last_comments = listComments.slice(-5, len_comments).reverse();
     }
 
-    res.render('staff/viewLatestComments',{listComments: last_comments, loginName: req.session.email});
+    res.render('staff/viewLatestComments', { listComments: last_comments, loginName: req.session.email });
 }
 
 exports.viewMostViewedIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let n_ideas = listIdeas.length;
     let visited_max = [];
-    for(let m = 0; m<n_ideas; m++) {
+    for (let m = 0; m < n_ideas; m++) {
         visited_max.push(0);
     }
     let countViews = [];
     console.log(listIdeas);
-    for(let idea of listIdeas) {
+    for (let idea of listIdeas) {
         countViews.push(idea.like + idea.dislike + idea.comment);
     }
     console.log(countViews);
     let top5Views = [];
     let i = 0;
-    while(i < 5){
+    while (i < 5) {
         let fake_max = -1;
         let idx_max = -1;
         let j = 0;
-        while(j < n_ideas ){
-            if(visited_max[j]==0 && countViews[j] >= fake_max){
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
                 fake_max = countViews[j];
                 idx_max = j;
             }
