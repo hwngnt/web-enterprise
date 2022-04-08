@@ -37,7 +37,8 @@ const ideas = new mongoose.Schema({
     }],
     annonymously: {
         type: Boolean,
-        require : false
+        require : true,
+        default: false
     },
 });
 

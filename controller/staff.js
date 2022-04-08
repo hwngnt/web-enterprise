@@ -33,15 +33,29 @@ exports.doAddIdea = async (req, res) => {
                     if (error) {
                         console.log(error);
                     } else {
-                        let newIdea = new idea({
-                            categoryID: aCategory._id,
-                            name: req.body.name,
-                            author: req.session.user._id,
-                            url: path,
-                            like: 0,
-                            dislike: 0,
-                            comment: 0
-                        })
+                        let newIdea;
+                        if(req.body.annonymously != undefined){
+                            newIdea = new idea({
+                                categoryID: aCategory._id,
+                                name: req.body.name,
+                                author: req.session.user._id,
+                                url: path,
+                                like: 0,
+                                dislike: 0,
+                                comment: 0,
+                                annonymously: true
+                            })
+                        }else{
+                            newIdea = new idea({
+                                categoryID: aCategory._id,
+                                name: req.body.name,
+                                author: req.session.user._id,
+                                url: path,
+                                like: 0,
+                                dislike: 0,
+                                comment: 0
+                            })
+                        }
                         newIdea = newIdea.save();
                         console.log("New Directory created successfully !!");
                     }
