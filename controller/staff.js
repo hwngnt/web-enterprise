@@ -56,6 +56,22 @@ exports.doAddFile = async (req, res) => {
     res.redirect('viewCategoryDetail?id=' + id)
 }
 
+exports.searchCategory = async (req, res) => {
+    const searchText = req.body.keyword;
+    let listCategory;
+    let checkAlphaName = validation.checkAlphabet(searchText);
+    let checkEmpty = validation.checkEmpty(searchText);
+    const searchCondition = new RegExp(searchText, 'i');
+
+    if (!checkEmpty) {
+        res.redirect('/staff/viewSubmittedIdeas');
+    }
+    else if (checkAlphaName) {
+        listCategory = await category.find({ name: searchCondition });
+    }
+    res.render('staff/viewSubmittedIdeas', { listCategory: listCategory, loginName: req.session.email });
+}
+
 exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
@@ -84,7 +100,7 @@ exports.viewCategoryDetail = async (req, res) => {
         let listIdeas = await idea.find({ categoryID: id }).populate('comments')
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
-        let listLikes = await likes.find({ staffID: { $all: staff._id} });
+        let listLikes = await likes.find({ staffID: { $all: staff._id } });
         let listDislikes = await dislikes.find({ staffID: { $all: staff._id } });;
         let likedIDs = [];
         for (let like of listLikes) {
@@ -98,7 +114,7 @@ exports.viewCategoryDetail = async (req, res) => {
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
         const fs = require("fs");
-        
+
         await listIdeas.forEach(async (i) => {
             fs.readdir(i.url, (err, files) => {
                 listFiles.push({
@@ -110,10 +126,10 @@ exports.viewCategoryDetail = async (req, res) => {
                 });
             });
         })
-        listFiles.countDocuments((err, count)=>{
+        listFiles.countDocuments((err, count) => {
             console.log(err)
         })
-       
+
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
         console.log(e);
@@ -133,7 +149,7 @@ exports.doComment = async (req, res) => {
     let aIdea = await idea.findById(req.body.idIdea)
     aIdea.comments.push(newComment);
     aIdea = await aIdea.save();
-    
+
     //console.log(newComment.comment);
     res.redirect('../viewCategoryDetail?id=' + id);
 }
@@ -259,16 +275,16 @@ exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let len_ideas = listIdeas.length;
     let last_ideas = [];
-    if(len_ideas == 0){
+    if (len_ideas == 0) {
         last_ideas = [];
     }
-    else if(len_ideas < 5){
+    else if (len_ideas < 5) {
         last_ideas = listIdeas.reverse();
     }
-    else{
+    else {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
-    
+
     let lastestIdeas = [];
     await last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
@@ -285,47 +301,67 @@ exports.viewLastestIdeas = async (req, res) => {
             });
         });
     });
-    res.render('staff/viewLastestIdeas',{listIdeas: last_ideas, lastestIdeas: lastestIdeas, loginName: req.session.email});
+    res.render('staff/viewLastestIdeas', { listIdeas: last_ideas, lastestIdeas: lastestIdeas, loginName: req.session.email });
 }
 
-exports.viewLatestComment = async (req, res) => {
+exports.viewLatestComments = async (req, res) => {
     let listComments = await comment.find()
     let len_comments = listComments.length;
     let last_comments = [];
-    if(len_comments == 0){
+    
+    if (len_comments == 0) {
         last_comments = [];
     }
-    else if(len_comments < 5){
+    else if (len_comments < 5) {
         last_comments = listComments.reverse();
     }
-    else{
+    else {
         last_comments = listComments.slice(-5, len_comments).reverse();
     }
-
-    res.render('staff/viewLatestComments',{listComments: last_comments, loginName: req.session.email});
+    let lastComments_detail = [];
+    for(let comment of last_comments){
+        // console.log(comment.ideaID);
+        let objIdea = await idea.findOne(comment.ideadID);
+        // console.log(objIdea);
+        let objAuthor = await Staff.findOne(comment.author);
+        fs.readdir(objIdea.url, (err, files) => {
+            lastComments_detail.push({
+                value: files,
+                linkValue: objIdea.url.slice(7),
+                name: objIdea.name,
+                comment_len: objIdea.comments.length,
+                comment_content: comment.comment,
+                n_likes: objIdea.like,
+                n_dislikes: objIdea.dislike,
+                author: objAuthor.name,
+                time: comment.time.toString().slice(0, -25)
+            })
+        });
+    }
+    res.render('staff/viewLatestComments', { lastComments_detail: lastComments_detail, loginName: req.session.email })
 }
 
 exports.viewMostViewedIdeas = async (req, res) => {
     let listIdeas = await idea.find();
     let n_ideas = listIdeas.length;
     let visited_max = [];
-    for(let m = 0; m<n_ideas; m++) {
+    for (let m = 0; m < n_ideas; m++) {
         visited_max.push(0);
     }
     let countViews = [];
     console.log(listIdeas);
-    for(let idea of listIdeas) {
+    for (let idea of listIdeas) {
         countViews.push(idea.like + idea.dislike + idea.comment);
     }
     console.log(countViews);
     let top5Views = [];
     let i = 0;
-    while(i < 5){
+    while (i < 5) {
         let fake_max = -1;
         let idx_max = -1;
         let j = 0;
-        while(j < n_ideas ){
-            if(visited_max[j]==0 && countViews[j] >= fake_max){
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
                 fake_max = countViews[j];
                 idx_max = j;
             }
@@ -352,4 +388,165 @@ exports.viewMostViewedIdeas = async (req, res) => {
         });
     });
     res.render('staff/viewMostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+}
+
+exports.getAddCategory = async (req, res) => {
+    res.render('staff/addCategory', { loginName: req.session.email })
+}
+
+exports.doAddCategory = async (req, res) => {
+    const fs = require("fs");
+    let date = new Date();
+    let newDate = new Date();
+    if (date.getMonth() == '1' || '3' || '5' || '7' || '8' || '10' || '12') {
+        if (date.getDate() + 14 > 31) {
+            let tempDate = 14 - (31 - date.getDate() + 1);
+            let tempMonth = date.getMonth() + 1;
+            newDate.setDate(tempDate);
+            newDate.setMonth(tempMonth);
+        }
+        else {
+            newDate.setDate(date.getDate() + 14)
+        }
+    }
+    else if (date.getMonth() == '4' || '6' || '9' || '11') {
+        if (date.getDate() + 14 > 30) {
+            let tempDate = 14 - (30 - date.getDate() + 1);
+            let tempMonth = date.getMonth() + 1;
+            newDate.setDate(tempDate);
+            newDate.setMonth(tempMonth);
+        }
+        else {
+            newDate.setDate(date.getDate() + 14)
+        }
+    }
+    else if (date.getMonth() == '2') {
+        if (date.getDate() + 14 > 28) {
+            let tempDate = 14 - (28 - date.getDate() + 1);
+            let tempMonth = date.getMonth() + 1;
+            newDate.setDate(tempDate);
+            newDate.setMonth(tempMonth);
+        }
+        else {
+            newDate.setDate(date.getDate() + 14)
+        }
+    }
+    console.log(req.body.name)
+    let newCategory = new category({
+        name: req.body.name,
+        description: req.body.description,
+        dateStart: date,
+        dateEnd: newDate,
+        url: 'public/folder/' + req.body.name
+    })
+    fs.access('public/folder/' + req.body.name, (error) => {
+        // To check if the given directory 
+        // already exists or not
+        if (error) {
+            // If current directory does not exist
+            // then create it
+            fs.mkdir('public/folder/' + req.body.name, (error) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log("New Directory created successfully !!");
+                }
+            });
+        } else {
+            console.log("Given Directory already exists !!");
+        }
+    });
+    newCategory = await newCategory.save();
+    res.redirect('/staff/viewSubmittedIdeas');
+}
+
+exports.viewMostViewedIdeas = async (req, res) => {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    // check if idea was added
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    // count total 'view = like+dis_like+comment'
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.like + idea.dislike + idea.comments.length);
+    }
+    let top5Views = [];
+    let i = 0;
+    while (i < 5) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        top5Views.push(listIdeas[idx_max]);
+        i++;
+    }
+    let mostViewedIdeas = [];
+    let counter = 0;
+    for (let i of top5Views) {
+        // let authors_name = [];
+        // let comments_contents = [];
+        // let time_comments = [];
+        // for (let commentID of i.comments) {
+        //     let objComment = await comment.findOne(commentID);
+        //     time_comments.push(objComment.time.toString().slice(0, -25));
+        //     comments_contents.push(objComment.comment);
+        //     let objAuthor = await staff.findOne(objComment.author);
+        //     authors_name.push(objAuthor.name);
+        // }
+        // console.log(comments_contents);
+        // console.log("----");
+        fs.readdir(i.url, (err, files) => {
+            mostViewedIdeas.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                // comment_content: comments_contents,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                // authors: authors_name,
+                time: i.time.toString().slice(0, -25),
+                // time_comment: time_comments
+            });
+        });
+        counter = counter + 1;
+    };
+    console.log(mostViewedIdeas.length);
+    res.render('staff/viewMostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+}
+
+exports.paginations = async (req, res) => {
+    const pageSize = 5;
+    var page = req.query.page;
+    if (page) {
+        page = parseInt(page)
+        if (page < 1) {
+            page = 1;
+        }
+        skip = (page - 1) * pageSize;
+        let listCategory = await category.find({}).skip(skip).limit(pageSize).then(data => {
+            res.json(data);
+        })
+        .catch((err) => {
+            res.status(500).json('loi');
+        });
+        res.render('staff/testPagination', { listCategory: listCategory, loginName: req.session.email })
+    }else{
+        let listCategory = await category.find({})
+        ;
+        res.render('staff/testPagination', { listCategory: listCategory, loginName: req.session.email })
+    }
 }
