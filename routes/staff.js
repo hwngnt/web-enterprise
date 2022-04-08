@@ -27,16 +27,20 @@ router.get('/staff/addIdea',isStaff, staffController.addIdea);
 router.post('/staff/doAddIdea',isStaff, staffController.doAddIdea);
 router.post('/staff/doAddFile',isStaff, uploadQAmanager.any('ideas'), staffController.doAddFile);
 router.get('/staff/viewLastestIdeas', staffController.viewLastestIdeas);
+router.get('/staff/addCategory', staffController.getAddCategory);
+router.post('/staff/doAddCategory', staffController.doAddCategory);
+router.get('/staff/viewMostViewedIdeas', staffController.viewMostViewedIdeas)
 
 router.get('/staff/viewSubmittedIdeas', staffController.viewSubmittedIdeas);
 router.get('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
 router.post('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
 router.post('/staff/viewCategoryDetail/Comment', staffController.doComment);
-
+router.post('/staff/searchCategory', staffController.searchCategory);
 
 router.post('/staff/addLike', staffController.addLike);
 router.post('/staff/addDislike', staffController.addDislike);
 
-router.get('/staff/viewLatestComments', staffController.viewLatestComment);
+router.get('/staff/viewLatestComments', staffController.viewLatestComments);
 router.get('/staff/viewMostViewedIdeas', staffController.viewMostViewedIdeas)
+router.get('staff/testPagination', staffController.paginations)
 module.exports = router;
