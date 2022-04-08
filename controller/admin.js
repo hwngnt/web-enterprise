@@ -7,33 +7,6 @@ const idea = require('../models/ideas');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 exports.getAdmin = async (req, res) => {
-    // const students = [
-    //     { name: "Alex",   grade: 15 },
-    //     { name: "Devlin", grade: 15 },
-    //     { name: "Eagle",  grade: 13 },
-    //     { name: "Sam",    grade: 14 }
-    //   ];
-    //   students.sort((firstItem, secondItem) => firstItem.grade - secondItem.grade);
-    // const students = [
-    //     { name: "Alex", grade: 15 },
-    //     { name: "Eagle", grade: 13 },
-    //     { name: "Devlin", grade: 15 },
-    //     { name: "Sam", grade: 14 }
-    // ];
-    // students.sort(function (a, b) {
-    //     const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-    //     const nameB = b.name.toUpperCase(); // ignore upper and lowercase
-    //     if (nameA < nameB) {
-    //         return -1;
-    //     }
-    //     if (nameA > nameB) {
-    //         return 1;
-    //     }
-
-    //     // names must be equal
-    //     return 0;
-    // });
-    // console.log(students)
     res.render('admin/admin', { loginName: req.session.email })
 }
 
@@ -387,21 +360,7 @@ exports.doEditDate = async (req, res) => {
 }
 
 //view
-exports.viewLastestIdeas = async (req, res) => {
-    let listIdeas = await idea.find();
-    let len_ideas = listIdeas.length;
-    let last_ideas = [];
-    if (len_ideas == 0) {
-        last_ideas = [];
-    }
-    else if (len_ideas < 5) {
-        last_ideas = listIdeas.reverse();
-    }
-    else {
-        last_ideas = listIdeas.slice(-5, len_ideas).reverse();
-    }
-    res.render('admin/viewLastestIdeas', { listIdeas: last_ideas });
-}
+
 exports.viewSubmittedIdeas = async (req, res) => {
     let listCategory = await category.find();
     res.render('admin/viewSubmittedIdeas', { listCategory: listCategory, loginName: req.session.email })
@@ -506,7 +465,6 @@ exports.viewCategoryDetail = async (req, res) => {
                 counter = counter + 1;
                 callBack();
             });
-
         })
         //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
         res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });

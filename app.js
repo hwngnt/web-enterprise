@@ -25,6 +25,7 @@ hbs.registerHelper('ifCond', function (v1, v2, options) {
     }
     return options.inverse(this);
 });
+
 app.use(express.static(__dirname + '/public'));
 app.get('/', (req, res) => {
     res.render('index')

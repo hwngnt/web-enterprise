@@ -19,4 +19,10 @@ router.get('/qam/qamEditCategory', qamController.editCategory);
 router.post('/qam/doEditCategory', qamController.updateCategory);
 router.get('/qam/viewMostViewed', qamController.getMostViewed);
 router.get('/qam/downloadZip', qamController.downloadZip);
+
+router.get('/qam/numberOfIdeasByYear', qamController.numberOfIdeasByYear);
+router.post('/qam/numberOfIdeasByYear', qamController.numberOfIdeasByYear);
+router.get('/qam/numberOfIdeasByYear2', qamController.numberOfIdeasByYear2);
+router.post('/qam/numberOfIdeasByYear2', qamController.numberOfIdeasByYear2);
+router.get('/qam/numberOfPeople', qamController.numberOfPeople);
 module.exports = router;

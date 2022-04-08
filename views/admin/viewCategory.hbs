@@ -5,7 +5,7 @@
 <body class="sb-nav-fixed">
     {{> adminHeader}}
 
-    <div class="container py-5" style="margin-top: 3%; margin-left: 15%">
+    <div class="container py-5" style="margin-top: 4%; margin-left: 15%">
             <div class="form-group">
                 <label style="margin-left: 25%;">Search by Name:</label>
                 <div class="input-group">
@@ -36,7 +36,9 @@
                             <tbody>
                                 {{#each listCategory}}
                                 <tr>
-                                    <td class="text-nowrap align-middle">{{name}}</td>
+                                    <td class="text-nowrap align-middle">
+                                        <a href="/admin/viewCategoryDetail?id={{_id}}">{{name}}</a>
+                                    </td>
                                     <td class="text-nowrap align-middle">{{description}}</td>
                                     <td class="text-nowrap align-middle"><span>{{dateFormat dateStart
                                             "YYYY-MM-DD"}}</span></td>
