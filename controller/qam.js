@@ -2,6 +2,9 @@ const Account = require('../models/user');
 const bcrypt = require('bcryptjs');
 const category = require('../models/category');
 const idea = require('../models/ideas');
+const AdmZip = require('adm-zip');
+
+const zipdir = require('zip-dir');
 
 exports.getQAM = async (req, res) => {
     res.render('qam/qam_index', { loginName: req.session.email })
@@ -118,7 +121,7 @@ exports.getCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('like');
+                    // console.log('like');
                 }
                 else if (sortBy === 'comment') {
                     listFiles.sort((a, b) => {
@@ -136,7 +139,7 @@ exports.getCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('comment');
+                    // console.log('comment');
                 }
                 else if (sortBy === 'time') {
                     listFiles.sort((a, b) => {
@@ -148,7 +151,7 @@ exports.getCategoryDetail = async (req, res) => {
                         else if (A > B) {
                             return -1;
                         }
-                        else{
+                        else {
                             if (a.idea._id < b.idea._id) {
                                 return -1;
                             }
@@ -157,7 +160,7 @@ exports.getCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('time');
+                    // console.log('time');
                 } else {
                     listFiles.sort((a, b) => {
                         if (a.idea._id < b.idea._id) {
@@ -167,7 +170,7 @@ exports.getCategoryDetail = async (req, res) => {
                             return 1;
                         }
                     });
-                    console.log('id');
+                    // console.log('id');
                 }
             };
         };
@@ -179,6 +182,7 @@ exports.getCategoryDetail = async (req, res) => {
                     linkValue: i.url.slice(7),
                     idea: i
                 });
+                // console.log(listFiles)
                 counter = counter + 1;
                 callBack();
             });
@@ -196,7 +200,7 @@ exports.deleteCategory = async (req, res) => {
     let id = req.query.id;
     let dir = await category.findById(id);
     category.findByIdAndRemove(id).then(data = {});
-    const path = 'public/folder/'+dir.name
+    const path = 'public/folder/' + dir.name
     // include node fs module
     const fs = require('fs');
     fs.rm(path, { recursive: true }, () => console.log('delete done'));
@@ -237,7 +241,7 @@ exports.viewLastestIdeas = async (req, res) => {
     res.render('qam/viewLastestIdeas', { lastestIdeas: lastestIdeas, loginName: req.session.email });
 }
 
-exports.editCategory = async (req,  res) => {
+exports.editCategory = async (req, res) => {
     let id = req.query.id;
     let aCategory = await category.findById(id);
     res.render('qam/qamEditCategory', { aCategory: aCategory, loginName: req.session.email })
@@ -311,4 +315,115 @@ exports.getMostViewed = async (req, res) => {
         });
     });
     res.render('qam/qamMostViewed', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+}
+
+exports.downloadZip = async (req, res) => {
+    const fs = require("fs");
+    let id = req.query.id;
+    let aCategory = await category.findById(id);
+    let folderpath = (__dirname.slice(0, -10) + aCategory.url)
+    var zp = new AdmZip();
+    zp.addLocalFolder(folderpath);
+    // here we assigned the name to our downloaded file!
+    const file_after_download = 'downloaded_file.zip';
+    // toBuffer() is used to read the data and save it
+    // for downloading process!
+    const data = zp.toBuffer();
+    res.set('Content-Type', 'application/octet-stream');
+    res.set('Content-Disposition', `attachment; filename=${file_after_download}`);
+    res.set('Content-Length', data.length);
+    res.send(data);
+}
+
+exports.numberOfIdeasByYear = async (req, res) => {
+    let yearStart = 2020;
+    let yearEnd = 2022;
+    if (req.body == {}) {
+        //console.log(req.body)
+        yearStart = parseInt(req.body.from);
+        yearEnd = parseInt(req.body.to);
+    }
+    let dateStart;
+    let dateEnd;
+    let listYear = [];
+    let i = yearStart;
+    async function loop() {
+        if (i <= yearEnd) {
+            dateStart = new Date(i + "-01-01");
+            dateEnd = new Date(i + "-12-31");
+            //console.log(dateEnd)
+            let noIdeas = await idea.find({
+                "time": {
+                    $gte: dateStart,
+                    $lt: dateEnd
+                }
+            }).count();
+            // console.log(i);
+            // console.log(noIdeas);
+            listYear.push({
+                x: i,
+                value: noIdeas
+            })
+            i += 1;
+            // console.log(listYear);
+            loop();
+
+        } else {
+            //console.log(listYear);
+            res.render('qam/numberOfIdeasByYear', { listYear: JSON.stringify(listYear), loginName: req.session.email })
+        }
+    }
+    loop();
+}
+exports.numberOfIdeasByYear2 = async (req, res) => {
+    let year = 2022;
+    console.log(req.body.year);
+    if (req.body.year != undefined) {
+        year = parseInt(req.body.year);
+    }
+    let dateS = new Date(year + "-01-01");
+    let dateE = new Date(year + "-12-31");
+    let data = [];
+    console.log(dateE)
+    let listCategory = await category.find({
+        "dateStart": {
+            $gte: dateS,
+            $lt: dateE
+        }
+    });
+    let counter = 0;
+    listCategory.forEach(async (i) => {
+        let noIdeas = await idea.find({
+            "categoryID": i._id, "time": {
+                $gte: dateS,
+                $lt: dateE
+            }
+        }).count();
+        data.push({
+            x: i.name,
+            value: noIdeas
+        });
+        counter += 1;
+        if (counter === listCategory.length) {
+            console.log(data);
+            res.render('qam/numberOfIdeasByYear2', { data: JSON.stringify(data), loginName: req.session.email })
+        }
+    });
+}
+exports.numberOfPeople = async (req, res) => {
+    let role = ['QAmanager', 'QAcoordinator', 'Staff'];
+    let data = [];
+    let counter = 0;
+    role.forEach(async (i) => {
+        let noPeople = await Account.find({ "role": i }).count();
+        data.push({
+            x: i,
+            value: noPeople
+        });
+        counter += 1;
+        if (counter === 3) {
+            console.log(data);
+            res.render('qam/numberOfPeoPle', { data: JSON.stringify(data), loginName: req.session.email })
+        }
+    });
 }
