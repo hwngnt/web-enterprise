@@ -20,36 +20,43 @@ exports.addIdea = async (req, res) => {
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
-
+    req.body.name = req.body.name.replace(" ", "_");
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
-    // console.log(aCategory);
     let path = aCategory.url + '/' + req.body.name;
-    // console.log(req.session.user._id);
-    await fs.access(path, (error) => {
-        if (error) {
-            fs.mkdir(path, (error) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("New Directory created successfully !!");
-                    let newIdea = new idea({
-                        categoryID: aCategory._id,
-                        name: req.body.name,
-                        author: req.session.user._id,
-                        url: path,
-                        like: 0,
-                        dislike: 0,
-                        comment: 0
-                    })
-                    newIdea = newIdea.save();
-                }
-            });
-        } else {
-            console.log("Given Directory already exists !!");
-        }
-    });
-    res.render('staff/addFileToIdea', { idCategory: idCategory, path: path, loginName: req.session.email })
+    let count = 0;
+    function loop() {
+        console.log(path);
+        fs.access(path, (error) => {
+            if (error) {
+                fs.mkdir(path, (error) => {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        let newIdea = new idea({
+                            categoryID: aCategory._id,
+                            name: req.body.name,
+                            author: req.session.user._id,
+                            url: path,
+                            like: 0,
+                            dislike: 0,
+                            comment: 0
+                        })
+                        newIdea = newIdea.save();
+                        console.log("New Directory created successfully !!");
+                    }
+                });
+                res.render('staff/addFileToIdea', { idCategory: idCategory, path: path, loginName: req.session.email });
+            } else {
+                console.log("Given Directory already exists !!");
+                count += 1;
+                path = path + "_(" + count + ")";
+                req.body.name = req.body.name + "_(" + count + ")";
+                loop();
+            }
+        });
+    };
+    await loop();
 }
 exports.doAddFile = async (req, res) => {
     let id = req.body.idCategory;
@@ -126,10 +133,16 @@ exports.viewCategoryDetail = async (req, res) => {
                 });
             });
         })
+<<<<<<< HEAD
         listFiles.countDocuments((err, count) => {
             console.log(err)
         })
 
+=======
+        // listFiles.countDocuments((err, count)=>{
+        //     console.log(err)
+        // })
+>>>>>>> b5e281e82cf6dec21b18fb2f4efcf63650ccac96
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
         console.log(e);
@@ -308,7 +321,10 @@ exports.viewLatestComments = async (req, res) => {
     let listComments = await comment.find()
     let len_comments = listComments.length;
     let last_comments = [];
+<<<<<<< HEAD
     
+=======
+>>>>>>> b5e281e82cf6dec21b18fb2f4efcf63650ccac96
     if (len_comments == 0) {
         last_comments = [];
     }
