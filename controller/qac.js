@@ -210,6 +210,129 @@ exports.filterMostViewIdeas = async function (req, res) {
     res.render('qac/mostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }
 
+exports.viewMostComments = async (req, res) => {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    // check if idea was added
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    // count total 'view = like+dis_like+comment'
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.comments.length);
+    }
+    let top5Views = [];
+    let i = 0;
+    while (i < 5) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        top5Views.push(listIdeas[idx_max]);
+        i++;
+    }
+    // console.log(top5Views);
+    let mostViewedIdeas = [];
+    let counter = 0;
+    for(let j = 0; j < top5Views.length; j++) {
+        let i = top5Views[j];
+        console.log(i.comments.length);
+        // let authors_name = [];
+        // let comments_contents = [];
+        // let time_comments = [];
+        // for (let commentID of i.comments) {
+        //     let objComment = await comment.findOne(commentID);
+        //     time_comments.push(objComment.time.toString().slice(0, -25));
+        //     comments_contents.push(objComment.comment);
+        //     let objAuthor = await staff.findOne(objComment.author);
+        //     authors_name.push(objAuthor.name);
+        // }
+        // console.log(comments_contents);
+        // console.log("----");
+        fs.readdir(i.url, (err, files) => {
+            mostViewedIdeas.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                // comment_content: comments_contents,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                // authors: authors_name,
+                time: i.time.toString().slice(0, -25),
+                // time_comment: time_comments
+            });
+        });
+        
+    };
+    res.render('qac/mostComments', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+}
+
+exports.filterMostComments = async function (req, res) {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    let n_last = Number(req.body.last);
+    let n_times = n_last;
+    if (n_last > n_ideas) {
+        n_times = n_ideas;
+    }
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.comments.length);
+    }
+    let topViews = [];
+    let i = 0;
+    while (i < n_times) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        topViews.push(listIdeas[idx_max]);
+        i++;
+    }
+
+    let mostViewedIdeas = [];
+    await topViews.forEach(async (i) => {
+        fs.readdir(i.url, (err, files) => {
+            mostViewedIdeas.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                time: i.time.toString().slice(0, -25)
+            });
+        });
+    });
+    res.render('qac/mostComments', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+}
 
 exports.viewLastestIdeas = async (req, res) => {
     let listIdeas = await idea.find().populate('comments');
