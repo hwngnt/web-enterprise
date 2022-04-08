@@ -14,10 +14,6 @@ const accSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    ideaID: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'ideas'
-    }
 });
 
 

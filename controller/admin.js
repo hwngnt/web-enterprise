@@ -380,7 +380,7 @@ exports.viewCategoryDetail = async (req, res) => {
     // let id = req.query.id;
     let listFiles = [];
     try {
-        let listIdeas = await idea.find({ categoryID: id }).populate('comments')
+        let listIdeas = await idea.find({ categoryID: id }).populate({path:'comments', populate : { path: 'author'}}).populate('author');
         let aCategory = await category.findById(id);
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;

@@ -20,6 +20,7 @@ exports.addIdea = async (req, res) => {
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
+    let aStaff = await Staff.findOne({email : req.session.email});
     req.body.name = req.body.name.replace(" ", "_");
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
@@ -36,24 +37,22 @@ exports.doAddIdea = async (req, res) => {
                         let newIdea;
                         if(req.body.annonymously != undefined){
                             newIdea = new idea({
-                                categoryID: aCategory._id,
+                                categoryID: aCategory,
                                 name: req.body.name,
-                                author: req.session.user._id,
+                                author: aStaff,
                                 url: path,
                                 like: 0,
                                 dislike: 0,
-                                comment: 0,
                                 annonymously: true
                             })
                         }else{
                             newIdea = new idea({
-                                categoryID: aCategory._id,
+                                categoryID: aCategory,
                                 name: req.body.name,
-                                author: req.session.user._id,
+                                author: aStaff,
                                 url: path,
                                 like: 0,
                                 dislike: 0,
-                                comment: 0
                             })
                         }
                         newIdea = newIdea.save();
@@ -147,9 +146,9 @@ exports.viewCategoryDetail = async (req, res) => {
                 });
             });
         })
-        listFiles.countDocuments((err, count) => {
-            console.log(err)
-        })
+        // listFiles.countDocuments((err, count) => {
+        //     console.log(err)
+        // })
 
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
@@ -160,24 +159,25 @@ exports.viewCategoryDetail = async (req, res) => {
 
 exports.doComment = async (req, res) => {
     let id = req.body.idCategory;
+    let aIdea = await idea.findById(req.body.idIdea);
+    let aStaff = await Staff.findOne({email : req.session.email});
     //console.log(req.body.idCategory);
     if(req.body.annonymously != undefined){
         newComment = new comment({
-            ideaID: req.body.idIdea,
-            author: req.session.user._id,
+            ideaID: aIdea,
+            author: aStaff,
             comment: req.body.comment,
             annonymously : true
         });
     }else{
         newComment = new comment({
             ideaID: req.body.idIdea,
-            author: req.session.user._id,
+            author: aStaff,
             comment: req.body.comment,
         });
     }
     
     newComment = await newComment.save();
-    let aIdea = await idea.findById(req.body.idIdea)
     aIdea.comments.push(newComment);
     aIdea = await aIdea.save();
 

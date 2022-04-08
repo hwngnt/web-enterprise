@@ -16,7 +16,7 @@ const ideas = new mongoose.Schema({
     },
     author:{
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'user',
+        ref: 'Staff',
         require : true
     },
     time:{
