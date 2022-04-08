@@ -19,6 +19,7 @@ router.get('/qam/qamEditCategory', qamController.editCategory);
 router.post('/qam/doEditCategory', qamController.updateCategory);
 router.get('/qam/viewMostViewed', qamController.getMostViewed);
 router.get('/qam/downloadZip', qamController.downloadZip);
+router.get('/qam/downloadCSV', qamController.downloadCSV);
 
 router.get('/qam/numberOfIdeasByYear', qamController.numberOfIdeasByYear);
 router.post('/qam/numberOfIdeasByYear', qamController.numberOfIdeasByYear);

@@ -21,6 +21,10 @@ const staffSchema = new mongoose.Schema({
     img: {
         type: String,
         default: "user.png"
+    },
+    type: {
+        type: String,
+        required: true
     }
 });
 

@@ -25,6 +25,9 @@ hbs.registerHelper('ifCond', function (v1, v2, options) {
     }
     return options.inverse(this);
 });
+hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
+    return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
 
 app.use(express.static(__dirname + '/public'));
 app.get('/', (req, res) => {

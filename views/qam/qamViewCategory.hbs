@@ -36,28 +36,39 @@
                 </tr>
               </thead>
               <tbody>
-                {{#each listCategory}}
+                {{#each listCompare}}
                 <tr>
                   <td class="text-nowrap align-middle" style="text-decoration: underline">
-                    <a href="/qam/qamViewCategoryDetail?id={{_id}}">
-                      {{name}}
+                    <a href="/qam/qamViewCategoryDetail?id={{category._id}}">
+                      {{category.name}}
                     </a>
                   </td>
                   <td class="text-center align-middle">
                     <div class="btn-group align-top">
-                      <a href="/qam/qamEditCategory?id={{_id}}" class="btn btn-success">
+                      <a href="/qam/qamEditCategory?id={{category._id}}" class="btn btn-success">
                         <span class="glyphicon glyphicon-edit"></span>
                         <span><strong>Edit</strong></span>
                       </a>
-                      <a href="/qam/qamDeleteCategory?id={{_id}}" class="btn btn-danger"
+                      <a href="/qam/qamDeleteCategory?id={{category._id}}" class="btn btn-danger"
                         onclick="return confirm('Are you sure')">
                         <span class="glyphicon glyphicon-remove"></span>
                         <span><strong>Delete</strong></span>
                       </a>
-                      <a href="/qam/downloadZip?id={{_id}}" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-edit"></span>
+                      <a href="/qam/downloadZip?id={{category._id}}" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-book"></span>
                         <span><strong>ZIP</strong></span>
                       </a>
+                      {{#if compare}}
+                        <a href="/qam/downloadCSV?id={{category._id}}" class="btn btn-info">
+                          <span class="glyphicon glyphicon-floppy-save"></span>
+                          <span><strong>CSV</strong></span>
+                        </a>
+                      {{else}}
+                        <a href="/qam/downloadCSV?id={{category._id}}" class="btn btn-info" disabled>
+                          <span class="glyphicon glyphicon-floppy-save"></span>
+                          <span><strong>CSV</strong></span>
+                        </a>
+                      {{/if}}
                     </div>
                   </td>
                 </tr>

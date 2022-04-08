@@ -13,8 +13,13 @@ const accSchema = new mongoose.Schema({
     role:{
         type: String,
         required: true
-    }},
-);
+    },
+    ideaID: {
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'ideas',
+        require : true
+    }
+});
 
 
 module.exports = mongoose.model('User', accSchema);

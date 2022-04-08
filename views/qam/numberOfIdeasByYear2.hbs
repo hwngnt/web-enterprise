@@ -4,22 +4,18 @@
 
 <body class="sb-nav-fixed">
     {{> qamHeader}}
-        <form method="post" action="/qam/numberOfIdeasByYear2" style="margin: 4% 15%;">
+    <form method="post" action="/qam/numberOfIdeasByYear2" style="margin: 4% 15%;">
         <div class="form-group"></div>
         <div class="row">
             <div class='col-md-2'>
                 Year: <input type="number" name="year" min="1900" value="2022" class="form-control" />
             </div>
-            <div class='col-md-2' >
-                <input type="submit" value="Find" class="btn btn-outline-info" style="margin-top: 7%; width: 70px; height: 35px;" >
+            <div class='col-md-2'>
+                <input type="submit" value="Find" class="btn btn-outline-info"
+                    style="margin-top: 7%; width: 70px; height: 35px;">
+            </div>
         </div>
-        </div>
-        
-        
-            
-        </form>
-    </div>
-    </div>
+    </form>
     <div id="container" style="width: 70%; height: 80%; margin: -2% 15%; padding: 0;"></div>
 
 </body>

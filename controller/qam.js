@@ -1,10 +1,12 @@
 const Account = require('../models/user');
 const bcrypt = require('bcryptjs');
-const category = require('../models/category');
+const Category = require('../models/category');
 const idea = require('../models/ideas');
+const User = require('../models/user');
+const Comment = require('../models/comments');
 const AdmZip = require('adm-zip');
-
-const zipdir = require('zip-dir');
+var mongoose = require('mongoose');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 exports.getQAM = async (req, res) => {
     res.render('qam/qam_index', { loginName: req.session.email })
@@ -52,7 +54,7 @@ exports.doAddCategory = async (req, res) => {
         }
     }
     console.log(req.body.name)
-    let newCategory = new category({
+    let newCategory = new Category({
         name: req.body.name,
         description: req.body.description,
         dateStart: date,
@@ -81,10 +83,20 @@ exports.doAddCategory = async (req, res) => {
 }
 
 exports.getViewCategory = async (req, res) => {
-    let listCategory = await category.find();
-    res.render('qam/qamViewCategory', { listCategory: listCategory, loginName: req.session.email })
+    let listCategory = await Category.find();
+    let tempDate = new Date();
+    let listCompare = [];
+    listCategory.forEach(element =>{
+        listCompare.push({
+            compare: tempDate > element.dateEnd,
+            category: element
+        });
+    })
+    // console.log(listCompare)
+    // let compare = tempDate > aCategory.dateEnd;
+    res.render('qam/qamViewCategory', { listCompare: listCompare, loginName: req.session.email })
 }
-
+ 
 exports.getCategoryDetail = async (req, res) => {
     let id;
     let sortBy;
@@ -98,7 +110,7 @@ exports.getCategoryDetail = async (req, res) => {
     let listFiles = [];
     try {
         let listIdeas = await idea.find({ categoryID: id }).populate('comments')
-        let aCategory = await category.findById(id);
+        let aCategory = await Category.findById(id);
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
         const fs = require("fs");
@@ -198,9 +210,9 @@ exports.getCategoryDetail = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
     let id = req.query.id;
-    let dir = await category.findById(id);
-    category.findByIdAndRemove(id).then(data = {});
-    const path = 'public/folder/' + dir.name
+    let dir = await Category.findById(id);
+    Category.findByIdAndRemove(id).then(data = {});
+    const path = 'public/folder/'+dir.name
     // include node fs module
     const fs = require('fs');
     fs.rm(path, { recursive: true }, () => console.log('delete done'));
@@ -243,13 +255,13 @@ exports.viewLastestIdeas = async (req, res) => {
 
 exports.editCategory = async (req, res) => {
     let id = req.query.id;
-    let aCategory = await category.findById(id);
+    let aCategory = await Category.findById(id);
     res.render('qam/qamEditCategory', { aCategory: aCategory, loginName: req.session.email })
 }
 
 exports.updateCategory = async (req, res) => {
     let id = req.body.id;
-    let aCategory = await category.findById(id);
+    let aCategory = await Category.findById(id);
     console.log(aCategory)
     aCategory.name = req.body.name;
     aCategory.description = req.body.description;
@@ -320,8 +332,9 @@ exports.getMostViewed = async (req, res) => {
 exports.downloadZip = async (req, res) => {
     const fs = require("fs");
     let id = req.query.id;
-    let aCategory = await category.findById(id);
-    let folderpath = (__dirname.slice(0, -10) + aCategory.url)
+    let aCategory = await Category.findById(id);
+    let folderpath = (__dirname.slice(0,-10) + aCategory.url)
+
     var zp = new AdmZip();
     zp.addLocalFolder(folderpath);
     // here we assigned the name to our downloaded file!
@@ -335,6 +348,76 @@ exports.downloadZip = async (req, res) => {
     res.send(data);
 }
 
+exports.downloadCSV = async (req, res) => {
+    let id = req.query.id;
+    let aCategory = await Category.findById(id);
+    const csvWriter = createCsvWriter({
+        path: aCategory.name + '.csv',
+        header: [
+          {id: '_id', title: 'ID'},
+          {id: 'category', title: 'Category Name'},
+          {id: 'name', title: 'Name'},
+          {id: 'url', title: 'URL'},
+          {id: 'author', title: 'Author'},
+          {id: 'time', title: 'Time'},
+          {id: 'like', title: 'Like'},
+          {id: 'dislike', title: 'Dislike'},
+          {id: 'comments', title: 'Comments'},
+          {id: '__v', title: '__v'}
+        ]
+    });
+    let listIdeas = await idea.find({ categoryID: id }).populate('categoryID')
+    // console.log(listIdeas)
+    let CSVAttribute = [];
+    listIdeas.forEach(element => {
+        // let categoryName = Category.find({_id: mongoose.Types.ObjectId(element.categoryID.toString())})
+        // let authorName = User.findById(element.author)
+        // let categoryName = element.category
+        
+        console.log(element.categoryID.name)
+        // console.log(element)
+        // let listComment = []
+        // for (let obj of element.comments) {
+        //     if(obj != undefined){
+        //         listComment.push(obj)
+        //     }
+        //     else{
+        //         listComment=[]
+        //     }
+        // }
+        // console.log(listComment)
+        // let listCommentText = []
+        // for (let obj of listComment) {
+        //     if(obj != undefined){
+        //         temp = Comment.findById(obj)
+        //         console.log(temp)
+        //         listCommentText.push(temp.comment)
+        //         console.log(temp.comment)
+        //     }
+        //     else{
+        //         listCommentText=[]
+        //     }
+        // }
+        CSVAttribute.push({
+            _id: element._id,
+            // category: categoryName.name,
+            name: element.name,
+            url: element.url,
+            // author: authorName.email,
+            time: element.time,
+            like: element.like,
+            dislike: element.dislike,
+            // comment: listCommentText
+        })
+        listComment = []
+        // console.log("---------")
+    })
+    // console.log(CSVAttribute)
+    // const data = listIdeas;
+    // csvWriter
+    // .writeRecords(data)
+    // .then(()=> console.log('The CSV file was written successfully'));
+}
 exports.numberOfIdeasByYear = async (req, res) => {
     let yearStart = 2020;
     let yearEnd = 2022;
