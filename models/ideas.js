@@ -34,7 +34,7 @@ const ideas = new mongoose.Schema({
     comments:[{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'comments'
-    }]
+    }],
 });
 
 module.exports = mongoose.model('ideas', ideas);
