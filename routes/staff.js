@@ -26,6 +26,9 @@ router.get('/staff', staffController.getStaff);
 router.get('/staff/addIdea',isStaff, staffController.addIdea);
 router.post('/staff/doAddIdea',isStaff, staffController.doAddIdea);
 router.post('/staff/doAddFile',isStaff, uploadQAmanager.any('ideas'), staffController.doAddFile);
+router.post('/staff/searchStaff', staffController.searchStaff);
+router.get('/staff/viewStaff', staffController.viewStaff);
+
 router.get('/staff/viewLastestIdeas', staffController.viewLastestIdeas);
 router.get('/staff/viewMostViewedIdeas', staffController.viewMostViewedIdeas)
 
@@ -41,4 +44,8 @@ router.post('/staff/addDislike', staffController.addDislike);
 router.get('/staff/viewLatestComments', staffController.viewLatestComments);
 router.get('/staff/viewMostViewedIdeas', staffController.viewMostViewedIdeas)
 router.get('staff/testPagination', staffController.paginations)
+
+router.post('/staff/viewLastestIdeas', staffController.filterLastestIdeas);
+router.post('/staff/mostViewedIdeas', staffController.filterMostViewIdeas);
+router.post('/staff/viewLatestComments', staffController.filterLatestComment);
 module.exports = router;
