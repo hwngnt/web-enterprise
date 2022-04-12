@@ -338,6 +338,21 @@ exports.viewCategory = async (req, res) => {
     let listCategory = await category.find();
     res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email })
 }
+exports.searchCategory = async (req, res) => {
+    const searchText = req.body.keyword;
+    let listCategory;
+    let checkAlphaName = validation.checkAlphabet(searchText);
+    let checkEmpty = validation.checkEmpty(searchText);
+    const searchCondition = new RegExp(searchText, 'i');
+
+    if (!checkEmpty) {
+        res.redirect('/admin/viewCategory');
+    }
+    else if (checkAlphaName) {
+        listCategory = await category.find({ name: searchCondition });
+    }
+    res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email });
+}
 exports.editDate = async (req, res) => {
     let id = req.query.id;
     let aCategory = await category.findById(id);

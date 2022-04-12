@@ -434,7 +434,7 @@ exports.numberOfIdeasByYear = async (req, res) => {
         if (i <= yearEnd) {
             dateStart = new Date(i + "-01-01");
             dateEnd = new Date(i + "-12-31");
-            //console.log(dateEnd)
+            console.log(dateEnd)
             let noIdeas = await idea.find({
                 "time": {
                     $gte: dateStart,
@@ -452,7 +452,7 @@ exports.numberOfIdeasByYear = async (req, res) => {
             loop();
 
         } else {
-            //console.log(listYear);
+            console.log(listYear);
             res.render('qam/numberOfIdeasByYear', { listYear: JSON.stringify(listYear), loginName: req.session.email })
         }
     }
@@ -468,7 +468,7 @@ exports.numberOfIdeasByYear2 = async (req, res) => {
     let dateE = new Date(year + "-12-31");
     let data = [];
     console.log(dateE)
-    let listCategory = await category.find({
+    let listCategory = await Category.find({
         "dateStart": {
             $gte: dateS,
             $lt: dateE

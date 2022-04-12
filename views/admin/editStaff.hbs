@@ -10,18 +10,18 @@
             <div class="modal-header">
                 <h2 class="modal-title">Edit Quality Assurance Staff</h2>
             </div>
-            <div class="row">
+            <div class="row" style="margin-bottom: 22px;">
                 <div class="col-md-3 border-right" style="padding-right: 20px;">
                     <div class="d-flex flex-column align-items-center text-center p-3 py-5">
                         <img class="rounded-circle mt-5" width="150px" src="/uploads/staff/{{aStaff.img}}">
                     </div>
                 </div>
-                <div class="col-md-8 border-right">
+                <div class="col-md-8 border-right" style="margin-top: 12px;">
                     <form class="form" method="post" action='/admin/doEditStaff' id="add" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col">
                                 <p><b>Department</b></p>
-                                <div class="form-check form-check-inline col-md-5">
+                                <div class="form-check form-check-inline col-md-3">
                                     <label class="form-check-label" for="inlineCheckbox1">Academic</label>
                                     <input class="form-check-input" type="radio" name="department" id="inlineCheckbox1"
                                         value="Academic" required="required" {{#ifEquals aStaff.type "Academic"}} checked {{/ifEquals}} />

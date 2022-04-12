@@ -4,7 +4,7 @@
 
 <body class="sb-nav-fixed">
     {{> adminHeader}}
-    <div class="container py-5" style="position: fixed; top: 10%; margin-left: 80%;">
+    <div class="container py-5" style="position: fixed; top: 8%; margin-left: 81%;">
         <p style="margin-bottom: 0%;"><label>Sort By:</label></p>
         <div class="btn-group" role="group" aria-label="Basic example">
             <form method="post" action='/admin/viewCategoryDetail/'>
@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col" style="margin: 5% 30%;">
+        <div class="col" style="margin: 3% 30%;">
             {{#each listFiles}}
             <div class="container mt-5"
                 style=" border-radius: 13px; margin-bottom: 3% ; background-color: rgba(225, 230, 238, 0.481);">
@@ -38,10 +38,10 @@
                                     <div class="d-flex flex-row">
                                         {{#if idea.annonymously}}
                                         <img src="https://img.icons8.com/color/100/000000/folder-invoices.png"
-                                            width="70" height="60" />
+                                            width="60" height="60" />
                                         {{else}}
                                         <img class="rounded-circle" src="/uploads/staff/{{idea.author.img}}"
-                                            width="70px" height="60px">
+                                            width="60px" height="60px">
                                         {{/if}}
                                         <div class="ml-5 mt-3" style="margin-left: 11px;">
                                             <h1> {{idea.name}}</h1>
@@ -100,7 +100,7 @@
                             {{/ifEquals}}
                             {{#each idea.comments}}
                             <div class="user-comment-box commented-section py-2" style="display:none;">
-                                <div class="second py-2 px-2" style="margin-left: 25px;">
+                                <div class="second py-2 px-2" style="margin-left: 15px;">
                                     <ul class="media-list">
                                         <li class="media">
                                             <div class="pull-left">
