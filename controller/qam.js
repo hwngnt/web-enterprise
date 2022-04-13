@@ -366,15 +366,15 @@ exports.downloadCSV = async (req, res) => {
           {id: '__v', title: '__v'}
         ]
     });
-    let listIdeas = await idea.find({ categoryID: id }).populate('categoryID')
+    let listIdeas = await idea.find({ categoryID: id }).populate('categoryID').populate('comments')
     // console.log(listIdeas)
     let CSVAttribute = [];
     listIdeas.forEach(element => {
         // let categoryName = Category.find({_id: mongoose.Types.ObjectId(element.categoryID.toString())})
         // let authorName = User.findById(element.author)
         // let categoryName = element.category
-        
-        console.log(element.categoryID.name)
+        console.log(element)
+        // console.log(element.comments.comment)
         // console.log(element)
         // let listComment = []
         // for (let obj of element.comments) {

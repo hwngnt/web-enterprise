@@ -14,13 +14,36 @@ exports.getStaff = async (req, res) => {
     res.render('staff/staff', { loginName: req.session.email })
 }
 
+exports.viewStaff = async (req, res) => {
+    let listStaff = await Staff.find();
+    res.render('staff/viewStaff', { listStaff: listStaff, loginName: req.session.email })
+}
+
+exports.searchStaff = async (req, res) => {
+    const searchText = req.body.keyword;
+    console.log(req.body);
+    let listStaff;
+    let checkAlphaName = validation.checkAlphabet(searchText);
+    let checkEmpty = validation.checkEmpty(searchText);
+    const searchCondition = new RegExp(searchText, 'i');
+
+    //console.log(checkEmpty);
+    if (!checkEmpty) {
+        res.redirect('/staff/viewStaff');
+    }
+    else if (checkAlphaName) {
+        listStaff = await Staff.find({ name: searchCondition });
+    }
+    res.render('staff/viewStaff', { listStaff: listStaff, loginName: req.session.email });
+}
+
 exports.addIdea = async (req, res) => {
     var id = req.query.id;
     res.render('staff/addIdeas', { idCategory: id, loginName: req.session.email })
 }
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
-    let aStaff = await Staff.findOne({email : req.session.email});
+    let aStaff = await Staff.findOne({ email: req.session.email });
     req.body.name = req.body.name.replace(" ", "_");
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
@@ -35,7 +58,7 @@ exports.doAddIdea = async (req, res) => {
                         console.log(error);
                     } else {
                         let newIdea;
-                        if(req.body.annonymously != undefined){
+                        if (req.body.annonymously != undefined) {
                             newIdea = new idea({
                                 categoryID: aCategory,
                                 name: req.body.name,
@@ -45,7 +68,7 @@ exports.doAddIdea = async (req, res) => {
                                 dislike: 0,
                                 annonymously: true
                             })
-                        }else{
+                        } else {
                             newIdea = new idea({
                                 categoryID: aCategory,
                                 name: req.body.name,
@@ -114,28 +137,111 @@ exports.viewSubmittedIdeas = async (req, res) => {
 }
 
 exports.viewCategoryDetail = async (req, res) => {
-    let id = req.query.id;
+    let id;
+    let sortBy;
+    if (req.query.id === undefined) {
+        id = req.body.idCategory;
+        sortBy = req.body.sortBy;
+    } else {
+        id = req.query.id;
+    }
     let listFiles = [];
     try {
-        let listIdeas = await idea.find({ categoryID: id }).populate('comments')
+        let listIdeas = await idea.find({ categoryID: id }).populate({ path: 'comments', populate: { path: 'author' } }).populate('author');
+
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
+
         let listLikes = await likes.find({ staffID: { $all: staff._id } });
         let listDislikes = await dislikes.find({ staffID: { $all: staff._id } });;
+
         let likedIDs = [];
         for (let like of listLikes) {
             likedIDs.push(like.ideaID);
         }
+
         let dislikeIDs = [];
         for (let dislike of listDislikes) {
             dislikeIDs.push(dislike.ideaID);
         }
+
         let aCategory = await category.findById(id);
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
         const fs = require("fs");
-
-        await listIdeas.forEach(async (i) => {
+        var counter = 0;
+        function callBack() {
+            if (listIdeas.length === counter) {
+                if (sortBy === 'like') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.like < a.idea.like) {
+                            return -1;
+                        }
+                        else if (b.idea.like > a.idea.like) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('like');
+                }
+                else if (sortBy === 'comment') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.comments.length < a.idea.comments.length) {
+                            return -1;
+                        }
+                        else if (b.idea.comments.length > a.idea.comments.length) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('comment');
+                }
+                else if (sortBy === 'time') {
+                    listFiles.sort((a, b) => {
+                        const A = new Date(a.idea.time)
+                        const B = new Date(b.idea.time)
+                        if (A < B) {
+                            return 1;
+                        }
+                        else if (A > B) {
+                            return -1;
+                        }
+                        else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('time');
+                } else {
+                    listFiles.sort((a, b) => {
+                        if (a.idea._id < b.idea._id) {
+                            return -1;
+                        }
+                        if (a.idea._id > b.idea._id) {
+                            return 1;
+                        }
+                    });
+                    console.log('id');
+                }
+            };
+        };
+        listIdeas.forEach(async (i) => {
             fs.readdir(i.url, (err, files) => {
                 listFiles.push({
                     value: files,
@@ -144,11 +250,10 @@ exports.viewCategoryDetail = async (req, res) => {
                     idLikeds: likedIDs,
                     idDislikes: dislikeIDs,
                 });
+                counter = counter + 1;
+                callBack();
             });
         })
-        // listFiles.countDocuments((err, count) => {
-        //     console.log(err)
-        // })
 
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
@@ -160,23 +265,23 @@ exports.viewCategoryDetail = async (req, res) => {
 exports.doComment = async (req, res) => {
     let id = req.body.idCategory;
     let aIdea = await idea.findById(req.body.idIdea);
-    let aStaff = await Staff.findOne({email : req.session.email});
+    let aStaff = await Staff.findOne({ email: req.session.email });
     //console.log(req.body.idCategory);
-    if(req.body.annonymously != undefined){
+    if (req.body.annonymously != undefined) {
         newComment = new comment({
             ideaID: aIdea,
             author: aStaff,
             comment: req.body.comment,
-            annonymously : true
+            annonymously: true
         });
-    }else{
+    } else {
         newComment = new comment({
             ideaID: req.body.idIdea,
             author: aStaff,
             comment: req.body.comment,
         });
     }
-    
+
     newComment = await newComment.save();
     aIdea.comments.push(newComment);
     aIdea = await aIdea.save();
@@ -303,7 +408,7 @@ exports.addDislike = async (req, res) => {
 }
 
 exports.viewLastestIdeas = async (req, res) => {
-    let listIdeas = await idea.find();
+    let listIdeas = await idea.find().populate('comments');
     let len_ideas = listIdeas.length;
     let last_ideas = [];
     if (len_ideas == 0) {
@@ -315,11 +420,11 @@ exports.viewLastestIdeas = async (req, res) => {
     else {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
-
     let lastestIdeas = [];
-    await last_ideas.forEach(async (i) => {
+    last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             lastestIdeas.push({
+                idea: i,
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
@@ -328,17 +433,167 @@ exports.viewLastestIdeas = async (req, res) => {
                 idCategory: i.categoryID,
                 n_likes: i.like,
                 n_dislikes: i.dislike,
-                time: i.time
+                time: i.time.toString().slice(0, -25)
             });
         });
     });
-    res.render('staff/viewLastestIdeas', { listIdeas: last_ideas, lastestIdeas: lastestIdeas, loginName: req.session.email });
+    res.render('staff/viewLastestIdeas', { lastestIdeas: lastestIdeas, loginName: req.session.email });
+}
+
+exports.filterLastestIdeas = async (req, res) => {
+    let n_last = Number(req.body.last);
+    let listIdeas = await idea.find().populate('comments');
+    let len_ideas = listIdeas.length;
+    if (len_ideas < n_last) {
+        n_last = len_ideas;
+    }
+    let last_ideas = [];
+    if (len_ideas == 0) {
+        last_ideas = [];
+    }
+    else if (len_ideas < 5) {
+        last_ideas = listIdeas.reverse();
+    }
+    else {
+        last_ideas = listIdeas.slice(-n_last, len_ideas).reverse();
+    }
+    let lastestIdeas = [];
+    last_ideas.forEach(async (i) => {
+        fs.readdir(i.url, (err, files) => {
+            lastestIdeas.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comment,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                time: i.time.toString().slice(0, -25)
+            });
+        });
+    });
+    res.render('staff/viewLastestIdeas', { lastestIdeas: lastestIdeas, loginName: req.session.email });
+}
+
+exports.viewMostComments = async (req, res) => {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    // check if idea was added
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    // count total 'view = like+dis_like+comment'
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.comments.length);
+    }
+    let top5Views = [];
+    let i = 0;
+    while (i < 5) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        top5Views.push(listIdeas[idx_max]);
+        i++;
+    }
+    // console.log(top5Views);
+    let mostComments = [];
+    let counter = 0;
+    for(let j = 0; j < top5Views.length; j++) {
+        let i = top5Views[j];
+        console.log(i.comments.length);
+        fs.readdir(i.url, (err, files) => {
+            mostComments.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                // comment_content: comments_contents,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                // authors: authors_name,
+                time: i.time.toString().slice(0, -25),
+                // time_comment: time_comments
+            });
+        });
+        
+    };
+    res.render('staff/viewMostComments', { mostComments: mostComments, loginName: req.session.email });
+}
+
+exports.filterMostComments = async function (req, res) {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    let n_last = Number(req.body.last);
+    let n_times = n_last;
+    if (n_last > n_ideas) {
+        n_times = n_ideas;
+    }
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.comments.length);
+    }
+    let topViews = [];
+    let i = 0;
+    while (i < n_times) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        topViews.push(listIdeas[idx_max]);
+        i++;
+    }
+
+    let mostCommnents = [];
+    topViews.forEach(async (i) => {
+        fs.readdir(i.url, (err, files) => {
+            mostCommnents.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                time: i.time.toString().slice(0, -25)
+            });
+        });
+    });
+    res.render('staff/viewMostComments', { mostCommnents: mostCommnents, loginName: req.session.email });
 }
 
 exports.viewLatestComments = async (req, res) => {
     let listComments = await comment.find()
     let len_comments = listComments.length;
     let last_comments = [];
+
     if (len_comments == 0) {
         last_comments = [];
     }
@@ -349,7 +604,7 @@ exports.viewLatestComments = async (req, res) => {
         last_comments = listComments.slice(-5, len_comments).reverse();
     }
     let lastComments_detail = [];
-    for(let comment of last_comments){
+    for (let comment of last_comments) {
         // console.log(comment.ideaID);
         let objIdea = await idea.findOne(comment.ideadID);
         // console.log(objIdea);
@@ -371,53 +626,44 @@ exports.viewLatestComments = async (req, res) => {
     res.render('staff/viewLatestComments', { lastComments_detail: lastComments_detail, loginName: req.session.email })
 }
 
-exports.viewMostViewedIdeas = async (req, res) => {
-    let listIdeas = await idea.find();
-    let n_ideas = listIdeas.length;
-    let visited_max = [];
-    for (let m = 0; m < n_ideas; m++) {
-        visited_max.push(0);
+exports.filterLatestComment = async (req, res) => {
+    let n_last = Number(req.body.last);
+    let listComments = await comment.find()
+    let len_comments = listComments.length;
+    let last_comments = [];
+    if (len_comments < n_last) {
+        n_last = len_comments;
     }
-    let countViews = [];
-    console.log(listIdeas);
-    for (let idea of listIdeas) {
-        countViews.push(idea.like + idea.dislike + idea.comment);
+    if (len_comments == 0) {
+        last_comments = [];
     }
-    console.log(countViews);
-    let top5Views = [];
-    let i = 0;
-    while (i < 5) {
-        let fake_max = -1;
-        let idx_max = -1;
-        let j = 0;
-        while (j < n_ideas) {
-            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
-                fake_max = countViews[j];
-                idx_max = j;
-            }
-            j++;
-        }
-        visited_max[idx_max] = 1;
-        top5Views.push(listIdeas[idx_max]);
-        i++;
+    else if (len_comments < 5) {
+        last_comments = listComments.reverse();
     }
-    let mostViewedIdeas = [];
-    await top5Views.forEach(async (i) => {
-        fs.readdir(i.url, (err, files) => {
-            mostViewedIdeas.push({
-                id: i._id,
+    else {
+        last_comments = listComments.slice(-n_last, len_comments).reverse();
+    }
+    let lastComments_detail = [];
+    for (let comment of last_comments) {
+        // console.log(comment.ideaID);
+        let objIdea = await idea.findOne(comment.ideadID);
+        // console.log(objIdea);
+        let objAuthor = await Staff.findOne(comment.author);
+        fs.readdir(objIdea.url, (err, files) => {
+            lastComments_detail.push({
                 value: files,
-                linkValue: i.url.slice(7),
-                name: i.name,
-                comment: i.comment,
-                idCategory: i.categoryID,
-                n_likes: i.like,
-                n_dislikes: i.dislike,
-                time: i.time
-            });
+                linkValue: objIdea.url.slice(7),
+                name: objIdea.name,
+                comment_len: objIdea.comments.length,
+                comment_content: comment.comment,
+                n_likes: objIdea.like,
+                n_dislikes: objIdea.dislike,
+                author: objAuthor.name,
+                time: comment.time.toString().slice(0, -25)
+            })
         });
-    });
-    res.render('staff/viewMostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+    }
+    res.render('staff/viewLatestComments', { lastComments_detail: lastComments_detail, loginName: req.session.email })
 }
 
 exports.viewMostViewedIdeas = async (req, res) => {
@@ -488,6 +734,60 @@ exports.viewMostViewedIdeas = async (req, res) => {
     res.render('staff/viewMostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }
 
+exports.filterMostViewIdeas = async function (req, res) {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    let n_last = Number(req.body.last);
+    let n_times = n_last;
+    if (n_last > n_ideas) {
+        n_times = n_ideas;
+    }
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.like + idea.dislike + idea.comments.length);
+    }
+    let topViews = [];
+    let i = 0;
+    while (i < n_times) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        topViews.push(listIdeas[idx_max]);
+        i++;
+    }
+
+    let mostViewedIdeas = [];
+    await topViews.forEach(async (i) => {
+        fs.readdir(i.url, (err, files) => {
+            mostViewedIdeas.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                time: i.time.toString().slice(0, -25)
+            });
+        });
+    });
+    res.render('qac/mostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+}
+
 exports.paginations = async (req, res) => {
     const pageSize = 5;
     var page = req.query.page;
@@ -500,13 +800,13 @@ exports.paginations = async (req, res) => {
         let listCategory = await category.find({}).skip(skip).limit(pageSize).then(data => {
             res.json(data);
         })
-        .catch((err) => {
-            res.status(500).json('loi');
-        });
+            .catch((err) => {
+                res.status(500).json('loi');
+            });
         res.render('staff/testPagination', { listCategory: listCategory, loginName: req.session.email })
-    }else{
+    } else {
         let listCategory = await category.find({})
-        ;
+            ;
         res.render('staff/testPagination', { listCategory: listCategory, loginName: req.session.email })
     }
 }
