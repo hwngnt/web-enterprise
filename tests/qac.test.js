@@ -1,4 +1,8 @@
 const qacController = require('../controller/qac');
+const idea = require('../models/ideas');
+const comment = require('../models/comments');
+const staff = require('../models/staff');
+const fs = require("fs");
 
 
 jest.useFakeTimers()
@@ -14,6 +18,10 @@ const mockResponse = () => {
 
 describe('Test qac controller', () => {
   describe('Test get qac', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    })
     it('it should abcxyz', async () => {
       const req = {
         session: {
@@ -24,6 +32,40 @@ describe('Test qac controller', () => {
       await qacController.getQAC(req, res);
 
       expect(res.render).toHaveBeenCalledWith("qac/index", {"loginName": "Test@gmail.com"});
+    })
+  })
+
+  describe('Test view Lastest Comment', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    })
+    it('it should abxyzzdsda', async () => {
+      jest.spyOn(comment, 'find').mockResolvedValueOnce([{
+        ideaId: 1,
+        author: 1
+      }]);
+
+
+      jest.spyOn(idea, 'findOne').mockResolvedValueOnce({
+        ideaId: 1,
+      })
+
+      jest.spyOn(staff, 'findOne').mockResolvedValueOnce({
+        author: 1
+      })
+
+      jest.spyOn(fs, 'readdir').mockResolvedValueOnce(true);
+
+      const req = {
+        session: {
+          email: 'Test',
+        }
+      };
+      const res = mockResponse();
+      await qacController.viewLastestComment(req, res);
+
+      expect(res.render).toHaveBeenCalledWith("qac/viewLastestComment", {"lastComments_detail": [], "loginName": "Test"});
     })
   })
 })

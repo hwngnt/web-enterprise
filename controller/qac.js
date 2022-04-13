@@ -13,53 +13,53 @@ exports.getQAC = async (req, res) => {
 
 // ======================== View Lastest Comments ========================== //
 exports.viewLastestComment = async (req, res) => {
-    let listComments = await comment.find();
-    let len_comments = listComments.length;
-    let last_comments = [];
-    if (len_comments == 0) {
-        last_comments = [];
-    }
-    else if (len_comments < 5) {
-        last_comments = listComments.reverse();
-    }
-    else {
-        last_comments = listComments.slice(-5, len_comments).reverse();
-    }
-    console.log(last_comments.length);
-    let lastComments_detail = [];
-    for (let comment of last_comments) {
-        let objIdea = await idea.findOne({_id: comment.ideaID});
-        let objAuthor = await staff.findOne({_id: comment.author});
-        if(objIdea === null || objAuthor===null) {
-            if(objIdea === null)
-            console.log('Idea lost: ', comment.ideaID);
-            else if(objAuthor===null)
-            console.log('Author lost: ', comment.author);
-            continue;
-        }
-        fs.readdir(objIdea.url, (err, files) => {
-            lastComments_detail.push({
-                idea: objIdea,
-                value: files,
-                linkValue: objIdea.url.slice(7),
-                name: objIdea.name,
-                comment_len: objIdea.comments.length,
-                comment_content: comment.comment,
-                n_likes: objIdea.like,
-                n_dislikes: objIdea.dislike,
-                author: objAuthor,
-                time: comment.time.toString().slice(0, -25)
-            })
-        });
-    }
     try {
+        let listComments = await comment.find();
+        let len_comments = listComments.length;
+        let last_comments = [];
+        if (len_comments == 0) {
+            last_comments = [];
+        }
+        else if (len_comments < 5) {
+            last_comments = listComments.reverse();
+        }
+        else {
+            last_comments = listComments.slice(-5, len_comments).reverse();
+        }
+
+        console.log(last_comments.length);
+        let lastComments_detail = [];
+        for (let comment of last_comments) {
+            let objIdea = await idea.findOne({_id: comment.ideaID});
+            let objAuthor = await staff.findOne({_id: comment.author});
+            if(objIdea === null || objAuthor===null) {
+                if(objIdea === null)
+                console.log('Idea lost: ', comment.ideaID);
+                else if(objAuthor===null)
+                console.log('Author lost: ', comment.author);
+                continue;
+            }
+            fs.readdir(objIdea.url, (err, files) => {
+                lastComments_detail.push({
+                    idea: objIdea,
+                    value: files,
+                    linkValue: objIdea.url.slice(7),
+                    name: objIdea.name,
+                    comment_len: objIdea.comments.length,
+                    comment_content: comment.comment,
+                    n_likes: objIdea.like,
+                    n_dislikes: objIdea.dislike,
+                    author: objAuthor,
+                    time: comment.time.toString().slice(0, -25)
+                })
+            });
+        }
         res.render('qac/viewLastestComment', { lastComments_detail: lastComments_detail, loginName: req.session.email });
     }
     catch (err) {
         console.log(err);
         // res.render('qac/viewLastestComment', { lastComments_detail: lastComments_detail, loginName: req.session.email });
     }
-    return lastComments_detail;
 }
 
 // ======================== Filter Lastest Comments ========================== //
@@ -141,7 +141,7 @@ exports.mostViewIdeas = async (req, res) => {
         topViews.push(listIdeas[idx_max]);
         i++;
     }
-    // 
+    //
     let mostViewedIdeas = [];
     for (let i of topViews) {
         fs.readdir(i.url, (err, files) => {
@@ -419,4 +419,3 @@ exports.filterLastestIdeas = async (req, res) => {
     });
     res.render('qac/viewLastestIdeas', { lastestIdeas: lastestIdeas, loginName: req.session.email });
 }
-
