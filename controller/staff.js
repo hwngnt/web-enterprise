@@ -137,28 +137,110 @@ exports.viewSubmittedIdeas = async (req, res) => {
 }
 
 exports.viewCategoryDetail = async (req, res) => {
-    let id = req.query.id;
+    let id;
+    let sortBy;
+    if (req.query.id === undefined) {
+        id = req.body.idCategory;
+        sortBy = req.body.sortBy;
+    } else {
+        id = req.query.id;
+    }
     let listFiles = [];
     try {
-        let listIdeas = await idea.find({ categoryID: id }).populate('comments')
+        let listIdeas = await idea.find({ categoryID: id }).populate({ path: 'comments', populate: { path: 'author' } }).populate('author');
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
+
         let listLikes = await likes.find({ staffID: { $all: staff._id } });
         let listDislikes = await dislikes.find({ staffID: { $all: staff._id } });;
+
         let likedIDs = [];
         for (let like of listLikes) {
             likedIDs.push(like.ideaID);
         }
+
         let dislikeIDs = [];
         for (let dislike of listDislikes) {
             dislikeIDs.push(dislike.ideaID);
         }
+
         let aCategory = await category.findById(id);
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
         const fs = require("fs");
-
-        await listIdeas.forEach(async (i) => {
+        var counter = 0;
+        function callBack() {
+            if (listIdeas.length === counter) {
+                if (sortBy === 'like') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.like < a.idea.like) {
+                            return -1;
+                        }
+                        else if (b.idea.like > a.idea.like) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('like');
+                }
+                else if (sortBy === 'comment') {
+                    listFiles.sort((a, b) => {
+                        if (b.idea.comments.length < a.idea.comments.length) {
+                            return -1;
+                        }
+                        else if (b.idea.comments.length > a.idea.comments.length) {
+                            return 1;
+                        } else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('comment');
+                }
+                else if (sortBy === 'time') {
+                    listFiles.sort((a, b) => {
+                        const A = new Date(a.idea.time)
+                        const B = new Date(b.idea.time)
+                        if (A < B) {
+                            return 1;
+                        }
+                        else if (A > B) {
+                            return -1;
+                        }
+                        else {
+                            if (a.idea._id < b.idea._id) {
+                                return -1;
+                            }
+                            if (a.idea._id > b.idea._id) {
+                                return 1;
+                            }
+                        };
+                    });
+                    console.log('time');
+                } else {
+                    listFiles.sort((a, b) => {
+                        if (a.idea._id < b.idea._id) {
+                            return -1;
+                        }
+                        if (a.idea._id > b.idea._id) {
+                            return 1;
+                        }
+                    });
+                    console.log('id');
+                }
+            };
+        };
+        listIdeas.forEach(async (i) => {
             fs.readdir(i.url, (err, files) => {
                 listFiles.push({
                     value: files,
@@ -167,6 +249,8 @@ exports.viewCategoryDetail = async (req, res) => {
                     idLikeds: likedIDs,
                     idDislikes: dislikeIDs,
                 });
+                counter = counter + 1;
+                callBack();
             });
         })
         // listFiles.countDocuments((err, count) => {
@@ -455,7 +539,7 @@ exports.filterLatestComment = async (req, res) => {
         // console.log(comment.ideaID);
         let objIdea = await idea.findOne(comment.ideadID);
         // console.log(objIdea);
-        let objAuthor = await staff.findOne(comment.author);
+        let objAuthor = await Staff.findOne(comment.author);
         fs.readdir(objIdea.url, (err, files) => {
             lastComments_detail.push({
                 value: files,
@@ -470,7 +554,7 @@ exports.filterLatestComment = async (req, res) => {
             })
         });
     }
-    res.render('staff/viewLatestComment', { lastComments_detail: lastComments_detail, loginName: req.session.email })
+    res.render('staff/viewLatestComments', { lastComments_detail: lastComments_detail, loginName: req.session.email })
 }
 
 exports.viewMostViewedIdeas = async (req, res) => {
