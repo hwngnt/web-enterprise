@@ -423,7 +423,7 @@ exports.viewLastestIdeas = async (req, res) => {
         last_ideas = listIdeas.slice(-5, len_ideas).reverse();
     }
     let lastestIdeas = [];
-    await last_ideas.forEach(async (i) => {
+    last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             lastestIdeas.push({
                 idea: i,
@@ -460,7 +460,7 @@ exports.filterLastestIdeas = async (req, res) => {
         last_ideas = listIdeas.slice(-n_last, len_ideas).reverse();
     }
     let lastestIdeas = [];
-    await last_ideas.forEach(async (i) => {
+    last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             lastestIdeas.push({
                 idea: i,
@@ -479,6 +479,117 @@ exports.filterLastestIdeas = async (req, res) => {
     res.render('staff/viewLastestIdeas', { lastestIdeas: lastestIdeas, loginName: req.session.email });
 }
 
+exports.viewMostComments = async (req, res) => {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    // check if idea was added
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    // count total 'view = like+dis_like+comment'
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.comments.length);
+    }
+    let top5Views = [];
+    let i = 0;
+    while (i < 5) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        top5Views.push(listIdeas[idx_max]);
+        i++;
+    }
+    // console.log(top5Views);
+    let mostComments = [];
+    let counter = 0;
+    for(let j = 0; j < top5Views.length; j++) {
+        let i = top5Views[j];
+        console.log(i.comments.length);
+        fs.readdir(i.url, (err, files) => {
+            mostComments.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                // comment_content: comments_contents,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                // authors: authors_name,
+                time: i.time.toString().slice(0, -25),
+                // time_comment: time_comments
+            });
+        });
+        
+    };
+    res.render('staff/viewMostComments', { mostComments: mostComments, loginName: req.session.email });
+}
+
+exports.filterMostComments = async function (req, res) {
+    let listIdeas = await idea.find().populate('comments');
+    let n_ideas = listIdeas.length;
+    let n_last = Number(req.body.last);
+    let n_times = n_last;
+    if (n_last > n_ideas) {
+        n_times = n_ideas;
+    }
+    let visited_max = [];
+    for (let m = 0; m < n_ideas; m++) {
+        visited_max.push(0);
+    }
+    let countViews = [];
+    for (let idea of listIdeas) {
+        countViews.push(idea.comments.length);
+    }
+    let topViews = [];
+    let i = 0;
+    while (i < n_times) {
+        let fake_max = -1;
+        let idx_max = -1;
+        let j = 0;
+        while (j < n_ideas) {
+            if (visited_max[j] == 0 && countViews[j] >= fake_max) {
+                fake_max = countViews[j];
+                idx_max = j;
+            }
+            j++;
+        }
+        visited_max[idx_max] = 1;
+        topViews.push(listIdeas[idx_max]);
+        i++;
+    }
+
+    let mostCommnents = [];
+    topViews.forEach(async (i) => {
+        fs.readdir(i.url, (err, files) => {
+            mostCommnents.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                time: i.time.toString().slice(0, -25)
+            });
+        });
+    });
+    res.render('staff/viewMostComments', { mostCommnents: mostCommnents, loginName: req.session.email });
+}
 
 exports.viewLatestComments = async (req, res) => {
     let listComments = await comment.find()
