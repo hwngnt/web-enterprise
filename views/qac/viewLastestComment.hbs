@@ -117,10 +117,16 @@
                     <div class="col">
                         <div class="well" style="width: 700px">
                             <div class="user-comment-box commented-section py-2"
-                                style="border-bottom: 1px dotted #ccc;">
+                                style="border-bottom: 1px dotted #ccc; ">
                                 <div class="second py-2 px-2">
                                     <p style="font-size:medium; text-align: justify;">
-                                        <b>{{author}} - </b> 
+                                        {{#if this.annonymously}}
+                                        
+                                            <b>Annonymously - </b> 
+                                        {{else}}
+                                        
+                                            <b>{{author.name}} - </b>
+                                        {{/if}} 
                                         <script>
                                             var d1 = new Date("{{time}}");
                                             var d2 = Date.now();
@@ -147,8 +153,7 @@
                                         <br>
                                         <span style="font-size: 14px">
                                             {{comment_content}}
-                                        </span>
-                                        
+                                        </span>                         
                                     </p>
                                 </div>
                             </div>
