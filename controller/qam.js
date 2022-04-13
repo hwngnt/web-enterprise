@@ -351,8 +351,9 @@ exports.downloadZip = async (req, res) => {
 exports.downloadCSV = async (req, res) => {
     let id = req.query.id;
     let aCategory = await Category.findById(id);
+    let path= aCategory.name + '.csv'
     const csvWriter = createCsvWriter({
-        path: aCategory.name + '.csv',
+        path: path,
         header: [
           {id: '_id', title: 'ID'},
           {id: 'category', title: 'Category Name'},
@@ -362,61 +363,45 @@ exports.downloadCSV = async (req, res) => {
           {id: 'time', title: 'Time'},
           {id: 'like', title: 'Like'},
           {id: 'dislike', title: 'Dislike'},
-          {id: 'comments', title: 'Comments'},
+          {id: 'comment', title: 'Comments'},
           {id: '__v', title: '__v'}
         ]
     });
-    let listIdeas = await idea.find({ categoryID: id }).populate('categoryID').populate('comments')
+    let listIdeas = await idea.find({ categoryID: id }).populate({path:'comments', populate : { path: 'author'}}).populate('author').populate('categoryID')
     // console.log(listIdeas)
     let CSVAttribute = [];
     listIdeas.forEach(element => {
-        // let categoryName = Category.find({_id: mongoose.Types.ObjectId(element.categoryID.toString())})
-        // let authorName = User.findById(element.author)
-        // let categoryName = element.category
-        console.log(element)
-        // console.log(element.comments.comment)
         // console.log(element)
-        // let listComment = []
-        // for (let obj of element.comments) {
-        //     if(obj != undefined){
-        //         listComment.push(obj)
-        //     }
-        //     else{
-        //         listComment=[]
-        //     }
-        // }
+        // console.log(element.author.name)
+        let listComment = []
+        element.comments.forEach(i => {
+            // console.log(i.comment)
+            listComment.push(i.comment)
+        })
         // console.log(listComment)
-        // let listCommentText = []
-        // for (let obj of listComment) {
-        //     if(obj != undefined){
-        //         temp = Comment.findById(obj)
-        //         console.log(temp)
-        //         listCommentText.push(temp.comment)
-        //         console.log(temp.comment)
-        //     }
-        //     else{
-        //         listCommentText=[]
-        //     }
-        // }
         CSVAttribute.push({
             _id: element._id,
-            // category: categoryName.name,
+            category: element.categoryID.name,
             name: element.name,
             url: element.url,
-            // author: authorName.email,
+            author: element.author.name,
             time: element.time,
             like: element.like,
             dislike: element.dislike,
-            // comment: listCommentText
+            comment: listComment
         })
-        listComment = []
+        // listComment = []
         // console.log("---------")
     })
     // console.log(CSVAttribute)
-    // const data = listIdeas;
-    // csvWriter
-    // .writeRecords(data)
-    // .then(()=> console.log('The CSV file was written successfully'));
+    const data = CSVAttribute;
+    // console.log(__dirname)
+    // res.send(csvWriter
+    //     .writeRecords(data)
+    //     .then(()=> console.log('The CSV file was written successfully')));
+    csvWriter
+    .writeRecords(data)
+    .then(()=> res.download(path));
 }
 exports.numberOfIdeasByYear = async (req, res) => {
     let yearStart = 2020;
