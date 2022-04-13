@@ -368,17 +368,12 @@ exports.downloadCSV = async (req, res) => {
         ]
     });
     let listIdeas = await idea.find({ categoryID: id }).populate({path:'comments', populate : { path: 'author'}}).populate('author').populate('categoryID')
-    // console.log(listIdeas)
     let CSVAttribute = [];
     listIdeas.forEach(element => {
-        // console.log(element)
-        // console.log(element.author.name)
         let listComment = []
         element.comments.forEach(i => {
-            // console.log(i.comment)
             listComment.push(i.comment)
         })
-        // console.log(listComment)
         CSVAttribute.push({
             _id: element._id,
             category: element.categoryID.name,
@@ -390,15 +385,8 @@ exports.downloadCSV = async (req, res) => {
             dislike: element.dislike,
             comment: listComment
         })
-        // listComment = []
-        // console.log("---------")
     })
-    // console.log(CSVAttribute)
     const data = CSVAttribute;
-    // console.log(__dirname)
-    // res.send(csvWriter
-    //     .writeRecords(data)
-    //     .then(()=> console.log('The CSV file was written successfully')));
     csvWriter
     .writeRecords(data)
     .then(()=> res.download(path));
