@@ -267,7 +267,6 @@ exports.doAddStaff = async (req, res) => {
             });
         });
         newStaff = await newStaff.save();
-        //console.log(newTrainee);
         res.redirect('/admin/viewStaff');
     }
     catch (error) {

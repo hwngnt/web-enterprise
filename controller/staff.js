@@ -148,6 +148,7 @@ exports.viewCategoryDetail = async (req, res) => {
     let listFiles = [];
     try {
         let listIdeas = await idea.find({ categoryID: id }).populate({ path: 'comments', populate: { path: 'author' } }).populate('author');
+
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
 
@@ -253,9 +254,6 @@ exports.viewCategoryDetail = async (req, res) => {
                 callBack();
             });
         })
-        // listFiles.countDocuments((err, count) => {
-        //     console.log(err)
-        // })
 
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {
