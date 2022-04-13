@@ -412,11 +412,18 @@ exports.doEditDate = async (req, res) => {
     let aCategory = await category.findById(id);
     console.log(req.body.dateStart)
     console.log(req.body.dateEnd)
-    aCategory.dateStart = new Date(req.body.dateStart);
-    aCategory.dateEnd = new Date(req.body.dateEnd);
+    let errors
     try {
-        aCategory = await aCategory.save();
-        res.redirect('/admin/viewCategory');
+        if(req.body.dateStart < req.body.dateEnd){
+            aCategory.dateStart = new Date(req.body.dateStart);
+            aCategory.dateEnd = new Date(req.body.dateEnd);
+            aCategory = await aCategory.save();
+            res.redirect('/admin/viewCategory');
+        }
+        else{
+            errors = 'End date must be greater than start date';
+            res.render('admin/editDate', { errors: errors, aCategory: aCategory, loginName: req.session.email })
+        }
     }
     catch (error) {
         console.log(error);
