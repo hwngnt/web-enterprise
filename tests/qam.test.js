@@ -71,15 +71,15 @@ describe('Test qam controller', () => {
 
       jest.spyOn(fs, 'access').mockResolvedValueOnce(true)
 
-      jest.spyOn(Category, 'save').mockResolvedValueOnce({
+      jest.spyOn(Category, 'create').mockResolvedValueOnce({
         name: 'Test',
         description: 'Test',
         // co the add field bat ki vi minh dang gia lap truy van
       });
 
       // sau khi mock het roi, va truyen du data de pass cac logic thi goi function
-      await qamController.getAddCategory(req, res);
-      expect(res.redirect).toHaveBeenCalledWith("qam/qamAddCategory", {"loginName": "Test@gmail.com"});
+      await qamController.doAddCategory(req, res);
+      expect(res.redirect).toHaveBeenCalledWith("/qam_index");
     })
   })
 })

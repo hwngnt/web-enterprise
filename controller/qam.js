@@ -54,15 +54,8 @@ exports.doAddCategory = async (req, res) => {
         }
     }
     console.log(req.body.name)
-    let newCategory = new Category({
-        name: req.body.name,
-        description: req.body.description,
-        dateStart: date,
-        dateEnd: newDate,
-        url: 'public/folder/' + req.body.name
-    })
     fs.access('public/folder/' + req.body.name, (error) => {
-        // To check if the given directory 
+        // To check if the given directory
         // already exists or not
         if (error) {
             // If current directory does not exist
@@ -78,7 +71,13 @@ exports.doAddCategory = async (req, res) => {
             console.log("Given Directory already exists !!");
         }
     });
-    newCategory = await newCategory.save();
+    await Category.create({
+        name: req.body.name,
+        description: req.body.description,
+        dateStart: date,
+        dateEnd: newDate,
+        url: 'public/folder/' + req.body.name
+    });
     res.redirect('/qam_index');
 }
 
@@ -96,7 +95,7 @@ exports.getViewCategory = async (req, res) => {
     // let compare = tempDate > aCategory.dateEnd;
     res.render('qam/qamViewCategory', { listCompare: listCompare, loginName: req.session.email })
 }
- 
+
 exports.getCategoryDetail = async (req, res) => {
     let id;
     let sortBy;
