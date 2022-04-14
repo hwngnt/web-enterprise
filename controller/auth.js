@@ -14,6 +14,7 @@ exports.handleLogin = async (req, res) => {
                     req.session.user = user;
                     req.session.email = username;
                     req.session.admin = true;
+                    req.session.sort = 'id';
                     res.redirect('/admin');
                 }else if(user.role == 'Staff'){
                     req.session.user = user;

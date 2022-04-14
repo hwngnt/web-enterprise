@@ -439,13 +439,21 @@ exports.viewSubmittedIdeas = async (req, res) => {
 }
 exports.viewCategoryDetail = async (req, res) => {
     let id;
-    let sortBy;
+    let noPage;
+    console.log(req.body.idCategory);
+    let page = 0;
+    if(req.body.noPage != undefined){
+        page = req.body.noPage;
+    }
     if (req.query.id === undefined) {
         id = req.body.idCategory;
-        sortBy = req.body.sortBy;
     } else {
         id = req.query.id;
     }
+    if( req.body.sortBy != undefined){
+        req.session.sort = req.body.sortBy;
+    }
+    let sortBy = req.session.sort;
     // let id = req.query.id;
     let listFiles = [];
     try {
@@ -473,7 +481,7 @@ exports.viewCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('like');
+                    // console.log('like');
                 }
                 else if (sortBy === 'comment') {
                     listFiles.sort((a, b) => {
@@ -491,7 +499,7 @@ exports.viewCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('comment');
+                    // console.log('comment');
                 }
                 else if (sortBy === 'time') {
                     listFiles.sort((a, b) => {
@@ -512,7 +520,7 @@ exports.viewCategoryDetail = async (req, res) => {
                             }
                         };
                     });
-                    console.log('time');
+                    // console.log('time');
                 } else {
                     listFiles.sort((a, b) => {
                         if (a.idea._id < b.idea._id) {
@@ -522,8 +530,17 @@ exports.viewCategoryDetail = async (req, res) => {
                             return 1;
                         }
                     });
-                    console.log('id');
+                    //console.log('id');
                 }
+                noPage = Math.floor(listIdeas.length/5)+1;
+                let s = page*5;
+                
+                console.log(s+ " nnn " +(s+5));
+                listFiles = listFiles.slice(s,s+5);
+                console.log(noPage);
+                console.log(listFiles.length);
+                //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+                res.render('admin/viewCategoryDetail2', { idCategory: id, listFiles: listFiles, compare: compare, noPage: noPage, loginName: req.session.email });  
             };
         };
         listIdeas.forEach(async (i) => {
@@ -538,11 +555,10 @@ exports.viewCategoryDetail = async (req, res) => {
                 callBack();
             });
         })
-        //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
-        res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+        
     } catch (e) {
-        console.log(e);
-        res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+        // console.log(e);
+        res.render('admin/viewCategoryDetail2', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     }
 }
 

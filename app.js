@@ -28,7 +28,12 @@ hbs.registerHelper('ifCond', function (v1, v2, options) {
 hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
     return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 });
-
+hbs.registerHelper('times', function(n, block) {
+    var accum = '';
+    for(var i = 0; i < n; ++i)
+        accum += block.fn(i);
+    return accum;
+});
 app.use(express.static(__dirname + '/public'));
 app.get('/', (req, res) => {
     res.render('index')
