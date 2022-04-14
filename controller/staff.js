@@ -701,18 +701,6 @@ exports.viewMostViewedIdeas = async (req, res) => {
     let mostViewedIdeas = [];
     let counter = 0;
     for (let i of top5Views) {
-        // let authors_name = [];
-        // let comments_contents = [];
-        // let time_comments = [];
-        // for (let commentID of i.comments) {
-        //     let objComment = await comment.findOne(commentID);
-        //     time_comments.push(objComment.time.toString().slice(0, -25));
-        //     comments_contents.push(objComment.comment);
-        //     let objAuthor = await staff.findOne(objComment.author);
-        //     authors_name.push(objAuthor.name);
-        // }
-        // console.log(comments_contents);
-        // console.log("----");
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
                 idea: i,
@@ -771,7 +759,7 @@ exports.filterMostViewIdeas = async function (req, res) {
     }
 
     let mostViewedIdeas = [];
-    await topViews.forEach(async (i) => {
+    topViews.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
                 idea: i,
