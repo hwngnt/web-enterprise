@@ -3,13 +3,63 @@ const bcrypt = require('bcryptjs');
 const Category = require('../models/category');
 const idea = require('../models/ideas');
 const User = require('../models/user');
+const validation = require('./validation');
 const Comment = require('../models/comments');
 const AdmZip = require('adm-zip');
 var mongoose = require('mongoose');
+const fs = require("fs");
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 exports.getQAM = async (req, res) => {
     res.render('qam/qam_index', { loginName: req.session.email })
+}
+
+exports.changePassword = async (req, res) => {
+    res.render('qam/changePassword', { loginName: req.session.email })
+}
+exports.doChangePassword = async (req, res) => {
+    let user = await Account.findOne({ email: req.session.email });
+    let current = req.body.current;
+    let newpw = req.body.new;
+    let confirm = req.body.confirm;
+    let errors = {};
+    let flag = true;
+    try {
+        await bcrypt.compare(current, user.password)
+            .then((doMatch) => {
+                if (doMatch) {
+                    if (newpw.length < 8) {
+                        flag = false;
+                        Object.assign(errors, { length: "Password must contain 8 characters or more!" });
+                    }
+                    else if (newpw != confirm) {
+                        flag = false;
+                        Object.assign(errors, { check: "New Password and Confirm Password do not match!" });
+                    }
+                }
+                else {
+                    flag = false;
+                    Object.assign(errors, { current: "Old password is incorrect!" });
+                }
+            });
+        if (!flag) {
+            res.render('qam/changePassword', { errors: errors, loginName: req.session.email })
+        }
+        else {
+            await bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newpw, salt, (err, hash) => {
+                    if (err) throw err;
+                    user.password = hash;
+                    user = user.save();
+                    req.session.user = user;
+                    res.redirect('/qam_index')
+                })
+            })
+
+        }
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 exports.getAddCategory = async (req, res) => {
@@ -218,11 +268,14 @@ exports.deleteCategory = async (req, res) => {
     res.redirect('/qam/qamViewCategory');
 }
 
-
 exports.viewLastestIdeas = async (req, res) => {
-    const fs = require("fs");
-    let listIdeas = await idea.find();
+
+    let n_last = Number(req.body.last);
+    let listIdeas = await idea.find().populate('comments');
     let len_ideas = listIdeas.length;
+    if (len_ideas < n_last) {
+        n_last = len_ideas;
+    }
     let last_ideas = [];
     if (len_ideas == 0) {
         last_ideas = [];
@@ -231,12 +284,13 @@ exports.viewLastestIdeas = async (req, res) => {
         last_ideas = listIdeas.reverse();
     }
     else {
-        last_ideas = listIdeas.slice(-5, len_ideas).reverse();
+        last_ideas = listIdeas.slice(-n_last, len_ideas).reverse();
     }
     let lastestIdeas = [];
-    await last_ideas.forEach(async (i) => {
+    last_ideas.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             lastestIdeas.push({
+                idea: i,
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
@@ -245,7 +299,7 @@ exports.viewLastestIdeas = async (req, res) => {
                 idCategory: i.categoryID,
                 n_likes: i.like,
                 n_dislikes: i.dislike,
-                time: i.time
+                time: i.time.toString().slice(0, -25)
             });
         });
     });
@@ -277,19 +331,18 @@ exports.updateCategory = async (req, res) => {
 }
 
 exports.getMostViewed = async (req, res) => {
-    const fs = require("fs");
-    let listIdeas = await idea.find();
+    let listIdeas = await idea.find().populate('comments');
     let n_ideas = listIdeas.length;
+    // check if idea was added
     let visited_max = [];
     for (let m = 0; m < n_ideas; m++) {
         visited_max.push(0);
     }
+    // count total 'view = like+dis_like+comment'
     let countViews = [];
-    // console.log(listIdeas);
     for (let idea of listIdeas) {
         countViews.push(idea.like + idea.dislike + idea.comments.length);
     }
-    // console.log(countViews);
     let top5Views = [];
     let i = 0;
     while (i < 5) {
@@ -307,24 +360,29 @@ exports.getMostViewed = async (req, res) => {
         top5Views.push(listIdeas[idx_max]);
         i++;
     }
-    // console.log(top5Views);
     let mostViewedIdeas = [];
-    await top5Views.forEach(async (i) => {
-        console.log(i);
+    let counter = 0;
+    for (let i of top5Views) {
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
+                idea: i,
                 id: i._id,
                 value: files,
                 linkValue: i.url.slice(7),
                 name: i.name,
                 comment: i.comments.length,
+                // comment_content: comments_contents,
                 idCategory: i.categoryID,
                 n_likes: i.like,
                 n_dislikes: i.dislike,
-                time: i.time
+                // authors: authors_name,
+                time: i.time.toString().slice(0, -25),
+                // time_comment: time_comments
             });
         });
-    });
+        counter = counter + 1;
+    };
+    console.log(mostViewedIdeas.length);
     res.render('qam/qamMostViewed', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }
 
@@ -390,6 +448,7 @@ exports.downloadCSV = async (req, res) => {
     .writeRecords(data)
     .then(()=> res.download(path));
 }
+
 exports.numberOfIdeasByYear = async (req, res) => {
     let yearStart = 2020;
     let yearEnd = 2022;
@@ -430,6 +489,7 @@ exports.numberOfIdeasByYear = async (req, res) => {
     }
     loop();
 }
+
 exports.numberOfIdeasByYear2 = async (req, res) => {
     let year = 2022;
     console.log(req.body.year);
@@ -465,6 +525,7 @@ exports.numberOfIdeasByYear2 = async (req, res) => {
         }
     });
 }
+
 exports.numberOfPeople = async (req, res) => {
     let role = ['QAmanager', 'QAcoordinator', 'Staff'];
     let data = [];
@@ -481,4 +542,30 @@ exports.numberOfPeople = async (req, res) => {
             res.render('qam/numberOfPeoPle', { data: JSON.stringify(data), loginName: req.session.email })
         }
     });
+}
+
+exports.searchCategory = async (req, res) => {
+
+    const searchText = req.body.keyword;
+    console.log(req.body);
+    let listCategory;
+    let listCompare = [];
+    let checkEmpty = validation.checkEmpty(searchText);
+    const searchCondition = new RegExp(searchText, 'i');
+    if (!checkEmpty) {
+        res.redirect('/qam/qamViewCategory');
+    }
+    else {
+        listCategory = await Category.find({ name: searchCondition });
+        let tempDate = new Date();
+        let listCompare = [];
+        listCategory.forEach(element =>{
+            listCompare.push({
+                compare: tempDate > element.dateEnd,
+                category: element
+            });
+        })
+        console.log(listCompare)
+        res.render('qam/qamViewCategory', { listCompare: listCompare, loginName: req.session.email });
+    }
 }
