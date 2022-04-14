@@ -8,6 +8,8 @@ var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json();
 
 router.get('/admin', adminController.getAdmin);
+router.get('/admin/changePassword', isAdmin, adminController.changePassword)
+router.post('/admin/doChangePassword', isAdmin, adminController.doChangePassword)
 
 //QAmanager
 const storageQAmanager = multer.diskStorage({

@@ -54,15 +54,8 @@ exports.doAddCategory = async (req, res) => {
         }
     }
     console.log(req.body.name)
-    let newCategory = new Category({
-        name: req.body.name,
-        description: req.body.description,
-        dateStart: date,
-        dateEnd: newDate,
-        url: 'public/folder/' + req.body.name
-    })
     fs.access('public/folder/' + req.body.name, (error) => {
-        // To check if the given directory 
+        // To check if the given directory
         // already exists or not
         if (error) {
             // If current directory does not exist
@@ -78,7 +71,13 @@ exports.doAddCategory = async (req, res) => {
             console.log("Given Directory already exists !!");
         }
     });
-    newCategory = await newCategory.save();
+    await Category.create({
+        name: req.body.name,
+        description: req.body.description,
+        dateStart: date,
+        dateEnd: newDate,
+        url: 'public/folder/' + req.body.name
+    });
     res.redirect('/qam_index');
 }
 
@@ -96,7 +95,7 @@ exports.getViewCategory = async (req, res) => {
     // let compare = tempDate > aCategory.dateEnd;
     res.render('qam/qamViewCategory', { listCompare: listCompare, loginName: req.session.email })
 }
- 
+
 exports.getCategoryDetail = async (req, res) => {
     let id;
     let sortBy;
@@ -351,8 +350,9 @@ exports.downloadZip = async (req, res) => {
 exports.downloadCSV = async (req, res) => {
     let id = req.query.id;
     let aCategory = await Category.findById(id);
+    let path= aCategory.name + '.csv'
     const csvWriter = createCsvWriter({
-        path: aCategory.name + '.csv',
+        path: path,
         header: [
           {id: '_id', title: 'ID'},
           {id: 'category', title: 'Category Name'},
@@ -362,61 +362,33 @@ exports.downloadCSV = async (req, res) => {
           {id: 'time', title: 'Time'},
           {id: 'like', title: 'Like'},
           {id: 'dislike', title: 'Dislike'},
-          {id: 'comments', title: 'Comments'},
+          {id: 'comment', title: 'Comments'},
           {id: '__v', title: '__v'}
         ]
     });
-    let listIdeas = await idea.find({ categoryID: id }).populate('categoryID')
-    // console.log(listIdeas)
+    let listIdeas = await idea.find({ categoryID: id }).populate({path:'comments', populate : { path: 'author'}}).populate('author').populate('categoryID')
     let CSVAttribute = [];
     listIdeas.forEach(element => {
-        // let categoryName = Category.find({_id: mongoose.Types.ObjectId(element.categoryID.toString())})
-        // let authorName = User.findById(element.author)
-        // let categoryName = element.category
-        
-        console.log(element.categoryID.name)
-        // console.log(element)
-        // let listComment = []
-        // for (let obj of element.comments) {
-        //     if(obj != undefined){
-        //         listComment.push(obj)
-        //     }
-        //     else{
-        //         listComment=[]
-        //     }
-        // }
-        // console.log(listComment)
-        // let listCommentText = []
-        // for (let obj of listComment) {
-        //     if(obj != undefined){
-        //         temp = Comment.findById(obj)
-        //         console.log(temp)
-        //         listCommentText.push(temp.comment)
-        //         console.log(temp.comment)
-        //     }
-        //     else{
-        //         listCommentText=[]
-        //     }
-        // }
+        let listComment = []
+        element.comments.forEach(i => {
+            listComment.push(i.comment)
+        })
         CSVAttribute.push({
             _id: element._id,
-            // category: categoryName.name,
+            category: element.categoryID.name,
             name: element.name,
             url: element.url,
-            // author: authorName.email,
+            author: element.author.name,
             time: element.time,
             like: element.like,
             dislike: element.dislike,
-            // comment: listCommentText
+            comment: listComment
         })
-        listComment = []
-        // console.log("---------")
     })
-    // console.log(CSVAttribute)
-    // const data = listIdeas;
-    // csvWriter
-    // .writeRecords(data)
-    // .then(()=> console.log('The CSV file was written successfully'));
+    const data = CSVAttribute;
+    csvWriter
+    .writeRecords(data)
+    .then(()=> res.download(path));
 }
 exports.numberOfIdeasByYear = async (req, res) => {
     let yearStart = 2020;

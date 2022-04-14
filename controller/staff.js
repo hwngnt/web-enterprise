@@ -9,6 +9,7 @@ const { redirect } = require('express/lib/response');
 const likes = require('../models/likes');
 const dislikes = require('../models/dislikes');
 const Staff = require('../models/staff');
+const nodemailer = require('nodemailer');
 
 exports.getStaff = async (req, res) => {
     res.render('staff/staff', { loginName: req.session.email })
@@ -44,6 +45,7 @@ exports.addIdea = async (req, res) => {
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
     let aStaff = await Staff.findOne({ email: req.session.email });
+    let ideaName = req.body.name;
     req.body.name = req.body.name.replace(" ", "_");
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
@@ -58,7 +60,9 @@ exports.doAddIdea = async (req, res) => {
                         console.log(error);
                     } else {
                         let newIdea;
+                        let checkAnnonymously = false;
                         if (req.body.annonymously != undefined) {
+                            checkAnnonymously = true;
                             newIdea = new idea({
                                 categoryID: aCategory,
                                 name: req.body.name,
@@ -78,6 +82,47 @@ exports.doAddIdea = async (req, res) => {
                                 dislike: 0,
                             })
                         }
+                        
+                        let transporter = nodemailer.createTransport({
+                            host: 'smtp.gmail.com',
+                            port: 465,
+                            secure: true,
+                            auth: {
+                                user: 'staffgroup1gw@gmail.com',
+                                pass: 'neymar9701'
+                            },
+                            tls: { rejectUnauthorized: false }
+                        })
+                        let content = '';
+                        content += `
+                            <div style="padding: 10px; background-color: #003375">
+                                <div style="padding: 10px; background-color: white;">    
+                        `;
+                        content += '<h4 style="color: #0085ff"> From: ' + aStaff.email.toString() + '</h4> <hr>';
+                        content += '<span style="color: black"> Idea name: ' + ideaName.toString() + '</span><br>'; 
+                        content += '<span style="color: black"> Category name: ' + aCategory.name.toString() + '</span><br>'; 
+                        if(!checkAnnonymously){
+                            content += '<span style="color: black"> Staff name: ' + aStaff.name.toString() + '</span>';
+                        }
+                        else{
+                            content += '<span style="color: black"> Staff name: Annonymously </span>';
+                        }
+                        content += '</div> </div>';
+                        let mainOptions = {
+                            from: 'staffgroup1gw@gmail.com',
+                            to: 'hoangdzaik1@gmail.com',
+                            subject: 'New submitted idea' + (Math.round(Math.random()*10000)).toString(),
+                            text: 'abc', 
+                            html: content
+                        }
+                        transporter.sendMail(mainOptions, function(err, infor){
+                            if(err){
+                                console.error(err);
+                            }
+                            else{
+                                console.log('Message sent: ' + info.response);
+                            }
+                        });
                         newIdea = newIdea.save();
                         console.log("New Directory created successfully !!");
                     }
@@ -148,6 +193,7 @@ exports.viewCategoryDetail = async (req, res) => {
     let listFiles = [];
     try {
         let listIdeas = await idea.find({ categoryID: id }).populate({ path: 'comments', populate: { path: 'author' } }).populate('author');
+
         let email = req.session.email;
         let staff = await Staff.findOne({ email: email });
 
@@ -253,9 +299,6 @@ exports.viewCategoryDetail = async (req, res) => {
                 callBack();
             });
         })
-        // listFiles.countDocuments((err, count) => {
-        //     console.log(err)
-        // })
 
         res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     } catch (e) {

@@ -13,7 +13,7 @@ const accSchema = new mongoose.Schema({
     role:{
         type: String,
         required: true
-    },
+    }
 });
 
 

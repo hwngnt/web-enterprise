@@ -4,9 +4,10 @@ const bcrypt = require('bcryptjs');
 exports.handleLogin = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-
+    console.log(username)
     try {
         let user = await Account.findOne({ email: username });
+        console.log(user)
         await bcrypt.compare(password, user.password).then((doMatch) => {
             if (doMatch) {
                 if (user.role == 'admin') {

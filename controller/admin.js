@@ -3,13 +3,60 @@ const Staff = require('../models/staff');
 const QAcoordinator = require('../models/QAcoordinator');
 const QAmanager = require('../models/QAmanager');
 const category = require('../models/category');
+const Comments = require('../models/comments');
 const idea = require('../models/ideas');
 const validation = require('./validation');
 const bcrypt = require('bcryptjs');
 exports.getAdmin = async (req, res) => {
     res.render('admin/admin', { loginName: req.session.email })
 }
+exports.changePassword = async (req, res) => {
+    res.render('admin/changePassword', { loginName: req.session.email })
+}
+exports.doChangePassword = async (req, res) => {
+    let user = await Account.findOne({ email: req.session.email });
+    let current = req.body.current;
+    let newpw = req.body.new;
+    let confirm = req.body.confirm;
+    let errors = {};
+    let flag = true;
+    try {
+        await bcrypt.compare(current, user.password)
+            .then((doMatch) => {
+                if (doMatch) {
+                    if (newpw.length < 8) {
+                        flag = false;
+                        Object.assign(errors, { length: "Password must contain 8 characters or more!" });
+                    }
+                    else if (newpw != confirm) {
+                        flag = false;
+                        Object.assign(errors, { check: "New Password and Confirm Password do not match!" });
+                    }
+                }
+                else {
+                    flag = false;
+                    Object.assign(errors, { current: "Old password is incorrect!" });
+                }
+            });
+        if (!flag) {
+            res.render('admin/changePassword', { errors: errors, loginName: req.session.email })
+        }
+        else {
+            await bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newpw, salt, (err, hash) => {
+                    if (err) throw err;
+                    user.password = hash;
+                    user = user.save();
+                    req.session.user = user;
+                    res.redirect('/admin')
+                })
+            })
 
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 //QAmanager
 exports.viewQAmanager = async (req, res) => {
     let listQAmanager = await QAmanager.find();
@@ -267,7 +314,6 @@ exports.doAddStaff = async (req, res) => {
             });
         });
         newStaff = await newStaff.save();
-        //console.log(newTrainee);
         res.redirect('/admin/viewStaff');
     }
     catch (error) {
@@ -312,8 +358,9 @@ exports.deleteStaff = async (req, res) => {
         else
             console.log('Account is deleted');
     })
+    await idea.deleteMany({'author': aStaff.id});
+    await Comments.deleteMany({'author': aStaff.id});
     await Staff.findByIdAndRemove(id).then(data = {});
-
     res.redirect('/admin/viewStaff');
 }
 exports.searchStaff = async (req, res) => {
@@ -365,11 +412,18 @@ exports.doEditDate = async (req, res) => {
     let aCategory = await category.findById(id);
     console.log(req.body.dateStart)
     console.log(req.body.dateEnd)
-    aCategory.dateStart = new Date(req.body.dateStart);
-    aCategory.dateEnd = new Date(req.body.dateEnd);
+    let errors
     try {
-        aCategory = await aCategory.save();
-        res.redirect('/admin/viewCategory');
+        if(req.body.dateStart < req.body.dateEnd){
+            aCategory.dateStart = new Date(req.body.dateStart);
+            aCategory.dateEnd = new Date(req.body.dateEnd);
+            aCategory = await aCategory.save();
+            res.redirect('/admin/viewCategory');
+        }
+        else{
+            errors = 'End date must be greater than start date';
+            res.render('admin/editDate', { errors: errors, aCategory: aCategory, loginName: req.session.email })
+        }
     }
     catch (error) {
         console.log(error);
