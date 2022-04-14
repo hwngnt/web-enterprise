@@ -106,56 +106,74 @@
                                     <i>{{n_dislikes}}</i>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div style="font-weight: 900px; font-size: 1.2rem; margin-top: 3px; border: none;">
-                                    {{comment_len}} Comments
+                            <div class="col-sm-1">
+                                <div class="btn " type="submit" style="font-size: 15px; border: none;" /disabled>
+                                    <i class="fa fa-comment" style=" color: #6a6e72;"></i>
+                                    <i>{{idea.comments.length}}</i>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="well" style="width: 700px">
-                            <div class="user-comment-box commented-section py-2"
-                                style="border-bottom: 1px dotted #ccc;">
-                                <div class="second py-2 px-2">
-                                    <p style="font-size:medium; text-align: justify;">
-                                        <b>{{author}} - </b>
-                                        <script>
-                                            var d1 = new Date("{{time}}");
-                                            var d2 = Date.now();
-                                            var diff = Math.floor((d2 - d1) / 1000 / 60)
-                                            if (diff < 60) {
-                                                document.write(diff + " minutes ago");
-                                            } else {
-
-                                                diff = Math.floor(diff / 60);
-                                                if (diff < 24) {
-                                                    document.write(diff + " hours ago");
+                <div class="user-comment-box commented-section py-2">
+                    <div class="second py-2 px-2" style="margin-left: 15px;">
+                        <ul class="media-list">
+                            <li class="media">
+                                <div class="pull-left">
+                                    {{#if this.annonymously}}
+                                    <img class="rounded-circle" src="/images/user.png" width="40px" height="40px" />
+                                    {{else}}
+                                    <img class="rounded-circle" src="/uploads/staff/{{this.author.img}}" width="40px"
+                                        height="40px">
+                                    {{/if}}
+                                </div>
+                                <div class="media-body">
+                                    <h3>
+                                        {{#if this.annonymously}}
+                                        {{else}}
+                                        {{this.author.name}}
+                                        {{/if}}
+                                    </h3>
+                                    <div class="well well-lg" style="width: 600px; padding: 10px;">
+                                        <p style="font-size: medium; margin:0; text-align: justify;">
+                                            {{comment_content}}
+                                        </p>
+                                    </div>
+                                    <div class="pull-right" style="margin-top: -3%;">
+                                        <img src="/images/images.png" width="10px" height="10px">
+                                        <span style="width: 50px;">
+                                            <script>
+                                                var d1 = new Date("{{this.time}}");
+                                                var d2 = Date.now();
+                                                var diff = Math.floor((d2 - d1) / 1000 / 60)
+                                                if (diff < 60) {
+                                                    document.write(diff + " minutes ago");
                                                 } else {
-                                                    diff = Math.floor(diff / 24);
-                                                    if (diff < 365) {
-                                                        document.write(diff + " days ago");
-                                                    }
-                                                    else {
-                                                        diff = Math.floor(diff / 365);
-                                                        document.write(diff + " years ago");
+
+                                                    diff = Math.floor(diff / 60);
+                                                    if (diff < 24) {
+                                                        document.write(diff + " hours ago");
+                                                    } else {
+                                                        diff = Math.floor(diff / 24);
+                                                        if (diff < 365) {
+                                                            document.write(diff + " days ago");
+                                                        }
+                                                        else {
+                                                            diff = Math.floor(diff / 365);
+                                                            document.write(diff + " years ago");
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        </script>
-                                        <br>
-                                        <span style="font-size: 14px">
-                                            {{comment_content}}
+                                            </script>
                                         </span>
-
-                                    </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+
+
             </div>
             {{/each}}
         </div>
