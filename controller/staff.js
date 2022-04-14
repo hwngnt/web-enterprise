@@ -525,6 +525,8 @@ exports.filterLastestIdeas = async (req, res) => {
 exports.viewMostComments = async (req, res) => {
     let listIdeas = await idea.find().populate('comments');
     let n_ideas = listIdeas.length;
+    let default_ideas = 5;
+    if (n_ideas < default_ideas) default_ideas = n_ideas;
     // check if idea was added
     let visited_max = [];
     for (let m = 0; m < n_ideas; m++) {
@@ -535,9 +537,9 @@ exports.viewMostComments = async (req, res) => {
     for (let idea of listIdeas) {
         countViews.push(idea.comments.length);
     }
-    let top5Views = [];
+    let topViews = [];
     let i = 0;
-    while (i < 5) {
+    while (i < default_ideas) {
         let fake_max = -1;
         let idx_max = -1;
         let j = 0;
@@ -549,15 +551,14 @@ exports.viewMostComments = async (req, res) => {
             j++;
         }
         visited_max[idx_max] = 1;
-        top5Views.push(listIdeas[idx_max]);
+        topViews.push(listIdeas[idx_max]);
         i++;
     }
-    // console.log(top5Views);
+    console.log(topViews);
     let mostComments = [];
     let counter = 0;
-    for(let j = 0; j < top5Views.length; j++) {
-        let i = top5Views[j];
-        console.log(i.comments.length);
+    for (let j = 0; j < topViews.length; j++) {
+        let i = topViews[j];
         fs.readdir(i.url, (err, files) => {
             mostComments.push({
                 idea: i,
@@ -575,7 +576,6 @@ exports.viewMostComments = async (req, res) => {
                 // time_comment: time_comments
             });
         });
-        
     };
     res.render('staff/viewMostComments', { mostComments: mostComments, loginName: req.session.email });
 }
@@ -818,7 +818,7 @@ exports.filterMostViewIdeas = async function (req, res) {
             });
         });
     });
-    res.render('qac/mostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+    res.render('staff/viewMostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }
 
 exports.paginations = async (req, res) => {
