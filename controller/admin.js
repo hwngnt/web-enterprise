@@ -67,7 +67,7 @@ exports.addQAmanager = async (req, res) => {
     res.render('admin/addQAmanager', { loginName: req.session.email });
 }
 exports.doAddQAmanager = async (req, res) => {
-    console.log(req.body)
+    //console.log(req.body)
     let newQAmanager;
     if (req.file) {
         newQAmanager = new QAmanager({
@@ -100,8 +100,7 @@ exports.doAddQAmanager = async (req, res) => {
             });
         });
         newQAmanager = await newQAmanager.save();
-        // res.redirect('/admin/viewQualityAssuranceManager');
-        return 1;
+        res.redirect('/admin/viewQualityAssuranceManager');
     }
     catch (error) {
         console.log(error);
