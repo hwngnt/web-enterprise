@@ -82,4 +82,49 @@ describe('Test qam controller', () => {
       expect(res.redirect).toHaveBeenCalledWith("/qam_index");
     })
   })
+
+  describe('Test get change password', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    })
+    it('it should return view route and data', async () => {
+      const req = {
+        session: {
+          email: 'Test@gmail.com'
+        }
+      };
+      const res = mockResponse();
+      await qamController.changePassword(req, res);
+
+      expect(res.render).toHaveBeenCalledWith("qam/changePassword", {"loginName": "Test@gmail.com"});
+    })
+  })
+
+  describe('Test do search category', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    })
+    it('it should return view route and data', async () => {
+      const req = {
+        body: {
+          keyword: 'lll',
+        },
+        session: {
+          email: 'Test@gmail.com'
+        }
+      };
+      const res = mockResponse();
+
+      jest.spyOn(Category, 'find').mockResolvedValueOnce([{
+        name: 'lll',
+        // co the add field bat ki vi minh dang gia lap truy van
+      }]);
+
+      // sau khi mock het roi, va truyen du data de pass cac logic thi goi function
+      await qamController.searchCategory(req, res);
+      expect(res.render).toHaveBeenCalledWith("qam/qamViewCategory", {"listCompare": [{"category": {"name": "lll"}, "compare": false}], "loginName": "Test@gmail.com"});
+    })
+  })
 })
