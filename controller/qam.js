@@ -19,6 +19,7 @@ exports.getQAM = async (req, res) => {
 exports.changePassword = async (req, res) => {
     res.render('qam/changePassword', { loginName: req.session.email })
 }
+
 exports.doChangePassword = async (req, res) => {
     let user = await Account.findOne({ email: req.session.email });
     let current = req.body.current;
@@ -364,43 +365,23 @@ exports.getMostViewed = async (req, res) => {
     }
     let mostViewedIdeas = [];
     let counter = 0;
-    // for (let i of top5Views) {
-    //     fs.readdir(i.url, (err, files) => {
-    //         mostViewedIdeas.push({
-    //             idea: i,
-    //             id: i._id,
-    //             value: files,
-    //             linkValue: i.url.slice(7),
-    //             name: i.name,
-    //             comment: i.comments.length,
-    //             // comment_content: comments_contents,
-    //             idCategory: i.categoryID,
-    //             n_likes: i.like,
-    //             n_dislikes: i.dislike,
-    //             // authors: authors_name,
-    //             time: i.time.toString().slice(0, -25),
-    //             // time_comment: time_comments
-    //         });
-    //     });
-    //     counter = counter + 1;
-    // };
-
-    for (let i = 0; i < top5Views.length; i++) {
-        const files = await fsPromises.readdir(i.url)
-        mostViewedIdeas.push({
-            idea: i,
-            id: i._id,
-            value: files,
-            linkValue: i.url.slice(7),
-            name: i.name,
-            comment: i.comments.length,
-            // comment_content: comments_contents,
-            idCategory: i.categoryID,
-            n_likes: i.like,
-            n_dislikes: i.dislike,
-            // authors: authors_name,
-            time: i.time.toString().slice(0, -25),
-            // time_comment: time_comments
+    for (let i of top5Views) {
+        fs.readdir(i.url, (err, files) => {
+            mostViewedIdeas.push({
+                idea: i,
+                id: i._id,
+                value: files,
+                linkValue: i.url.slice(7),
+                name: i.name,
+                comment: i.comments.length,
+                // comment_content: comments_contents,
+                idCategory: i.categoryID,
+                n_likes: i.like,
+                n_dislikes: i.dislike,
+                // authors: authors_name,
+                time: i.time.toString().slice(0, -25),
+                // time_comment: time_comments
+            });
         });
         counter = counter + 1;
     };
