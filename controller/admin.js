@@ -388,14 +388,13 @@ exports.viewCategory = async (req, res) => {
 exports.searchCategory = async (req, res) => {
     const searchText = req.body.keyword;
     let listCategory;
-    let checkAlphaName = validation.checkAlphabet(searchText);
     let checkEmpty = validation.checkEmpty(searchText);
     const searchCondition = new RegExp(searchText, 'i');
 
     if (!checkEmpty) {
         res.redirect('/admin/viewCategory');
     }
-    else if (checkAlphaName) {
+    else {
         listCategory = await category.find({ name: searchCondition });
     }
     res.render('admin/viewCategory', { listCategory: listCategory, loginName: req.session.email });

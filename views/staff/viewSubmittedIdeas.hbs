@@ -29,6 +29,8 @@
                 <tr>
                   <th>Name</th>
                   <th>Description</th>
+                  <th>Date Start</th>
+                  <th>Date End</th>
                 </tr>
               </thead>
               <tbody>
@@ -42,6 +44,10 @@
                   <td class="text-center align-middle">
                     {{description}}
                   </td>
+                  <td class="text-nowrap align-middle"><span>{{dateFormat dateStart
+                      "YYYY-MM-DD"}}</span></td>
+                  <td class="text-nowrap align-middle"><span>{{dateFormat dateEnd
+                      "YYYY-MM-DD"}}</span></td>
                 </tr>
                 {{/each}}
               </tbody>

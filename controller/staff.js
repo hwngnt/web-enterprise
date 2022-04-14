@@ -24,7 +24,6 @@ exports.searchStaff = async (req, res) => {
     const searchText = req.body.keyword;
     console.log(req.body);
     let listStaff;
-    let checkAlphaName = validation.checkAlphabet(searchText);
     let checkEmpty = validation.checkEmpty(searchText);
     const searchCondition = new RegExp(searchText, 'i');
 
@@ -32,7 +31,7 @@ exports.searchStaff = async (req, res) => {
     if (!checkEmpty) {
         res.redirect('/staff/viewStaff');
     }
-    else if (checkAlphaName) {
+    else {
         listStaff = await Staff.find({ name: searchCondition });
     }
     res.render('staff/viewStaff', { listStaff: listStaff, loginName: req.session.email });
@@ -82,7 +81,7 @@ exports.doAddIdea = async (req, res) => {
                                 dislike: 0,
                             })
                         }
-                        
+
                         let transporter = nodemailer.createTransport({
                             host: 'smtp.gmail.com',
                             port: 465,
@@ -99,27 +98,27 @@ exports.doAddIdea = async (req, res) => {
                                 <div style="padding: 10px; background-color: white;">    
                         `;
                         content += '<h4 style="color: #0085ff"> From: ' + aStaff.email.toString() + '</h4> <hr>';
-                        content += '<span style="color: black"> Idea name: ' + ideaName.toString() + '</span><br>'; 
-                        content += '<span style="color: black"> Category name: ' + aCategory.name.toString() + '</span><br>'; 
-                        if(!checkAnnonymously){
+                        content += '<span style="color: black"> Idea name: ' + ideaName.toString() + '</span><br>';
+                        content += '<span style="color: black"> Category name: ' + aCategory.name.toString() + '</span><br>';
+                        if (!checkAnnonymously) {
                             content += '<span style="color: black"> Staff name: ' + aStaff.name.toString() + '</span>';
                         }
-                        else{
+                        else {
                             content += '<span style="color: black"> Staff name: Annonymously </span>';
                         }
                         content += '</div> </div>';
                         let mainOptions = {
                             from: 'staffgroup1gw@gmail.com',
                             to: 'hoangdzaik1@gmail.com',
-                            subject: 'New submitted idea' + (Math.round(Math.random()*10000)).toString(),
-                            text: 'abc', 
+                            subject: 'New submitted idea' + (Math.round(Math.random() * 10000)).toString(),
+                            text: 'abc',
                             html: content
                         }
-                        transporter.sendMail(mainOptions, function(err, infor){
-                            if(err){
+                        transporter.sendMail(mainOptions, function (err, infor) {
+                            if (err) {
                                 console.error(err);
                             }
-                            else{
+                            else {
                                 console.log('Message sent: ' + info.response);
                             }
                         });
@@ -147,14 +146,13 @@ exports.doAddFile = async (req, res) => {
 exports.searchCategory = async (req, res) => {
     const searchText = req.body.keyword;
     let listCategory;
-    let checkAlphaName = validation.checkAlphabet(searchText);
     let checkEmpty = validation.checkEmpty(searchText);
     const searchCondition = new RegExp(searchText, 'i');
 
     if (!checkEmpty) {
         res.redirect('/staff/viewSubmittedIdeas');
     }
-    else if (checkAlphaName) {
+    else {
         listCategory = await category.find({ name: searchCondition });
     }
     res.render('staff/viewSubmittedIdeas', { listCategory: listCategory, loginName: req.session.email });
@@ -326,13 +324,18 @@ exports.doComment = async (req, res) => {
             comment: req.body.comment,
         });
     }
-
-    newComment = await newComment.save();
-    aIdea.comments.push(newComment);
-    aIdea = await aIdea.save();
-
-    //console.log(newComment.comment);
-    res.redirect('../viewCategoryDetail?id=' + id);
+    let aCategory = await category.findById(id);
+    let tempDate = new Date();
+    let compare = tempDate > aCategory.dateEnd;
+    if (compare) {
+        res.redirect('../viewCategoryDetail?id=' + id)
+    } else {
+        newComment = await newComment.save();
+        aIdea.comments.push(newComment);
+        aIdea = await aIdea.save();
+        //console.log(newComment.comment);
+        res.redirect('../viewCategoryDetail?id=' + id);
+    }
 }
 
 
@@ -525,6 +528,8 @@ exports.filterLastestIdeas = async (req, res) => {
 exports.viewMostComments = async (req, res) => {
     let listIdeas = await idea.find().populate('comments');
     let n_ideas = listIdeas.length;
+    let default_ideas = 5;
+    if (n_ideas < default_ideas) default_ideas = n_ideas;
     // check if idea was added
     let visited_max = [];
     for (let m = 0; m < n_ideas; m++) {
@@ -535,9 +540,9 @@ exports.viewMostComments = async (req, res) => {
     for (let idea of listIdeas) {
         countViews.push(idea.comments.length);
     }
-    let top5Views = [];
+    let topViews = [];
     let i = 0;
-    while (i < 5) {
+    while (i < default_ideas) {
         let fake_max = -1;
         let idx_max = -1;
         let j = 0;
@@ -549,15 +554,14 @@ exports.viewMostComments = async (req, res) => {
             j++;
         }
         visited_max[idx_max] = 1;
-        top5Views.push(listIdeas[idx_max]);
+        topViews.push(listIdeas[idx_max]);
         i++;
     }
-    // console.log(top5Views);
+    console.log(topViews);
     let mostComments = [];
     let counter = 0;
-    for(let j = 0; j < top5Views.length; j++) {
-        let i = top5Views[j];
-        console.log(i.comments.length);
+    for (let j = 0; j < topViews.length; j++) {
+        let i = topViews[j];
         fs.readdir(i.url, (err, files) => {
             mostComments.push({
                 idea: i,
@@ -575,7 +579,6 @@ exports.viewMostComments = async (req, res) => {
                 // time_comment: time_comments
             });
         });
-        
     };
     res.render('staff/viewMostComments', { mostComments: mostComments, loginName: req.session.email });
 }
@@ -635,40 +638,53 @@ exports.filterMostComments = async function (req, res) {
 }
 
 exports.viewLatestComments = async (req, res) => {
-    let listComments = await comment.find()
-    let len_comments = listComments.length;
-    let last_comments = [];
+    try {
+        let listComments = await comment.find();
+        let len_comments = listComments.length;
+        let last_comments = [];
+        if (len_comments == 0) {
+            last_comments = [];
+        }
+        else if (len_comments < 5) {
+            last_comments = listComments.reverse();
+        }
+        else {
+            last_comments = listComments.slice(-5, len_comments).reverse();
+        }
 
-    if (len_comments == 0) {
-        last_comments = [];
+        console.log(last_comments.length);
+        let lastComments_detail = [];
+        for (let comment of last_comments) {
+            let objIdea = await idea.findOne({ _id: comment.ideaID });
+            let objAuthor = await Staff.findOne({ _id: comment.author });
+            if (objIdea === null || objAuthor === null) {
+                if (objIdea === null)
+                    console.log('Idea lost: ', comment.ideaID);
+                else if (objAuthor === null)
+                    console.log('Author lost: ', comment.author);
+                continue;
+            }
+            fs.readdir(objIdea.url, (err, files) => {
+                lastComments_detail.push({
+                    idea: objIdea,
+                    value: files,
+                    linkValue: objIdea.url.slice(7),
+                    name: objIdea.name,
+                    comment_len: objIdea.comments.length,
+                    comment_content: comment.comment,
+                    n_likes: objIdea.like,
+                    n_dislikes: objIdea.dislike,
+                    author: objAuthor,
+                    time: comment.time.toString().slice(0, -25)
+                })
+            });
+        }
+        res.render('staff/viewLatestComments', { lastComments_detail: lastComments_detail, loginName: req.session.email });
     }
-    else if (len_comments < 5) {
-        last_comments = listComments.reverse();
+    catch (err) {
+        console.log(err);
+        // res.render('qac/viewLastestComment', { lastComments_detail: lastComments_detail, loginName: req.session.email });
     }
-    else {
-        last_comments = listComments.slice(-5, len_comments).reverse();
-    }
-    let lastComments_detail = [];
-    for (let comment of last_comments) {
-        // console.log(comment.ideaID);
-        let objIdea = await idea.findOne(comment.ideadID);
-        // console.log(objIdea);
-        let objAuthor = await Staff.findOne(comment.author);
-        fs.readdir(objIdea.url, (err, files) => {
-            lastComments_detail.push({
-                value: files,
-                linkValue: objIdea.url.slice(7),
-                name: objIdea.name,
-                comment_len: objIdea.comments.length,
-                comment_content: comment.comment,
-                n_likes: objIdea.like,
-                n_dislikes: objIdea.dislike,
-                author: objAuthor.name,
-                time: comment.time.toString().slice(0, -25)
-            })
-        });
-    }
-    res.render('staff/viewLatestComments', { lastComments_detail: lastComments_detail, loginName: req.session.email })
 }
 
 exports.filterLatestComment = async (req, res) => {
@@ -744,18 +760,6 @@ exports.viewMostViewedIdeas = async (req, res) => {
     let mostViewedIdeas = [];
     let counter = 0;
     for (let i of top5Views) {
-        // let authors_name = [];
-        // let comments_contents = [];
-        // let time_comments = [];
-        // for (let commentID of i.comments) {
-        //     let objComment = await comment.findOne(commentID);
-        //     time_comments.push(objComment.time.toString().slice(0, -25));
-        //     comments_contents.push(objComment.comment);
-        //     let objAuthor = await staff.findOne(objComment.author);
-        //     authors_name.push(objAuthor.name);
-        // }
-        // console.log(comments_contents);
-        // console.log("----");
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
                 idea: i,
@@ -814,7 +818,7 @@ exports.filterMostViewIdeas = async function (req, res) {
     }
 
     let mostViewedIdeas = [];
-    await topViews.forEach(async (i) => {
+    topViews.forEach(async (i) => {
         fs.readdir(i.url, (err, files) => {
             mostViewedIdeas.push({
                 idea: i,
@@ -830,7 +834,7 @@ exports.filterMostViewIdeas = async function (req, res) {
             });
         });
     });
-    res.render('qac/mostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
+    res.render('staff/viewMostViewedIdeas', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }
 
 exports.paginations = async (req, res) => {

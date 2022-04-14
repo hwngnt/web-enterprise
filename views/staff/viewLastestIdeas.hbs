@@ -50,6 +50,7 @@
     {{> staffHeader}}
     <div class="row">
         <div class="col" style="margin: 5% 30%;">
+            <h1 class="display-1 font-weight-bold" style="text-align:center">Latest Ideas</h1>
             <div class="dropdown">
                 <button onclick="myFunction()" class="dropbtn">Lastest by ↓</button>
                 <div id="myDropdown" class="dropdown-content">
@@ -105,9 +106,10 @@
                                     <i>{{n_dislikes}}</i>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div style="font-weight: 900px; font-size: 1.2rem; margin-top: 3px; border: none;">
-                                    {{comment}} Comments
+                            <div class="col-sm-1">
+                                <div class="btn " type="submit" style="font-size: 15px; border: none;" /disabled>
+                                    <i class="fa fa-comment" style=" color: #6a6e72;"></i>
+                                    <i>{{idea.comments.length}}</i>
                                 </div>
                             </div>
                         </div>
@@ -116,14 +118,16 @@
                 <div class="row">
                     <div class="col">
                         <div class="well" style="width: 700px">
+                            {{#ifEquals idea.comments.length 0}}
+                            {{else}}
                             <button class="see-less" style=" font-size: 1.2rem; border: none; color: #3e5745; ">See
                                 Less...</button>
                             <button class="see-more" style=" font-size: 1.2rem; border: none; color:#3e5745; ">Read more
                                 comments...</button>
-
+                            {{/ifEquals}}
                             {{#each idea.comments}}
                             <div class="user-comment-box commented-section py-2"
-                                style="border-bottom: 1px dotted #ccc; ">
+                                style="border-bottom: 1px dotted #ccc; display:none;">
                                 <div class="second py-2 px-2">
                                     <p style="font-size:medium; text-align: justify;">{{this.comment}}</p>
                                     <div class="d-flex justify-content-between py-1 pt-2">
@@ -171,10 +175,10 @@
                         </div>
                     </div>
                 </div>
-                </div>
-                {{/each}}
             </div>
+            {{/each}}
         </div>
+    </div>
 </body>
 <script>
     /* When the user clicks on the button, 
