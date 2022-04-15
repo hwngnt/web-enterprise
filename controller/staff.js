@@ -10,6 +10,7 @@ const likes = require('../models/likes');
 const dislikes = require('../models/dislikes');
 const Staff = require('../models/staff');
 const nodemailer = require('nodemailer');
+const QAC = require('../models/QAcoordinator');
 
 exports.getStaff = async (req, res) => {
     res.render('staff/staff', { loginName: req.session.email })
@@ -41,6 +42,7 @@ exports.addIdea = async (req, res) => {
     var id = req.query.id;
     res.render('staff/addIdeas', { idCategory: id, loginName: req.session.email })
 }
+
 exports.doAddIdea = async (req, res) => {
     const fs = require("fs");
     let aStaff = await Staff.findOne({ email: req.session.email });
@@ -49,6 +51,13 @@ exports.doAddIdea = async (req, res) => {
     var idCategory = req.body.idCategory;
     let aCategory = await category.findById(idCategory);
     let path = aCategory.url + '/' + req.body.name;
+    
+    let allQacs = await QAC.find();
+    let qac_emails = [];
+    for (let qac of allQacs) {
+        qac_emails.push(qac.email);
+    }
+    console.log(qac_emails);
     let count = 0;
     function loop() {
         console.log(path);
@@ -79,7 +88,7 @@ exports.doAddIdea = async (req, res) => {
                                 url: path,
                                 like: 0,
                                 dislike: 0,
-                            })
+                           })
                         }
 
                         let transporter = nodemailer.createTransport({
@@ -91,7 +100,7 @@ exports.doAddIdea = async (req, res) => {
                                 pass: 'neymar9701'
                             },
                             tls: { rejectUnauthorized: false }
-                        })
+                        });
                         let content = '';
                         content += `
                             <div style="padding: 10px; background-color: #003375">
@@ -109,18 +118,15 @@ exports.doAddIdea = async (req, res) => {
                         content += '</div> </div>';
                         let mainOptions = {
                             from: 'staffgroup1gw@gmail.com',
-                            to: 'hoangdzaik1@gmail.com',
+                            to: qac_emails,
                             subject: 'New submitted idea' + (Math.round(Math.random() * 10000)).toString(),
                             text: 'abc',
                             html: content
                         }
-                        transporter.sendMail(mainOptions, function (err, infor) {
-                            if (err) {
-                                console.error(err);
-                            }
-                            else {
-                                console.log('Message sent: ' + info.response);
-                            }
+
+                        transporter.sendMail(mainOptions, function (err, info) {
+                            if (err) console.error('Error: ', err);
+                            else console.log('Message sent: ', info.response);
                         });
                         newIdea = newIdea.save();
                         console.log("New Directory created successfully !!");
@@ -326,8 +332,16 @@ exports.doComment = async (req, res) => {
     let id = req.body.idCategory;
     let aIdea = await idea.findById(req.body.idIdea);
     let aStaff = await Staff.findOne({ email: req.session.email });
-    //console.log(req.body.idCategory);
+    let aCategory = await category.findById(id);
+    let allStaffs = await Staff.find();
+    let staffEmails = [];
+    for(let staff of allStaffs) {
+        if(staff.email != aStaff.email) staffEmails.push(staff.email);
+    }
+    console.log(staffEmails);
+    let checkAnnonymously = false;
     if (req.body.annonymously != undefined) {
+        checkAnnonymously = true;
         newComment = new comment({
             ideaID: aIdea,
             author: aStaff,
@@ -341,18 +355,56 @@ exports.doComment = async (req, res) => {
             comment: req.body.comment,
         });
     }
-    let aCategory = await category.findById(id);
-    let tempDate = new Date();
-    let compare = tempDate > aCategory.dateEnd;
-    if (compare) {
-        res.redirect('../viewCategoryDetail?id=' + id)
-    } else {
-        newComment = await newComment.save();
-        aIdea.comments.push(newComment);
-        aIdea = await aIdea.save();
-        //console.log(newComment.comment);
-        res.redirect('../viewCategoryDetail?id=' + id);
+
+    
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: 'tempstaff1123@gmail.com',
+            pass: 'neymar9701'
+        },
+        tls: { rejectUnauthorized: false }
+    })
+    let content = '';
+    content += `
+        <div style="padding: 10px; background-color: #003375">
+            <div style="padding: 10px; background-color: white;">    
+    `;
+    content += '<h4 style="color: #0085ff"> From: ' + aStaff.email.toString() + '</h4> <hr>';
+    content += '<span style="color: black"> Category name: ' + aCategory.name.toString() + '</span><br>';
+    content += '<span style="color: black"> Comment to Idea: ' + aIdea.name.toString() + '</span><br>';
+    content += '<span style="color: black"> Comment: ' + req.body.comment.toString() + '</span><br>';
+    if (!checkAnnonymously) {
+        content += '<span style="color: black"> Staff name: ' + aStaff.name.toString() + '</span>';
     }
+    else {
+        content += '<span style="color: black"> Staff name: Annonymously </span>';
+    }
+    content += '</div> </div>';
+    let mainOptions = {
+        from: 'tempstaff1123@gmail.com',
+        to: staffEmails,
+        subject: 'New submitted idea' + (Math.round(Math.random() * 10000)).toString(),
+        text: 'abc',
+        html: content
+    }
+    transporter.sendMail(mainOptions, function (err, info) {
+        if (err) {
+            console.error(err);
+        }
+        else {
+            console.log('Message sent: ' + info.response);
+        }
+    });
+    newComment = await newComment.save();
+    aIdea.comments.push(newComment);
+    aIdea = await aIdea.save();
+
+    //console.log(newComment.comment);
+    res.redirect('../viewCategoryDetail?id=' + id);
+
 }
 
 
@@ -376,8 +428,7 @@ exports.addLike = async (req, res) => {
                             checkExistedStaff = true;
                             break;
                         }
-                    }
-                    if (checkExistedStaff) {
+                    }if (checkExistedStaff) {
                         data.staffID.splice(idxRemove, 1);
                         console.log('Removed existed staff liked idea');
                         n_staffs -= 1;
@@ -386,21 +437,19 @@ exports.addLike = async (req, res) => {
                         data.staffID.push(staffID);
                         n_staffs += 1;
                         data.save();
-                        console.log('Add a new staff');
+                        console.log('Add a new staff to existed like idea');
                     }
                 } catch (e) {
                     console.log(e);
                 }
-
-            }
-            else {
+            }else {
                 newLike = new likes({
                     ideaID: ideaID,
                     staffID: staffID
                 })
                 newLike.save();
                 n_staffs += 1;
-                console.log('Add new like');
+                console.log('Add new staff to new like idea');
             }
         });
     }
@@ -446,7 +495,7 @@ exports.addDislike = async (req, res) => {
                         data.staffID.push(staffID);
                         data.save();
                         n_staffs += 1;
-                        console.log('Add a new staff');
+                        console.log('Add a new staff to existed dislike idea');
                     }
                 } catch (e) {
                     console.log(e);
@@ -459,7 +508,7 @@ exports.addDislike = async (req, res) => {
                 })
                 newDislike.save();
                 n_staffs += 1;
-                console.log('Add new dislike');
+                console.log('Add new staff to new dislike idea');
             }
         });
     }
@@ -577,8 +626,10 @@ exports.viewMostComments = async (req, res) => {
     console.log(topViews);
     let mostComments = [];
     let counter = 0;
-    for (let j = 0; j < topViews.length; j++) {
-        let i = topViews[j];
+    for (let j = 0; j < top5Views.length; j++) {
+        let i = top5Views[j];
+        console.log(i.comments.length);
+
         fs.readdir(i.url, (err, files) => {
             mostComments.push({
                 idea: i,

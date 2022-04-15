@@ -8,6 +8,8 @@ const Comment = require('../models/comments');
 const AdmZip = require('adm-zip');
 var mongoose = require('mongoose');
 const fs = require("fs");
+const fsPromises = fs.promises;
+
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 exports.getQAM = async (req, res) => {
@@ -17,6 +19,7 @@ exports.getQAM = async (req, res) => {
 exports.changePassword = async (req, res) => {
     res.render('qam/changePassword', { loginName: req.session.email })
 }
+
 exports.doChangePassword = async (req, res) => {
     let user = await Account.findOne({ email: req.session.email });
     let current = req.body.current;
@@ -382,6 +385,7 @@ exports.getMostViewed = async (req, res) => {
         });
         counter = counter + 1;
     };
+
     console.log(mostViewedIdeas.length);
     res.render('qam/qamMostViewed', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }

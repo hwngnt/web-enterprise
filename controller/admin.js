@@ -60,13 +60,14 @@ exports.doChangePassword = async (req, res) => {
 //QAmanager
 exports.viewQAmanager = async (req, res) => {
     let listQAmanager = await QAmanager.find();
+    console.log(listQAmanager);
     res.render('admin/viewQAmanager', { listQAmanager: listQAmanager, loginName: req.session.email })
 }
 exports.addQAmanager = async (req, res) => {
     res.render('admin/addQAmanager', { loginName: req.session.email });
 }
 exports.doAddQAmanager = async (req, res) => {
-    console.log(req.body)
+    //console.log(req.body)
     let newQAmanager;
     if (req.file) {
         newQAmanager = new QAmanager({
@@ -103,7 +104,8 @@ exports.doAddQAmanager = async (req, res) => {
     }
     catch (error) {
         console.log(error);
-        res.redirect('/admin/viewQualityAssuranceManager');
+        return 0;
+        // res.redirect('/admin/viewQualityAssuranceManager');
     }
 }
 exports.editQAmanager = async (req, res) => {
