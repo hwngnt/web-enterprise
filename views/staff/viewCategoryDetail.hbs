@@ -262,6 +262,21 @@
             {{/each}}
         </div>
     </div>
+    <center>
+        <div aria-label="Page navigation example" style="margin-left: 50%; margin-top: -5%">
+            <ul class="pagination">
+                {{#times noPage}}
+                <li class="page-item">
+                    <form method="post" action='/staff/viewCategoryDetail/'>
+                        <input type="hidden" name="idCategory" value="{{../idCategory}}">
+                        <input type="hidden" name="noPage" value="{{this}}">
+                        <button type="submit" class="page-link" style="width: 40px; height: 40px;">{{this}}</button>
+                    </form>
+                </li>
+                {{/times}}
+            </ul>
+        </div>
+    </center>
 </body>
 <script>
     $(function () {

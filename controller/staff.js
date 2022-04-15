@@ -181,13 +181,22 @@ exports.viewSubmittedIdeas = async (req, res) => {
 
 exports.viewCategoryDetail = async (req, res) => {
     let id;
-    let sortBy;
+    let noPage;
+    let page = 0;
+    let sortBy = req.query.sort;
+    if(req.body,noPage != undefined) {
+        page = req.body.noPage;
+    }
     if (req.query.id === undefined) {
         id = req.body.idCategory;
         sortBy = req.body.sortBy;
     } else {
         id = req.query.id;
     }
+    if (sortBy === undefined) {
+        req.session.sort = req.body.sortBy;
+    }
+    
     let listFiles = [];
     try {
         let listIdeas = await idea.find({ categoryID: id }).populate({ path: 'comments', populate: { path: 'author' } }).populate('author');
@@ -280,8 +289,16 @@ exports.viewCategoryDetail = async (req, res) => {
                             return 1;
                         }
                     });
-                    console.log('id');
+                    //console.log('id');
                 }
+                noPage = Math.floor(listIdeas.length/5)+1;
+                let s = page * 5;
+
+                console.log(s + " nnn " + (s + 5));
+                listFiles = listFiles.slice(s, s + 5);
+                console.log(noPage);
+                console.log(listFiles.length);
+                res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, noPage: noPage, loginName: req.session.email })
             };
         };
         listIdeas.forEach(async (i) => {
@@ -298,10 +315,10 @@ exports.viewCategoryDetail = async (req, res) => {
             });
         })
 
-        res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+        
     } catch (e) {
         console.log(e);
-        res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, loginName: req.session.email });
+        res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
     }
 }
 
@@ -857,5 +874,53 @@ exports.paginations = async (req, res) => {
         let listCategory = await category.find({})
             ;
         res.render('staff/testPagination', { listCategory: listCategory, loginName: req.session.email })
+    }
+}
+
+exports.changePassword = async (req, res) => {
+    res.render('staff/changePassword', { loginName: req.session.email })
+}
+exports.doChangePassword = async (req, res) => {
+    let user = await Account.findOne({ email: req.session.email });
+    let current = req.body.current;
+    let newpw = req.body.new;
+    let confirm = req.body.confirm;
+    let errors = {};
+    let flag = true;
+    try {
+        await bcrypt.compare(current, user.password)
+            .then((doMatch) => {
+                if (doMatch) {
+                    if (newpw.length < 8) {
+                        flag = false;
+                        Object.assign(errors, { length: "Password must contain 8 characters or more!" });
+                    }
+                    else if (newpw != confirm) {
+                        flag = false;
+                        Object.assign(errors, { check: "New Password and Confirm Password do not match!" });
+                    }
+                }
+                else {
+                    flag = false;
+                    Object.assign(errors, { current: "Old password is incorrect!" });
+                }
+            });
+        if (!flag) {
+            res.render('staff/changePassword', { errors: errors, loginName: req.session.email })
+        }
+        else {
+            await bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newpw, salt, (err, hash) => {
+                    if (err) throw err;
+                    user.password = hash;
+                    user = user.save();
+                    req.session.user = user;
+                    res.redirect('/staff')
+                })
+            })
+
+        }
+    } catch (err) {
+        console.log(err);
     }
 }
