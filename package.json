@@ -2,7 +2,7 @@
   "name": "web-enterprise",
   "version": "1.0.0",
   "description": "",
-  "main": "nodemon app.js",
+  "main": "node app.js",
   "scripts": {
     "test": "jest"
   },
