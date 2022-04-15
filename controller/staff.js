@@ -328,7 +328,7 @@ exports.viewCategoryDetail = async (req, res) => {
                 });
             })
         } else {
-            res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, sortBy: sortBy, noPage: noPage, page: page, loginName: req.session.email });
+            res.render('staff/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, sortBy: sortBy, noPage: noPage, page: page, loginName: req.session.email });
         }
     } catch (e) {
         console.log(e);
