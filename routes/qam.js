@@ -11,6 +11,7 @@ router.get('/qam/qamAddCategory', isQAM, qamController.getAddCategory);
 router.post('/qam/doAddCategory', isQAM, qamController.doAddCategory);
 router.get('/qam/qamViewCategory', isQAM, qamController.getViewCategory);
 router.get('/qam/qamViewCategoryDetail', isQAM, qamController.getCategoryDetail);
+router.post('/qam/qamViewCategoryDetail', isQAM, qamController.getCategoryDetail);
 router.get('/qam/qamDeleteCategory', isQAM, qamController.deleteCategory);
 
 router.get('/qam/viewLastestIdeas', isQAM, qamController.viewLastestIdeas);

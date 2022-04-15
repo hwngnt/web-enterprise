@@ -150,18 +150,27 @@ exports.getViewCategory = async (req, res) => {
 }
 
 exports.getCategoryDetail = async (req, res) => {
+    console.log('1')
     let id;
-    let sortBy;
+    let noPage;
+    //console.log(req.body.idCategory);
+    let page = 1;
+    if(req.body.noPage != undefined){
+        page = req.body.noPage;
+    }
     if (req.query.id === undefined) {
         id = req.body.idCategory;
-        sortBy = req.body.sortBy;
     } else {
         id = req.query.id;
     }
+    if( req.body.sortBy != undefined){
+        req.session.sort = req.body.sortBy;
+    }
+    let sortBy = req.session.sort;
     // let id = req.query.id;
     let listFiles = [];
     try {
-        let listIdeas = await idea.find({ categoryID: id }).populate('comments')
+        let listIdeas = await idea.find({ categoryID: id }).populate({path:'comments', populate : { path: 'author'}}).populate('author');
         let aCategory = await Category.findById(id);
         let tempDate = new Date();
         let compare = tempDate > aCategory.dateEnd;
@@ -215,7 +224,7 @@ exports.getCategoryDetail = async (req, res) => {
                         else if (A > B) {
                             return -1;
                         }
-                        else {
+                        else{
                             if (a.idea._id < b.idea._id) {
                                 return -1;
                             }
@@ -234,31 +243,46 @@ exports.getCategoryDetail = async (req, res) => {
                             return 1;
                         }
                     });
-                    // console.log('id');
+                    //console.log('id');
                 }
+                noPage = Math.floor(listIdeas.length/5);
+                console.log(noPage);
+                if(listIdeas.length % 5 != 0){
+                    noPage+=1
+                }
+                console.log(noPage);
+                let s = (page-1)*5;
+                console.log(s+ " nnn " +(s+5));
+                listFiles = listFiles.slice(s,s+5);
+                console.log(noPage);
+                console.log(listFiles.length);
+                //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
+                res.render('qam/qamViewCategoryDetail', { idCategory: id, listFiles: listFiles, sortBy:sortBy, noPage: noPage, page: page, loginName: req.session.email });  
             };
         };
-        listIdeas.forEach(async (i) => {
-            fs.readdir(i.url, (err, files) => {
-                listFiles.push({
-                    counter: counter,
-                    value: files,
-                    linkValue: i.url.slice(7),
-                    idea: i
+        console.log(listIdeas);
+        if (listIdeas.length != 0){
+            listIdeas.forEach(async (i) => {
+                fs.readdir(i.url, (err, files) => {
+                    listFiles.push({
+                        counter: counter,
+                        value: files,
+                        linkValue: i.url.slice(7),
+                        idea: i
+                    });
+                    counter = counter + 1;
+                    callBack();
                 });
-                // console.log(listFiles)
-                counter = counter + 1;
-                callBack();
-            });
-
-        })
-        //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
-        res.render('qam/qamViewCategoryDetail', { idCategory: id, listFiles: listFiles, aCategory: aCategory, compare: compare, loginName: req.session.email });
+            })
+        }else{
+            res.render('qam/qamViewCategoryDetail', { idCategory: id, listFiles: listFiles, sortBy:sortBy, noPage: noPage, page: page, loginName: req.session.email });  
+        }
     } catch (e) {
-        console.log(e);
-        res.render('qam/qamViewCategoryDetail', { idCategory: id, listFiles: listFiles, aCategory: aCategory, compare: compare, loginName: req.session.email });
+        // console.log(e);
+        res.render('qam/qamViewCategoryDetail', { idCategory: id, listFiles: listFiles, sortBy:sortBy, noPage: noPage, page: page, loginName: req.session.email });
     }
 }
+
 
 exports.deleteCategory = async (req, res) => {
     let id = req.query.id;
