@@ -51,16 +51,13 @@
     <div class="row">
         <div class="col" style="margin: 5% 30%;">
             <div class="dropdown">
-                <button onclick="myFunction()" class="dropbtn">Lastest by ↓</button>
+                <button onclick="myFunction()" class="dropbtn">Latest by ↓</button>
                 <div id="myDropdown" class="dropdown-content">
                     <form action="/qac/viewLastestComment" method="POST">
-                        <input type="submit" name="last" value="5">
+                        {{#each distance5_comments}}
+                        <input type="submit" name="last" value="{{this}}">
                         <br>
-                        <input type="submit" name="last" value="10">
-                        <br>
-                        <input type="submit" name="last" value="15">
-                        <br>
-                        <input type="submit" name="last" value="20">
+                        {{/each}}
                     </form>
                 </div>
             </div>

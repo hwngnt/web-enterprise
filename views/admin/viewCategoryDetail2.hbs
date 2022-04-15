@@ -166,19 +166,46 @@
         </div>
     </div>
     <center>
-    <div aria-label="Page navigation example" style="margin-left: 50%; margin-top: -5%">
-        <ul class="pagination">
-            {{#times noPage}}
-            <li class="page-item">
-                <form method="post" action='/admin/viewCategoryDetail/'>
-                    <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                    <input type="hidden" name="noPage" value="{{this}}">
-                    <button type="submit" class="page-link" style="width: 40px; height: 40px;">{{this}}</button>
-                </form>
-            </li>
-            {{/times}}
-        </ul>
-    </div>
+        <div aria-label="Page navigation example" style="margin-left: 50%; margin-top: -5%">
+            <ul class="pagination">
+                <li class="page-item">
+                    <form method="post" action='/admin/viewCategoryDetail/'>
+                        <input type="hidden" name="idCategory" value="{{idCategory}}">
+                        {{#ifEquals page 1}}
+                        <input type="hidden" name="noPage" value="1">
+                        {{else}}
+                        <input type="hidden" name="noPage" value="{{#minus page 1}} {{/minus}}">
+                        {{/ifEquals}}
+                        <button type="submit" class="page-link" style="width: 40px; height: 40px;"><span
+                                aria-hidden="true">&laquo;</span></button>
+                    </form>
+                </li>
+                {{#times noPage}}
+                <li class="page-item">
+                    <form method="post" action='/admin/viewCategoryDetail/'>
+                        <input type="hidden" name="idCategory" value="{{../idCategory}}">
+                        <input type="hidden" name="noPage" value="{{this}}">
+                        {{#ifEquals ../page this}}
+                        <button type="submit" class="page-link" style="width: 40px; height: 40px; background-color: #03d1fa52;">{{this}}</button>
+                        {{else}}
+                        <button type="submit" class="page-link" style="width: 40px; height: 40px;">{{this}}</button>
+                        {{/ifEquals}}
+                    </form>
+                </li>
+                {{/times}}
+                <li class="page-item">
+                    <form method="post" action='/admin/viewCategoryDetail/'>
+                        <input type="hidden" name="idCategory" value="{{idCategory}}">
+                        {{#ifEquals page noPage}}
+                        <input type="hidden" name="noPage" value="{{page}}">
+                        {{else}}
+                        <input type="hidden" name="noPage" value="{{#plus page 1}} {{/plus}}">
+                        {{/ifEquals}}
+                        <button type="submit" class="page-link" style="width: 40px; height: 40px;"><span aria-hidden="true">&raquo;</span></button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </center>
 </body>
 <script>

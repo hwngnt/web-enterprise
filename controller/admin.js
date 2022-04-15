@@ -441,8 +441,8 @@ exports.viewSubmittedIdeas = async (req, res) => {
 exports.viewCategoryDetail = async (req, res) => {
     let id;
     let noPage;
-    console.log(req.body.idCategory);
-    let page = 0;
+    //console.log(req.body.idCategory);
+    let page = 1;
     if(req.body.noPage != undefined){
         page = req.body.noPage;
     }
@@ -533,33 +533,41 @@ exports.viewCategoryDetail = async (req, res) => {
                     });
                     //console.log('id');
                 }
-                noPage = Math.floor(listIdeas.length/5)+1;
-                let s = page*5;
-                
+                noPage = Math.floor(listIdeas.length/5);
+                console.log(noPage);
+                if(listIdeas.length % 5 != 0){
+                    noPage+=1
+                }
+                console.log(noPage);
+                let s = (page-1)*5;
                 console.log(s+ " nnn " +(s+5));
                 listFiles = listFiles.slice(s,s+5);
                 console.log(noPage);
                 console.log(listFiles.length);
                 //res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, nameIdea: nameIdea, listComment: listComment, compare: compare, loginName: req.session.email });
-                res.render('admin/viewCategoryDetail2', { idCategory: id, listFiles: listFiles, compare: compare, noPage: noPage, loginName: req.session.email });  
+                res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, sortBy:sortBy, noPage: noPage, page: page, loginName: req.session.email });  
             };
         };
-        listIdeas.forEach(async (i) => {
-            fs.readdir(i.url, (err, files) => {
-                listFiles.push({
-                    counter: counter,
-                    value: files,
-                    linkValue: i.url.slice(7),
-                    idea: i
+        console.log(listIdeas);
+        if (listIdeas.length != 0){
+            listIdeas.forEach(async (i) => {
+                fs.readdir(i.url, (err, files) => {
+                    listFiles.push({
+                        counter: counter,
+                        value: files,
+                        linkValue: i.url.slice(7),
+                        idea: i
+                    });
+                    counter = counter + 1;
+                    callBack();
                 });
-                counter = counter + 1;
-                callBack();
-            });
-        })
-        
+            })
+        }else{
+            res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, sortBy:sortBy, noPage: noPage, page: page, loginName: req.session.email });  
+        }
     } catch (e) {
         // console.log(e);
-        res.render('admin/viewCategoryDetail2', { idCategory: id, listFiles: listFiles, compare: compare, loginName: req.session.email });
+        res.render('admin/viewCategoryDetail', { idCategory: id, listFiles: listFiles, compare: compare, sortBy:sortBy, noPage: noPage, page: page, loginName: req.session.email });
     }
 }
 

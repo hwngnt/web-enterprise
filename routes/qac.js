@@ -12,4 +12,7 @@ router.post('/qac/viewLastestIdeas', qacController.filterLastestIdeas);
 router.post('/qac/mostViewedIdeas', qacController.filterMostViewIdeas);
 router.post('/qac/viewLastestComment', qacController.filterLastestComment);
 router.post('/qac/viewMostComments', qacController.filterMostComments);
+
+router.get('/qac/changePassword', qacController.changePassword);
+router.post('/qac/doChangePassword', qacController.doChangePassword);
 module.exports = router;

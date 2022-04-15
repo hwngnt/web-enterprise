@@ -30,9 +30,15 @@ hbs.registerHelper('ifEquals', function(arg1, arg2, options) {
 });
 hbs.registerHelper('times', function(n, block) {
     var accum = '';
-    for(var i = 0; i < n; ++i)
+    for(var i = 1; i <= n; ++i)
         accum += block.fn(i);
     return accum;
+});
+hbs.registerHelper('minus', function(arg1, arg2, options) {
+    return arg1 - arg2
+});
+hbs.registerHelper('plus', function(arg1, arg2, options) {
+    return Number(arg1) + Number(arg2);
 });
 app.use(express.static(__dirname + '/public'));
 app.get('/', (req, res) => {
