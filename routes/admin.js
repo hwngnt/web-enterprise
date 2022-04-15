@@ -7,7 +7,7 @@ const { isAdmin } = require("../middleware/auth");
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json();
 
-router.get('/admin', adminController.getAdmin);
+router.get('/admin', isAdmin, adminController.getAdmin);
 router.get('/admin/changePassword', isAdmin, adminController.changePassword)
 router.post('/admin/doChangePassword', isAdmin, adminController.doChangePassword)
 
@@ -30,13 +30,13 @@ const uploadQAmanager = multer({
     },
 })
 
-router.get('/admin/viewQualityAssuranceManager', adminController.viewQAmanager);
-router.get('/admin/addQualityAssuranceManager', adminController.addQAmanager);
-router.post('/admin/doAddQualityAssuranceManager', uploadQAmanager.single('picture'), adminController.doAddQAmanager);
-router.get('/admin/deleteQualityAssuranceManager', adminController.deleteQAmanager);
-router.get('/admin/editQualityAssuranceManager', adminController.editQAmanager);
-router.post('/admin/doEditQualityAssuranceManager',uploadQAmanager.single('picture'), adminController.doEditQAmanager);
-router.post('/admin/searchQualityAssuranceManager', adminController.searchQAmanager);
+router.get('/admin/viewQualityAssuranceManager', isAdmin, adminController.viewQAmanager);
+router.get('/admin/addQualityAssuranceManager', isAdmin, adminController.addQAmanager);
+router.post('/admin/doAddQualityAssuranceManager', isAdmin, uploadQAmanager.single('picture'), adminController.doAddQAmanager);
+router.get('/admin/deleteQualityAssuranceManager', isAdmin, adminController.deleteQAmanager);
+router.get('/admin/editQualityAssuranceManager', isAdmin, adminController.editQAmanager);
+router.post('/admin/doEditQualityAssuranceManager', isAdmin, uploadQAmanager.single('picture'), adminController.doEditQAmanager);
+router.post('/admin/searchQualityAssuranceManager', isAdmin, adminController.searchQAmanager);
 
 
 
@@ -57,13 +57,13 @@ const uploadQAcoordinator = multer({
         fieldSize:1024*1024*3
     },
 })
-router.get('/admin/viewQualityAssuranceCoordinator', adminController.viewQAcoordinator);
-router.get('/admin/addQualityAssuranceCoordinator', adminController.addQAcoordinator);
-router.post('/admin/doAddQualityAssuranceCoordinator', uploadQAcoordinator.single('picture'), adminController.doAddQAcoordinator);
-router.get('/admin/editQualityAssuranceCoordinator', adminController.editQAcoordinator);
-router.post('/admin/doEditQualityAssuranceCoordinator',uploadQAcoordinator.single('picture'), adminController.doEditQAcoordinator);
-router.get('/admin/deleteQualityAssuranceCoordinator', adminController.deleteQAcoordinator);
-router.post('/admin/searchQualityAssuranceCoordinator', adminController.searchQAcoordinator);
+router.get('/admin/viewQualityAssuranceCoordinator', isAdmin, adminController.viewQAcoordinator);
+router.get('/admin/addQualityAssuranceCoordinator', isAdmin, adminController.addQAcoordinator);
+router.post('/admin/doAddQualityAssuranceCoordinator', isAdmin, uploadQAcoordinator.single('picture'), adminController.doAddQAcoordinator);
+router.get('/admin/editQualityAssuranceCoordinator', isAdmin, adminController.editQAcoordinator);
+router.post('/admin/doEditQualityAssuranceCoordinator', isAdmin, uploadQAcoordinator.single('picture'), adminController.doEditQAcoordinator);
+router.get('/admin/deleteQualityAssuranceCoordinator', isAdmin, adminController.deleteQAcoordinator);
+router.post('/admin/searchQualityAssuranceCoordinator', isAdmin, adminController.searchQAcoordinator);
 
 //Staff
 const storageStaff = multer.diskStorage({
@@ -82,21 +82,21 @@ const uploadStaff = multer({
         fieldSize:1024*1024*3
     },
 });
-router.get('/admin/viewStaff', adminController.viewStaff);
-router.get('/admin/addStaff', adminController.addStaff);
-router.post('/admin/doAddStaff', uploadStaff.single('picture'), adminController.doAddStaff);
-router.get('/admin/editStaff', adminController.editStaff);
-router.post('/admin/doEditStaff',uploadStaff.single('picture'), adminController.doEditStaff);
-router.get('/admin/deleteStaff', adminController.deleteStaff);
-router.post('/admin/searchStaff', adminController.searchStaff);
+router.get('/admin/viewStaff', isAdmin, adminController.viewStaff);
+router.get('/admin/addStaff', isAdmin, adminController.addStaff);
+router.post('/admin/doAddStaff', isAdmin, uploadStaff.single('picture'), adminController.doAddStaff);
+router.get('/admin/editStaff', isAdmin, adminController.editStaff);
+router.post('/admin/doEditStaff', isAdmin, uploadStaff.single('picture'), adminController.doEditStaff);
+router.get('/admin/deleteStaff', isAdmin, adminController.deleteStaff);
+router.post('/admin/searchStaff', isAdmin, adminController.searchStaff);
 
-router.get('/admin/viewCategory', adminController.viewCategory);
-router.post('/admin/searchCategory', adminController.searchCategory);
-router.get('/admin/category/edit', adminController.editDate);
-router.post('/admin/doEditCategory', adminController.doEditDate);
+router.get('/admin/viewCategory', isAdmin, adminController.viewCategory);
+router.post('/admin/searchCategory', isAdmin, adminController.searchCategory);
+router.get('/admin/category/edit', isAdmin, adminController.editDate);
+router.post('/admin/doEditCategory', isAdmin, adminController.doEditDate);
 
 
-router.get('/admin/viewSubmittedIdeas', adminController.viewSubmittedIdeas);
-router.get('/admin/viewCategoryDetail', adminController.viewCategoryDetail);
-router.post('/admin/viewCategoryDetail', adminController.viewCategoryDetail);
+router.get('/admin/viewSubmittedIdeas', isAdmin, adminController.viewSubmittedIdeas);
+router.get('/admin/viewCategoryDetail', isAdmin, adminController.viewCategoryDetail);
+router.post('/admin/viewCategoryDetail', isAdmin, adminController.viewCategoryDetail);
 module.exports = router;
