@@ -15,13 +15,13 @@ const mockResponse = () => {
   return res;
 };
 
-describe('Test qac controller', () => {
-  describe('Test get qac', () => {
+describe('Test QAC controller', () => {
+  describe('Test get QAC', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       jest.resetAllMocks();
     })
-    it('it should abcxyz', async () => {
+    it('it should be...', async () => {
       const req = {
         session: {
           email: 'Test@gmail.com'
@@ -34,12 +34,12 @@ describe('Test qac controller', () => {
     })
   })
 
-  describe('Test view Lastest Comment', () => {
+  describe('Test View Lastest Comment', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       jest.resetAllMocks();
     })
-    it('it should abxyzzdsda', async () => {
+    it('it should be...', async () => {
       jest.spyOn(comment, 'find').mockResolvedValueOnce([{
         ideaId: 1,
         author: 1
