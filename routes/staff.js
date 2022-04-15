@@ -53,4 +53,7 @@ router.post('/staff/mostViewedIdeas', staffController.filterMostViewIdeas);
 router.post('/staff/viewLatestComments', staffController.filterLatestComment);
 router.post('/staff/viewMostComments',staffController.filterMostComments);
 
+router.get('/staff/changePassword', isStaff, staffController.changePassword)
+router.post('/staff/doChangePassword', isStaff, staffController.doChangePassword)
+
 module.exports = router;

@@ -4,8 +4,7 @@ const comment = require('../models/comments');
 const staff = require('../models/staff');
 const fs = require("fs");
 
-
-jest.useFakeTimers()
+jest.useFakeTimers();
 const mockResponse = () => {
   const res = {};
   res.send = jest.fn().mockReturnValue(res);
@@ -31,7 +30,7 @@ describe('Test qac controller', () => {
       const res = mockResponse();
       await qacController.getQAC(req, res);
 
-      expect(res.render).toHaveBeenCalledWith("qac/index", {"loginName": "Test@gmail.com"});
+      expect(res.render).toHaveBeenCalledWith("qac/index", { "loginName": "Test@gmail.com" });
     })
   })
 
@@ -65,7 +64,7 @@ describe('Test qac controller', () => {
       const res = mockResponse();
       await qacController.viewLastestComment(req, res);
 
-      expect(res.render).toHaveBeenCalledWith("qac/viewLastestComment", {"lastComments_detail": [], "loginName": "Test"});
+      expect(res.render).toHaveBeenCalledWith("qac/viewLastestComment", { "lastComments_detail": [], "loginName": "Test" });
     })
   })
 })
