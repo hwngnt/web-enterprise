@@ -25,10 +25,3 @@ exports.isQAC = function(req, res, next) {
   else
     return res.sendStatus(401);
 };
-
-exports.isTrainee = function(req, res, next) {
-    if (req.session && req.session.trainee)
-      return next();
-    else
-      return res.sendStatus(401);
-};

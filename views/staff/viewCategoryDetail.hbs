@@ -218,25 +218,6 @@
                         <div class="well" style="width: 700px">
                             <h4>Comments... <span class="glyphicon glyphicon-comment"></span></h4>
                             <form method="post" action='/staff/viewCategoryDetail/Comment'>
-                                {{#if compare}}
-                                <input type="hidden" name="idCategory" value="{{../idCategory}}">
-                                <input type="hidden" name="idIdea" value="{{idea._id}}" />
-                                <div class="form-group">
-                                    <textarea class="form-control" name="comment" row="3" disabled="true"
-                                        placeholder="Final closure date was end"></textarea>
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="form-check form-check-inline col-md-5">
-                                                <label class="form-check-label"
-                                                    for="inlineCheckbox1">Annonymously</label>
-                                                <input class="form-check-input" type="radio" name="annonymously"
-                                                    id="inlineCheckbox1" value="true" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary" disabled>Send</button>
-                                {{else}}
                                 <input type="hidden" name="idCategory" value="{{../idCategory}}">
                                 <input type="hidden" name="idIdea" value="{{idea._id}}" />
                                 <div class="form-group">
@@ -253,7 +234,6 @@
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Send</button>
-                                {{/if}}
                             </form>
                         </div>
                     </div>

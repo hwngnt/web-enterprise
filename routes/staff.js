@@ -28,30 +28,30 @@ router.get('/staff/viewStaff', staffController.viewStaff);
 router.get('/staff/addIdea',isStaff, staffController.addIdea);
 router.post('/staff/doAddIdea',isStaff, staffController.doAddIdea);
 router.post('/staff/doAddFile',isStaff, uploadQAmanager.any('ideas'), staffController.doAddFile);
-router.post('/staff/searchStaff', staffController.searchStaff);
+router.post('/staff/searchStaff',isStaff, staffController.searchStaff);
 
-router.get('/staff/viewLastestIdeas', staffController.viewLastestIdeas);
-router.get('/staff/viewMostViewedIdeas', staffController.viewMostViewedIdeas)
+router.get('/staff/viewLastestIdeas',isStaff, staffController.viewLastestIdeas);
+router.get('/staff/viewMostViewedIdeas',isStaff, staffController.viewMostViewedIdeas)
 
-router.get('/staff/viewSubmittedIdeas', staffController.viewSubmittedIdeas);
-router.get('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
+router.get('/staff/viewSubmittedIdeas',isStaff, staffController.viewSubmittedIdeas);
+router.get('/staff/viewCategoryDetail',isStaff, staffController.viewCategoryDetail);
 
-router.post('/staff/viewCategoryDetail', staffController.viewCategoryDetail);
-router.post('/staff/viewCategoryDetail/Comment', staffController.doComment);
-router.post('/staff/searchCategory', staffController.searchCategory);
+router.post('/staff/viewCategoryDetail',isStaff, staffController.viewCategoryDetail);
+router.post('/staff/viewCategoryDetail/Comment',isStaff, staffController.doComment);
+router.post('/staff/searchCategory',isStaff, staffController.searchCategory);
 
 router.post('/staff/addLike', staffController.addLike);
 router.post('/staff/addDislike', staffController.addDislike);
 
-router.get('/staff/viewLatestComments', staffController.viewLatestComments);
-router.get('/staff/viewMostViewedIdeas', staffController.viewMostViewedIdeas)
-router.get('staff/testPagination', staffController.paginations)
-router.get('/staff/viewMostComments',staffController.viewMostComments);
+router.get('/staff/viewLatestComments',isStaff, staffController.viewLatestComments);
+router.get('/staff/viewMostViewedIdeas',isStaff, staffController.viewMostViewedIdeas)
+router.get('staff/testPagination',isStaff, staffController.paginations)
+router.get('/staff/viewMostComments',isStaff,staffController.viewMostComments);
 
-router.post('/staff/viewLastestIdeas', staffController.filterLastestIdeas);
-router.post('/staff/mostViewedIdeas', staffController.filterMostViewIdeas);
-router.post('/staff/viewLatestComments', staffController.filterLatestComment);
-router.post('/staff/viewMostComments',staffController.filterMostComments);
+router.post('/staff/viewLastestIdeas',isStaff, staffController.filterLastestIdeas);
+router.post('/staff/mostViewedIdeas',isStaff, staffController.filterMostViewIdeas);
+router.post('/staff/viewLatestComments',isStaff, staffController.filterLatestComment);
+router.post('/staff/viewMostComments',isStaff,staffController.filterMostComments);
 
 router.get('/staff/changePassword', isStaff, staffController.changePassword)
 router.post('/staff/doChangePassword', isStaff, staffController.doChangePassword)
