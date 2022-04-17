@@ -37,7 +37,7 @@ exports.handleLogin = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        return res.render('index');
+        return res.render('index' , { errors: 'Username or password is incorrect' });
     }
 };
 
