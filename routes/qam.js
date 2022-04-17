@@ -15,10 +15,11 @@ router.post('/qam/qamViewCategoryDetail', isQAM, qamController.getCategoryDetail
 router.get('/qam/qamDeleteCategory', isQAM, qamController.deleteCategory);
 
 router.get('/qam/viewLastestIdeas', isQAM, qamController.viewLastestIdeas);
-
+router.post('/qam/viewLastestIdeas', isQAM, qamController.viewLastestIdeas);
 router.get('/qam/qamEditCategory', isQAM, qamController.editCategory);
 router.post('/qam/doEditCategory', isQAM, qamController.updateCategory);
 router.get('/qam/viewMostViewed', isQAM, qamController.getMostViewed);
+router.post('/qam/viewMostViewed', isQAM, qamController.getMostViewed);
 router.get('/qam/downloadZip', isQAM, qamController.downloadZip);
 router.get('/qam/downloadCSV', isQAM, qamController.downloadCSV);
 

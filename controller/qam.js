@@ -409,8 +409,6 @@ exports.getMostViewed = async (req, res) => {
         });
         counter = counter + 1;
     };
-
-    console.log(mostViewedIdeas.length);
     res.render('qam/qamMostViewed', { mostViewedIdeas: mostViewedIdeas, loginName: req.session.email });
 }
 
